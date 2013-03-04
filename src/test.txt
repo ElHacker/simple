@@ -1,0 +1,37 @@
+int rows = 5;
+int contador = 0;
+array boolean flags : rows;
+string mensaje = "Hola mundo";
+
+function inicializa_array() : void
+{
+    int iterador;
+    for (iterador = 0; iterador < rows; iterador = iterador + 1) {
+	flags[iterador] = 1;
+    }
+    return;
+}
+
+function numero_impresiones() : int
+{
+    contador = contador + 1;
+    print(mensaje);
+    return contador;
+}
+
+main()
+{
+    int j;
+    int num;
+    print("Inicializando array.");
+    inicializa_array();
+    for (j = 0; j < rows; j = j + 1) {
+	num = numero_impresiones();
+	if (num != 2) {
+	    j = rows;
+	} else {
+	    flags[j] = 0;
+	}
+    }
+    print("Fin de programa.");
+}
