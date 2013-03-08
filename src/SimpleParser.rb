@@ -5,7 +5,7 @@
 # Generated using ANTLR version: 3.2.1-SNAPSHOT Jul 31, 2010 19:34:52
 # Ruby runtime library version: 1.8.11
 # Input grammar file: Simple.g
-# Generated at: 2013-03-03 01:14:09
+# Generated at: 2013-03-06 21:34:18
 # 
 
 # ~~~> start load path setup
@@ -175,7 +175,7 @@ module Simple
         # syntactic predicate action gate test
         if @state.backtracking == 0
           # --> action
-           print("[PROGRAMA] ") 
+           print("[PROGRAMA] -> Entrada aceptada\n") 
           # <-- action
         end
         # - - - - - - - rule clean up - - - - - - - -
