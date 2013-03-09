@@ -82,7 +82,7 @@ DIGITS
 
 // Parser Rules
 programa:
-    var func main { print("[PROGRAMA] ") }
+    var func main { print("[PROGRAMA] -> Entrada aceptada\n") }
     ;
 
 var: /* empty */
