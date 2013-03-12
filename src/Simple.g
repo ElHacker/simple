@@ -1,6 +1,6 @@
 /* 
  * Simple
- * A simple progrramming language
+ * A simple programming language
  * Author:
  * Braulio Vladimir Chavez Nunez, A00803220
  * Teodoro Vargas Cortes, A00808903
@@ -85,15 +85,23 @@ DIGITS
 vars_block
 scope {
   global;
+  procedures;
 }
 @init {
   $vars_block::global = Hash.new;
+  $vars_block::procedures = Hash.new;
 }
+// Callback executed at the end of programa
 @after {
   puts("\n\nFound this global variables: \n")
   $vars_block::global.keys.sort.each do | key |
     \$var_info = $vars_block::global[key]
     print("#{key} : type=#{\$var_info[:type]}, value=#{\$var_info[:value]}\n")
+  end
+  puts("\n\nFound this functions: \n")
+  $vars_block::procedures.keys.sort.each do | key |
+    \$proc_info = $vars_block::procedures[key]
+    print("#{key} : #{\$proc_info}\n")
   end
 }
   : programa
@@ -101,13 +109,22 @@ scope {
 
 
 programa:
-    global=var func main {
+    global=var procedures=func main {
           $global.vars_array.each do | var_info |
             unless var_info.nil?
               if $vars_block::global.has_key?(var_info[:id])
-                print("\nERROR: Variable already defined in global\n")
+                print("\nERROR: Variable #{var_info[:id]} already defined in global\n")
               else
                 $vars_block::global[var_info[:id]] = var_info
+              end
+            end
+          end
+          $procedures.list.each do | proc_info |
+            unless proc_info.nil?
+              if $vars_block::procedures.has_key?(proc_info[:id])
+                print("\nERROR: Function #{proc_info[:id]}  already defined\n")
+              else
+                $vars_block::procedures[proc_info[:id]] = proc_info
               end
             end
           end
@@ -157,29 +174,53 @@ tipo returns[type]:
     | BOOLEAN { $type = $BOOLEAN.text }
     ;
 
-func: /* empty */
-    | funcion func { print("[FUNC] ") }
+func returns[list]:
+    | /* empty */
+    | proc=funcion procs=func { 
+        $list = [$proc.func_info]
+        $list.concat($procs.list) unless $procs.list.nil?
+      }
     ;
 
-funcion:
-    FUNCTION ID LPARENT argumentos RPARENT COLON retornofunc LBRACK var est RETURN retorno SEMICOLON RBRACK { print("[FUNCTION] ") }
+funcion returns[func_info]:
+    FUNCTION ID LPARENT arguments=argumentos RPARENT COLON return_type=retornofunc LBRACK local=var est RETURN retorno SEMICOLON RBRACK {
+        \$local_vars = {}
+        unless $local.vars_array.nil?
+          $local.vars_array.each do | var_info |
+            unless var_info.nil?
+              if \$local_vars.has_key?(var_info[:id])
+                print("\nERROR: Variable already defined in procedure\n")
+              else
+                \$local_vars[var_info[:id]] = var_info
+              end
+            end
+          end
+        end
+        $func_info = { id: $ID.text, args: $arguments.list, local_vars: \$local_vars, return_type: $return_type.type }
+      }
     ;
 
-argumentos: /* empty */
-    | tipo ref ID argumentoaux { print("[ARGUMENTOS] ") }
+argumentos returns[list]: /* empty */
+    | data_type=tipo ref ID more_args=argumentoaux {
+        $list = [ {type: $data_type.type, id: $ID.text } ]
+        $list.concat(more_args.list) unless more_args.list.nil?
+      }
     ;
 
-argumentoaux: /* empty */
-    | COMMA tipo ref ID argumentoaux { print("[ARGUMENTOAUX] ") }
+argumentoaux returns[list]: /* empty */
+    | COMMA data_type=tipo ref ID more_args=argumentoaux { 
+        $list = [ {type: $data_type.type, id: $ID.text } ]
+        $list.concat(more_args.list) unless more_args.list.nil?
+      }
     ;
 
 ref: /* empty */
     | REF { print("[REF] ") }
     ;
 
-retornofunc:
-    VOID { print("[RETORNOFUNC] ") }
-    | tipo { print("[RETORNOFUNC] ") }
+retornofunc returns[type]:
+    VOID { $type=$VOID.text }
+    | data_type=tipo { $type=$data_type.type }
     ;
 
 est:

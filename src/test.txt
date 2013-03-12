@@ -12,7 +12,7 @@ function inicializa_array() : void
     return;
 }
 
-function numero_impresiones() : int
+function numero_impresiones(int foo, float bar) : int
 {
     contador = contador + 1;
     print(mensaje);
