@@ -81,43 +81,80 @@ DIGITS
     ;
 
 // Parser Rules
+// block to keep the recognized variables
+vars_block
+scope {
+  global;
+}
+@init {
+  $vars_block::global = Hash.new;
+}
+@after {
+  puts("\n\nFound this global variables: \n")
+  $vars_block::global.keys.sort.each do | key |
+    \$var_info = $vars_block::global[key]
+    print("#{key} : type=#{\$var_info[:type]}, value=#{\$var_info[:value]}\n")
+  end
+}
+  : programa
+  ;
+
+
 programa:
-    var func main { print("[PROGRAMA] ") }
+    global=var func main {
+          $global.vars_array.each do | var_info |
+            unless var_info.nil?
+              if $vars_block::global.has_key?(var_info[:id])
+                print("\nERROR: Variable already defined in global\n")
+              else
+                $vars_block::global[var_info[:id]] = var_info
+              end
+            end
+          end
+       }
     ;
 
-var: /* empty */
-    | variables var { print("[VAR] ") }
+var returns[vars_array]:
+    | /* empty */
+    | single_var=variables vars=var { 
+        $vars_array = [single_var.var_info]
+        $vars_array.concat(vars.vars_array) unless vars.vars_array.nil?
+      }
     ;
 
-variables:
-    INT ID assignint SEMICOLON { print("[VARIABLES] ") }
-    | FLOAT ID assignfloat SEMICOLON { print("[VARIABLES] ") }
-    | STRING ID assignstring SEMICOLON { print("[VARIABLES] ") }
-    | BOOLEAN ID assignboolean SEMICOLON { print("[VARIABLES] ") }
-    | ARRAY tipo ID COLON exp SEMICOLON { print("[VARIABLES] ") }
+variables returns[var_info]:
+    INT ID as_int=assignint SEMICOLON { $var_info = { id: $ID.text, type: $INT.text, value: $as_int.value } }
+    | FLOAT ID as_float=assignfloat SEMICOLON { $var_info = { id: $ID.text, type: $FLOAT.text, value: $as_float.value } }
+    | STRING ID as_string=assignstring SEMICOLON { $var_info = { id: $ID.text, type: $STRING.text, value: $as_string.value }}
+    | BOOLEAN ID as_boolean=assignboolean SEMICOLON { $var_info = { id: $ID.text, type: $BOOLEAN.text, value: $as_boolean.value }}
+    | ARRAY data_type=tipo ID COLON exp SEMICOLON { $var_info = { id: $ID.text, type: "[#{$data_type.type}]" }  } //TODO: missing size of array
     ;
 
-assignint: /* empty */
-    | ASSIGN CTEI { print("[ASSIGNINT] ") }
+assignint returns[value]:
+    | /* empty */
+    | ASSIGN CTEI { $value = $CTEI.text.to_i }
     ;
 
-assignfloat: /* empty */
-    | ASSIGN CTEF { print("[ASSIGNFLOAT] ") }
+assignfloat returns[value]:
+    | /* empty */
+    | ASSIGN CTEF { $value = $CTEF.text.to_f}
     ;
 
-assignstring: /* empty */
-    | ASSIGN CTES { print("[ASSIGNSTRING] ") }
+assignstring returns[value]:
+    |  /* empty */
+    | ASSIGN CTES { $value = $CTES.text }
     ;
 
-assignboolean: /* empty */
-    | ASSIGN CTEB { print("[ASSIGNBOOLEAN] ") }
+assignboolean returns[value]:
+    | /* empty */
+    | ASSIGN CTEB { $value = $CTEB.text == 'true' } // Convert string to boolean
     ;
 
-tipo:
-    INT { print("[TIPO] ") }
-    | FLOAT { print("[TIPO] ") }
-    | STRING { print("[TIPO] ") }
-    | BOOLEAN { print("[TIPO] ") }
+tipo returns[type]:
+    INT { $type = $INT.text }
+    | FLOAT { $type = $FLOAT.text }
+    | STRING { $type = $STRING.text }
+    | BOOLEAN { $type = $BOOLEAN.text }
     ;
 
 func: /* empty */
