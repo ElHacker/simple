@@ -5,7 +5,7 @@
 # Generated using ANTLR version: 3.2.1-SNAPSHOT Jul 31, 2010 19:34:52
 # Ruby runtime library version: 1.8.11
 # Input grammar file: Simple_copy.g
-# Generated at: 2013-03-18 00:00:12
+# Generated at: 2013-03-18 00:37:01
 # 
 
 # ~~~> start load path setup
@@ -129,7 +129,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 24:6: 'int'
+      # at line 123:6: 'int'
       match( "int" )
       # --> action
        print("<INT> ") 
@@ -156,7 +156,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 25:8: 'float'
+      # at line 124:8: 'float'
       match( "float" )
       # --> action
        print("<FLOAT> ") 
@@ -183,7 +183,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 26:10: 'boolean'
+      # at line 125:10: 'boolean'
       match( "boolean" )
       # --> action
        print("<BOOLEAN> ") 
@@ -210,7 +210,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 27:9: 'string'
+      # at line 126:9: 'string'
       match( "string" )
       # --> action
        print("<STRING> ") 
@@ -237,7 +237,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 28:8: 'array'
+      # at line 127:8: 'array'
       match( "array" )
       # --> action
        print("<ARRAY> ") 
@@ -264,7 +264,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 29:7: 'main'
+      # at line 128:7: 'main'
       match( "main" )
       # --> action
        print("<MAIN> ") 
@@ -291,7 +291,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 30:7: 'void'
+      # at line 129:7: 'void'
       match( "void" )
       # --> action
        print("<VOID> ") 
@@ -318,7 +318,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 31:11: 'function'
+      # at line 130:11: 'function'
       match( "function" )
       # --> action
        print("<FUNCTION> ") 
@@ -345,7 +345,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 32:9: 'return'
+      # at line 131:9: 'return'
       match( "return" )
       # --> action
        print("<RETURN> ") 
@@ -372,7 +372,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 33:6: 'for'
+      # at line 132:6: 'for'
       match( "for" )
       # --> action
        print("<FOR> ") 
@@ -399,7 +399,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 34:5: 'if'
+      # at line 133:5: 'if'
       match( "if" )
       # --> action
        print("<IF> ") 
@@ -426,7 +426,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 35:7: 'else'
+      # at line 134:7: 'else'
       match( "else" )
       # --> action
        print("<ELSE> ") 
@@ -453,7 +453,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 36:8: 'print'
+      # at line 135:8: 'print'
       match( "print" )
       # --> action
        print("<PRINT> ") 
@@ -480,7 +480,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 37:8: 'input'
+      # at line 136:8: 'input'
       match( "input" )
       # --> action
        print("<INPUT> ") 
@@ -507,7 +507,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 38:9: '='
+      # at line 137:9: '='
       match( 0x3d )
       # --> action
        print("<ASSIGN> ") 
@@ -534,7 +534,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 39:5: '<'
+      # at line 138:5: '<'
       match( 0x3c )
       # --> action
        print("<LT> ") 
@@ -561,7 +561,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 40:5: '<='
+      # at line 139:5: '<='
       match( "<=" )
       # --> action
        print("<LE> ") 
@@ -588,7 +588,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 41:5: '>'
+      # at line 140:5: '>'
       match( 0x3e )
       # --> action
        print("<GT> ") 
@@ -615,7 +615,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 42:5: '>='
+      # at line 141:5: '>='
       match( ">=" )
       # --> action
        print("<GE> ") 
@@ -642,7 +642,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 43:5: '=='
+      # at line 142:5: '=='
       match( "==" )
       # --> action
        print("<EQ> ") 
@@ -669,7 +669,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 44:5: '!='
+      # at line 143:5: '!='
       match( "!=" )
       # --> action
        print("<NE> ") 
@@ -696,7 +696,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 45:6: 'not'
+      # at line 144:6: 'not'
       match( "not" )
       # --> action
        print("<NOT> ") 
@@ -723,7 +723,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 46:6: 'and'
+      # at line 145:6: 'and'
       match( "and" )
       # --> action
        print("<AND> ") 
@@ -750,7 +750,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 47:5: 'or'
+      # at line 146:5: 'or'
       match( "or" )
       # --> action
        print("<OR> ") 
@@ -777,7 +777,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 48:9: '{'
+      # at line 147:9: '{'
       match( 0x7b )
       # --> action
        print("<LBRACK> ") 
@@ -804,7 +804,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 49:9: '}'
+      # at line 148:9: '}'
       match( 0x7d )
       # --> action
        print("<RBRACK> ") 
@@ -831,7 +831,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 50:10: '('
+      # at line 149:10: '('
       match( 0x28 )
       # --> action
        print("<LPARENT> ") 
@@ -858,7 +858,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 51:10: ')'
+      # at line 150:10: ')'
       match( 0x29 )
       # --> action
        print("<RPARENT> ") 
@@ -885,7 +885,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 52:10: '['
+      # at line 151:10: '['
       match( 0x5b )
       # --> action
        print("<LSBRACK> ") 
@@ -912,7 +912,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 53:10: ']'
+      # at line 152:10: ']'
       match( 0x5d )
       # --> action
        print("<RSBRACK> ") 
@@ -939,7 +939,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 54:8: ','
+      # at line 153:8: ','
       match( 0x2c )
       # --> action
        print("<COMMA> ") 
@@ -966,7 +966,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 55:6: '&'
+      # at line 154:6: '&'
       match( 0x26 )
       # --> action
        print("<REF> ") 
@@ -993,7 +993,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 56:12: ';'
+      # at line 155:12: ';'
       match( 0x3b )
       # --> action
        print("<SEMICOLON> ") 
@@ -1020,7 +1020,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 57:8: ':'
+      # at line 156:8: ':'
       match( 0x3a )
       # --> action
        print("<COLON> ") 
@@ -1047,7 +1047,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 58:7: '+'
+      # at line 157:7: '+'
       match( 0x2b )
       # --> action
        print("<PLUS> ") 
@@ -1074,7 +1074,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 59:8: '-'
+      # at line 158:8: '-'
       match( 0x2d )
       # --> action
        print("<MINUS> ") 
@@ -1101,7 +1101,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 60:8: '*'
+      # at line 159:8: '*'
       match( 0x2a )
       # --> action
        print("<TIMES> ") 
@@ -1128,7 +1128,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 61:9: '/'
+      # at line 160:9: '/'
       match( 0x2f )
       # --> action
        print("<DIVIDE> ") 
@@ -1155,7 +1155,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 62:7: DIGITS
+      # at line 161:7: DIGITS
       digits!
       # --> action
        print("<CTEI> ") 
@@ -1182,7 +1182,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 63:7: DIGITS '.' DIGITS
+      # at line 162:7: DIGITS '.' DIGITS
       digits!
       match( 0x2e )
       digits!
@@ -1211,9 +1211,9 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 64:7: '\"' ( NormalChar )* '\"'
+      # at line 163:7: '\"' ( NormalChar )* '\"'
       match( 0x22 )
-      # at line 64:11: ( NormalChar )*
+      # at line 163:11: ( NormalChar )*
       while true # decision 1
         alt_1 = 2
         look_1_0 = @input.peek( 1 )
@@ -1224,7 +1224,7 @@ module Simple
         end
         case alt_1
         when 1
-          # at line 64:12: NormalChar
+          # at line 163:12: NormalChar
           normal_char!
 
         else
@@ -1257,7 +1257,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 65:5: ( 'true' | 'false' )
+      # at line 164:5: ( 'true' | 'false' )
       alt_2 = 2
       look_2_0 = @input.peek( 1 )
 
@@ -1270,11 +1270,11 @@ module Simple
       end
       case alt_2
       when 1
-        # at line 65:7: 'true'
+        # at line 164:7: 'true'
         match( "true" )
 
       when 2
-        # at line 65:16: 'false'
+        # at line 164:16: 'false'
         match( "false" )
         # --> action
          print("<CTEB> ") 
@@ -1302,7 +1302,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 66:5: Identifier
+      # at line 165:5: Identifier
       identifier!
       # --> action
        print("<ID> ") 
@@ -1329,8 +1329,8 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 67:13: ( '\\t' | ' ' | '\\r' | '\\n' )+
-      # at file 67:13: ( '\\t' | ' ' | '\\r' | '\\n' )+
+      # at line 166:13: ( '\\t' | ' ' | '\\r' | '\\n' )+
+      # at file 166:13: ( '\\t' | ' ' | '\\r' | '\\n' )+
       match_count_3 = 0
       while true
         alt_3 = 2
@@ -1385,7 +1385,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 71:7: ( 'a' .. 'z' | 'A' .. 'Z' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+      # at line 170:7: ( 'a' .. 'z' | 'A' .. 'Z' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
       if @input.peek( 1 ).between?( 0x41, 0x5a ) || @input.peek( 1 ).between?( 0x61, 0x7a )
         @input.consume
       else
@@ -1395,7 +1395,7 @@ module Simple
       end
 
 
-      # at line 71:28: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+      # at line 170:28: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
       while true # decision 4
         alt_4 = 2
         look_4_0 = @input.peek( 1 )
@@ -1461,7 +1461,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 81:7: ~ SpecialChar
+      # at line 180:7: ~ SpecialChar
       if @input.peek( 1 ).between?( 0x0, 0x32 ) || @input.peek( 1 ).between?( 0x34, 0xff )
         @input.consume
       else
@@ -1486,8 +1486,8 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 86:7: ( '0' .. '9' )+
-      # at file 86:7: ( '0' .. '9' )+
+      # at line 185:7: ( '0' .. '9' )+
+      # at file 185:7: ( '0' .. '9' )+
       match_count_5 = 0
       while true
         alt_5 = 2
@@ -1499,7 +1499,7 @@ module Simple
         end
         case alt_5
         when 1
-          # at line 86:8: '0' .. '9'
+          # at line 185:8: '0' .. '9'
           match_range( 0x30, 0x39 )
 
         else
