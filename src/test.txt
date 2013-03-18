@@ -1,13 +1,13 @@
 int rows = 5;
 int contador = 0;
-array boolean flags : rows;
+boolean flags;
 string mensaje = "Hola mundo";
 
 function inicializa_array() : void
 {
     int iterador;
     for (iterador = 0; iterador < rows; iterador = iterador + 1) {
-	flags[iterador] = 1;
+	    flags = false;
     }
     return;
 }
@@ -24,13 +24,12 @@ main()
     int j;
     int num;
     print("Inicializando array.");
-    inicializa_array();
     for (j = 0; j < rows; j = j + 1) {
-	num = numero_impresiones();
+	    num = 5;
 	if (num != 2) {
 	    j = rows;
 	} else {
-	    flags[j] = 0;
+	    flags = true;
 	}
     }
     print("Fin de programa.");

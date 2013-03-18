@@ -14,6 +14,12 @@ options {
     backtrack = true;
 }
 
+@header {
+  require 'Queue.rb'
+  require 'Stack.rb'
+  require 'Cuadruples.rb'
+}
+
 // Scanner Rules
 INT: 'int' { print("<INT> ") };
 FLOAT: 'float' { print("<FLOAT> ") };
@@ -86,11 +92,25 @@ vars_block
 scope {
   global;
   procedures;
+  operands_stack;
+  operations_stack;
+  jumps_stack;
+  lines_counter;
+  cuadruples_array;
+  scope_location;
 }
+
 @init {
   $vars_block::global = Hash.new;
   $vars_block::procedures = Hash.new;
+  $vars_block::operands_stack = Stack.new;
+  $vars_block::operations_stack = Stack.new;
+  $vars_block::jumps_stack = Stack.new;
+  $vars_block::lines_counter = 0;
+  $vars_block::cuadruples_array = [];
+  $vars_block::scope_location = nil;
 }
+
 // Callback executed at the end of programa
 @after {
   puts("\n\nFound this global variables: \n")
@@ -98,11 +118,15 @@ scope {
     \$var_info = $vars_block::global[key]
     print("#{key} : type=#{\$var_info[:type]}, value=#{\$var_info[:value]}\n")
   end
+
   puts("\n\nFound this functions: \n")
   $vars_block::procedures.keys.sort.each do | key |
     \$proc_info = $vars_block::procedures[key]
     print("#{key} : #{\$proc_info}\n")
   end
+
+  puts("\n\nVariables in the expressions: \n")
+  puts $vars_block::operands_stack.to_str
 }
   : programa
   ;
@@ -305,7 +329,22 @@ sign:
     ;
 
 varcte:
-    ID idvarcte { print("[VARCTE] ") }
+    ID idvarcte { 
+      scope_location = $vars_block::scope_location
+      if not \$scope_location.nil? and $vars_block::procedures.has_key?(\$scope_location)
+        if $vars_block::procedures[\$scope_location].local_vars.has_key?($ID.text)
+          $vars_block::operations_stack.push($vars_block::procedures[\$scope_location].local_vars[$ID.text])
+        else 
+          abort "Variable not defined in #{\$scope_location}"
+        end
+      else
+        if $vars_block::global.has_key?($ID.text)
+          $vars_block::operations_stack.push($vars_block::global[$ID.text])
+        else
+          abort "Variable not defined in the program: #{$ID.text}"
+        end
+      end
+    }
     | CTEI { print("[VARCTE] ") }
     | CTEF { print("[VARCTE] ") }
     | CTES { print("[VARCTE] ") }
