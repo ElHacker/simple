@@ -5,7 +5,7 @@
 # Generated using ANTLR version: 3.2.1-SNAPSHOT Jul 31, 2010 19:34:52
 # Ruby runtime library version: 1.8.11
 # Input grammar file: Simple_copy.g
-# Generated at: 2013-03-18 00:37:00
+# Generated at: 2013-03-20 23:44:11
 # 
 
 # ~~~> start load path setup
@@ -125,7 +125,7 @@ module Simple
                      :synpred11_Simple, :synpred12_Simple, :synpred13_Simple, 
                      :synpred17_Simple, :synpred18_Simple ].freeze
 
-    @@vars_block = Scope( "global", "procedures", "operands_stack", "operations_stack", "jumps_stack", "lines_counter", "cuadruples_array", "scope_location" )
+    @@vars_block = Scope( "global", "procedures", "operands_stack", "operations_stack", "jumps_stack", "lines_counter", "cuadruples_array", "scope_location", "sign_variable", "next_temp", "semanthic_cube" )
 
 
     include TokenData
@@ -149,7 +149,7 @@ module Simple
     # parser rule vars_block
     # 
     # (in Simple_copy.g)
-    # 24:1: vars_block : programa ;
+    # 91:1: vars_block : programa ;
     # 
     def vars_block
       # -> uncomment the next line to manually enable rule tracing
@@ -165,22 +165,119 @@ module Simple
 
       # - - - - @init action - - - -
 
-        @vars_block_stack.last.global = Hash.new
-        @vars_block_stack.last.procedures = Hash.new
-        @vars_block_stack.last.operands_stack = Stack.new
-        @vars_block_stack.last.operations_stack = Stack.new
-        @vars_block_stack.last.jumps_stack = Stack.new
-        @vars_block_stack.last.lines_counter = 0
-        @vars_block_stack.last.cuadruples_array = []
-        @vars_block_stack.last.scope_location = nil
+        @vars_block_stack.last.global =  Hash.new
+        @vars_block_stack.last.procedures =  Hash.new
+        @vars_block_stack.last.operands_stack =  Stack.new
+        @vars_block_stack.last.operations_stack =  Stack.new
+        @vars_block_stack.last.jumps_stack =  Stack.new
+        @vars_block_stack.last.lines_counter =  0
+        @vars_block_stack.last.cuadruples_array =  []
+        @vars_block_stack.last.scope_location =  nil
+        @vars_block_stack.last.sign_variable =  nil
+        @vars_block_stack.last.next_temp =  1
+        @vars_block_stack.last.semanthic_cube = {
+          'int' => {
+            'int' => {
+      	'=' => 'int',
+      	'+' => 'int',
+      	'-' => 'int',
+      	'*' => 'int',
+      	'/' => 'int',
+      	'and' => 'boolean',
+      	'or' => 'boolean',
+      	'>' => 'boolean',
+      	'>=' => 'boolean',
+      	'<' => 'boolean',
+      	'<=' => 'boolean',
+      	'==' => 'boolean',
+      	'!=' => 'boolean'
+            },
+            'float' => {
+      	'=' => 'int', 
+      	'+' => 'float',
+      	'-' => 'float',
+      	'*' => 'float',
+      	'/' => 'float',
+      	'and' => 'boolean',
+      	'or' => 'boolean',
+      	'>' => 'boolean',
+      	'>=' => 'boolean',
+      	'<' => 'boolean',
+      	'<=' => 'boolean',
+      	'==' => 'boolean',
+      	'!=' => 'boolean'
+            },
+            'boolean' => {
+      	'=' => 'int', 
+      	'and' => 'boolean',
+      	'or' => 'boolean'
+            }
+          },
+          'float' => {
+            'int' => {
+      	'=' => 'float',
+      	'+' => 'float',
+      	'-' => 'float',
+      	'*' => 'float',
+      	'/' => 'float',
+      	'and' => 'boolean',
+      	'or' => 'boolean',
+      	'>' => 'boolean',
+      	'>=' => 'boolean',
+      	'<' => 'boolean',
+      	'<=' => 'boolean',
+      	'==' => 'boolean',
+      	'!=' => 'boolean'
+            },
+            'float' => {
+      	'=' => 'float',
+      	'+' => 'float',
+      	'-' => 'float',
+      	'*' => 'float',
+      	'/' => 'float',
+      	'and' => 'boolean',
+      	'or' => 'boolean',
+      	'>' => 'boolean',
+      	'>=' => 'boolean',
+      	'<' => 'boolean',
+      	'<=' => 'boolean',
+      	'==' => 'boolean',
+      	'!=' => 'boolean'
+            },
+            'boolean' => {
+      	'=' => 'float', 
+      	'and' => 'boolean',
+      	'or' => 'boolean',
+            }
+          },
+          'string' => {
+            'string' => {
+      	'=' => 'string',
+      	'+' => 'string'
+            }
+          },
+          'boolean' => {
+            'int' => {
+      	'=' => 'boolean', 
+            },
+            'float' => {
+      	'=' => 'boolean', 
+            },
+            'boolean' => {
+      	'=' => 'boolean',
+      	'and' => 'boolean',
+      	'or' => 'boolean'
+            }
+          }
+        }
 
 
       begin
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 119:5: programa
-        @state.following.push( TOKENS_FOLLOWING_programa_IN_vars_block_87 )
+        # at line 233:5: programa
+        @state.following.push( TOKENS_FOLLOWING_programa_IN_vars_block_589 )
         programa1 = programa
         @state.following.pop
         if @state.backtracking == 0
@@ -210,8 +307,10 @@ module Simple
               print("#{key} : #{$proc_info}\n")
             end
 
-            puts("\n\nVariables in the expressions: \n")
-            puts @vars_block_stack.last.operands_stack.to_str
+            puts("\n\nCuadruples:\n")
+            @vars_block_stack.last.cuadruples_array.each do | cuadruple |
+              print("op: #{cuadruple[:op]}, oper1: #{cuadruple[:op1]}, oper2: #{cuadruple[:op2]}, dest: #{cuadruple[:dest]}\n")
+            end
 
           # <-- action
         end
@@ -236,7 +335,7 @@ module Simple
     # parser rule programa
     # 
     # (in Simple_copy.g)
-    # 189:1: programa : var func main ;
+    # 237:1: programa : var func main ;
     # 
     def programa
       # -> uncomment the next line to manually enable rule tracing
@@ -256,20 +355,20 @@ module Simple
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 190:5: var func main
-        @state.following.push( TOKENS_FOLLOWING_var_IN_programa_605 )
+        # at line 238:5: var func main
+        @state.following.push( TOKENS_FOLLOWING_var_IN_programa_604 )
         var2 = var
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, var2.tree )
         end
-        @state.following.push( TOKENS_FOLLOWING_func_IN_programa_607 )
+        @state.following.push( TOKENS_FOLLOWING_func_IN_programa_606 )
         func3 = func
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, func3.tree )
         end
-        @state.following.push( TOKENS_FOLLOWING_main_IN_programa_609 )
+        @state.following.push( TOKENS_FOLLOWING_main_IN_programa_608 )
         main4 = main
         @state.following.pop
         if @state.backtracking == 0
@@ -304,7 +403,7 @@ module Simple
     # parser rule var
     # 
     # (in Simple_copy.g)
-    # 193:1: var : ( | variables var );
+    # 241:1: var : ( | variables var );
     # 
     def var
       # -> uncomment the next line to manually enable rule tracing
@@ -320,7 +419,7 @@ module Simple
 
 
       begin
-        # at line 193:4: ( | variables var )
+        # at line 241:4: ( | variables var )
         alt_1 = 2
         look_1_0 = @input.peek( 1 )
 
@@ -338,20 +437,20 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 194:5: 
+          # at line 242:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 194:7: variables var
-          @state.following.push( TOKENS_FOLLOWING_variables_IN_var_627 )
+          # at line 242:7: variables var
+          @state.following.push( TOKENS_FOLLOWING_variables_IN_var_626 )
           variables5 = variables
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, variables5.tree )
           end
-          @state.following.push( TOKENS_FOLLOWING_var_IN_var_629 )
+          @state.following.push( TOKENS_FOLLOWING_var_IN_var_628 )
           var6 = var
           @state.following.pop
           if @state.backtracking == 0
@@ -387,7 +486,7 @@ module Simple
     # parser rule variables
     # 
     # (in Simple_copy.g)
-    # 197:1: variables : ( INT ID as_int= assignint SEMICOLON | FLOAT ID as_float= assignfloat SEMICOLON | STRING ID as_string= assignstring SEMICOLON | BOOLEAN ID as_boolean= assignboolean SEMICOLON | ARRAY data_type= tipo ID COLON exp SEMICOLON );
+    # 245:1: variables : ( INT ID as_int= assignint SEMICOLON | FLOAT ID as_float= assignfloat SEMICOLON | STRING ID as_string= assignstring SEMICOLON | BOOLEAN ID as_boolean= assignboolean SEMICOLON | ARRAY data_type= tipo ID COLON exp SEMICOLON );
     # 
     def variables
       # -> uncomment the next line to manually enable rule tracing
@@ -439,7 +538,7 @@ module Simple
       tree_for_SEMICOLON23 = nil
 
       begin
-        # at line 197:10: ( INT ID as_int= assignint SEMICOLON | FLOAT ID as_float= assignfloat SEMICOLON | STRING ID as_string= assignstring SEMICOLON | BOOLEAN ID as_boolean= assignboolean SEMICOLON | ARRAY data_type= tipo ID COLON exp SEMICOLON )
+        # at line 245:10: ( INT ID as_int= assignint SEMICOLON | FLOAT ID as_float= assignfloat SEMICOLON | STRING ID as_string= assignstring SEMICOLON | BOOLEAN ID as_boolean= assignboolean SEMICOLON | ARRAY data_type= tipo ID COLON exp SEMICOLON )
         alt_2 = 5
         case look_2 = @input.peek( 1 )
         when INT then alt_2 = 1
@@ -457,28 +556,28 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 198:5: INT ID as_int= assignint SEMICOLON
-          __INT7__ = match( INT, TOKENS_FOLLOWING_INT_IN_variables_645 )
+          # at line 246:5: INT ID as_int= assignint SEMICOLON
+          __INT7__ = match( INT, TOKENS_FOLLOWING_INT_IN_variables_644 )
           if @state.backtracking == 0
 
             tree_for_INT7 = @adaptor.create_with_payload( __INT7__ )
             @adaptor.add_child( root_0, tree_for_INT7 )
 
           end
-          __ID8__ = match( ID, TOKENS_FOLLOWING_ID_IN_variables_647 )
+          __ID8__ = match( ID, TOKENS_FOLLOWING_ID_IN_variables_646 )
           if @state.backtracking == 0
 
             tree_for_ID8 = @adaptor.create_with_payload( __ID8__ )
             @adaptor.add_child( root_0, tree_for_ID8 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_assignint_IN_variables_651 )
+          @state.following.push( TOKENS_FOLLOWING_assignint_IN_variables_650 )
           as_int = assignint
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, as_int.tree )
           end
-          __SEMICOLON9__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_variables_653 )
+          __SEMICOLON9__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_variables_652 )
           if @state.backtracking == 0
 
             tree_for_SEMICOLON9 = @adaptor.create_with_payload( __SEMICOLON9__ )
@@ -489,8 +588,21 @@ module Simple
           if @state.backtracking == 0
             # --> action
 
-            	$var_info = { id: __ID8__.text, type: __INT7__.text, value: ( as_int.nil? ? nil : as_int.value ) }
-            	addVariable($var_info) 
+                  $var_info = { id: __ID8__.text, type: __INT7__.text, value: ( as_int.nil? ? nil : as_int.value ) }
+                  $scope_location = @vars_block_stack.last.scope_location
+                  if $scope_location == nil
+            	if @vars_block_stack.last.global.has_key?($var_info[:id])
+            	  abort("\nERROR: Variable #{$var_info[:id]} already defined in global\n")
+            	else
+            	  @vars_block_stack.last.global[$var_info[:id]] = $var_info
+            	end
+                  else
+            	if @vars_block_stack.last.procedures[$scope_location][:local_vars].has_key?($var_info[:id])
+            	  abort("\nERROR: Variable #{$var_info[:id]} already defined in #{$scope_location}\n")
+            	else
+            	  @vars_block_stack.last.procedures[$scope_location][:local_vars][$var_info[:id]] = $var_info
+            	end
+                  end
                 
             # <-- action
           end
@@ -499,28 +611,28 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 202:7: FLOAT ID as_float= assignfloat SEMICOLON
-          __FLOAT10__ = match( FLOAT, TOKENS_FOLLOWING_FLOAT_IN_variables_663 )
+          # at line 263:7: FLOAT ID as_float= assignfloat SEMICOLON
+          __FLOAT10__ = match( FLOAT, TOKENS_FOLLOWING_FLOAT_IN_variables_662 )
           if @state.backtracking == 0
 
             tree_for_FLOAT10 = @adaptor.create_with_payload( __FLOAT10__ )
             @adaptor.add_child( root_0, tree_for_FLOAT10 )
 
           end
-          __ID11__ = match( ID, TOKENS_FOLLOWING_ID_IN_variables_665 )
+          __ID11__ = match( ID, TOKENS_FOLLOWING_ID_IN_variables_664 )
           if @state.backtracking == 0
 
             tree_for_ID11 = @adaptor.create_with_payload( __ID11__ )
             @adaptor.add_child( root_0, tree_for_ID11 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_assignfloat_IN_variables_669 )
+          @state.following.push( TOKENS_FOLLOWING_assignfloat_IN_variables_668 )
           as_float = assignfloat
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, as_float.tree )
           end
-          __SEMICOLON12__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_variables_671 )
+          __SEMICOLON12__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_variables_670 )
           if @state.backtracking == 0
 
             tree_for_SEMICOLON12 = @adaptor.create_with_payload( __SEMICOLON12__ )
@@ -532,7 +644,20 @@ module Simple
             # --> action
              
             	$var_info = { id: __ID11__.text, type: __FLOAT10__.text, value: ( as_float.nil? ? nil : as_float.value ) } 
-            	addVariable($var_info) 
+            	$scope_location = @vars_block_stack.last.scope_location
+            	if $scope_location == nil
+            	    if @vars_block_stack.last.global.has_key?($var_info[:id])
+            		abort("\nERROR: Variable #{$var_info[:id]} already defined in global\n")
+            	    else
+            		@vars_block_stack.last.global[$var_info[:id]] = $var_info
+            	    end
+            	else
+            	    if @vars_block_stack.last.procedures[$scope_location][:local_vars].has_key?($var_info[:id])
+            		abort("\nERROR: Variable #{$var_info[:id]} already defined in #{$scope_location}\n")
+            	    else
+            		@vars_block_stack.last.procedures[$scope_location][:local_vars][$var_info[:id]] = $var_info
+            	    end
+            	end
                 
             # <-- action
           end
@@ -541,28 +666,28 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 206:7: STRING ID as_string= assignstring SEMICOLON
-          __STRING13__ = match( STRING, TOKENS_FOLLOWING_STRING_IN_variables_681 )
+          # at line 280:7: STRING ID as_string= assignstring SEMICOLON
+          __STRING13__ = match( STRING, TOKENS_FOLLOWING_STRING_IN_variables_680 )
           if @state.backtracking == 0
 
             tree_for_STRING13 = @adaptor.create_with_payload( __STRING13__ )
             @adaptor.add_child( root_0, tree_for_STRING13 )
 
           end
-          __ID14__ = match( ID, TOKENS_FOLLOWING_ID_IN_variables_683 )
+          __ID14__ = match( ID, TOKENS_FOLLOWING_ID_IN_variables_682 )
           if @state.backtracking == 0
 
             tree_for_ID14 = @adaptor.create_with_payload( __ID14__ )
             @adaptor.add_child( root_0, tree_for_ID14 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_assignstring_IN_variables_687 )
+          @state.following.push( TOKENS_FOLLOWING_assignstring_IN_variables_686 )
           as_string = assignstring
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, as_string.tree )
           end
-          __SEMICOLON15__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_variables_689 )
+          __SEMICOLON15__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_variables_688 )
           if @state.backtracking == 0
 
             tree_for_SEMICOLON15 = @adaptor.create_with_payload( __SEMICOLON15__ )
@@ -574,7 +699,20 @@ module Simple
             # --> action
              
             	$var_info = { id: __ID14__.text, type: __STRING13__.text, value: ( as_string.nil? ? nil : as_string.value ) }
-            	addVariable($var_info)
+            	$scope_location = @vars_block_stack.last.scope_location
+            	if $scope_location == nil
+            	    if @vars_block_stack.last.global.has_key?($var_info[:id])
+            		abort("\nERROR: Variable #{$var_info[:id]} already defined in global\n")
+            	    else
+            		@vars_block_stack.last.global[$var_info[:id]] = $var_info
+            	    end
+            	else
+            	    if @vars_block_stack.last.procedures[$scope_location][:local_vars].has_key?($var_info[:id])
+            		abort("\nERROR: Variable #{$var_info[:id]} already defined in #{$scope_location}\n")
+            	    else
+            		@vars_block_stack.last.procedures[$scope_location][:local_vars][$var_info[:id]] = $var_info
+            	    end
+            	end
                 
             # <-- action
           end
@@ -583,28 +721,28 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 210:7: BOOLEAN ID as_boolean= assignboolean SEMICOLON
-          __BOOLEAN16__ = match( BOOLEAN, TOKENS_FOLLOWING_BOOLEAN_IN_variables_699 )
+          # at line 297:7: BOOLEAN ID as_boolean= assignboolean SEMICOLON
+          __BOOLEAN16__ = match( BOOLEAN, TOKENS_FOLLOWING_BOOLEAN_IN_variables_698 )
           if @state.backtracking == 0
 
             tree_for_BOOLEAN16 = @adaptor.create_with_payload( __BOOLEAN16__ )
             @adaptor.add_child( root_0, tree_for_BOOLEAN16 )
 
           end
-          __ID17__ = match( ID, TOKENS_FOLLOWING_ID_IN_variables_701 )
+          __ID17__ = match( ID, TOKENS_FOLLOWING_ID_IN_variables_700 )
           if @state.backtracking == 0
 
             tree_for_ID17 = @adaptor.create_with_payload( __ID17__ )
             @adaptor.add_child( root_0, tree_for_ID17 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_assignboolean_IN_variables_705 )
+          @state.following.push( TOKENS_FOLLOWING_assignboolean_IN_variables_704 )
           as_boolean = assignboolean
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, as_boolean.tree )
           end
-          __SEMICOLON18__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_variables_707 )
+          __SEMICOLON18__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_variables_706 )
           if @state.backtracking == 0
 
             tree_for_SEMICOLON18 = @adaptor.create_with_payload( __SEMICOLON18__ )
@@ -616,7 +754,20 @@ module Simple
             # --> action
              
             	$var_info = { id: __ID17__.text, type: __BOOLEAN16__.text, value: ( as_boolean.nil? ? nil : as_boolean.value ) }
-            	addVariable($var_info)
+            	$scope_location = @vars_block_stack.last.scope_location
+            	if $scope_location == nil
+            	    if @vars_block_stack.last.global.has_key?($var_info[:id])
+            		abort("\nERROR: Variable #{$var_info[:id]} already defined in global\n")
+            	    else
+            		@vars_block_stack.last.global[$var_info[:id]] = $var_info
+            	    end
+            	else
+            	    if @vars_block_stack.last.procedures[$scope_location][:local_vars].has_key?($var_info[:id])
+            		abort("\nERROR: Variable #{$var_info[:id]} already defined in #{$scope_location}\n")
+            	    else
+            		@vars_block_stack.last.procedures[$scope_location][:local_vars][$var_info[:id]] = $var_info
+            	    end
+            	end
                 
             # <-- action
           end
@@ -625,41 +776,41 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 214:7: ARRAY data_type= tipo ID COLON exp SEMICOLON
-          __ARRAY19__ = match( ARRAY, TOKENS_FOLLOWING_ARRAY_IN_variables_717 )
+          # at line 314:7: ARRAY data_type= tipo ID COLON exp SEMICOLON
+          __ARRAY19__ = match( ARRAY, TOKENS_FOLLOWING_ARRAY_IN_variables_716 )
           if @state.backtracking == 0
 
             tree_for_ARRAY19 = @adaptor.create_with_payload( __ARRAY19__ )
             @adaptor.add_child( root_0, tree_for_ARRAY19 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_tipo_IN_variables_721 )
+          @state.following.push( TOKENS_FOLLOWING_tipo_IN_variables_720 )
           data_type = tipo
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, data_type.tree )
           end
-          __ID20__ = match( ID, TOKENS_FOLLOWING_ID_IN_variables_723 )
+          __ID20__ = match( ID, TOKENS_FOLLOWING_ID_IN_variables_722 )
           if @state.backtracking == 0
 
             tree_for_ID20 = @adaptor.create_with_payload( __ID20__ )
             @adaptor.add_child( root_0, tree_for_ID20 )
 
           end
-          __COLON21__ = match( COLON, TOKENS_FOLLOWING_COLON_IN_variables_725 )
+          __COLON21__ = match( COLON, TOKENS_FOLLOWING_COLON_IN_variables_724 )
           if @state.backtracking == 0
 
             tree_for_COLON21 = @adaptor.create_with_payload( __COLON21__ )
             @adaptor.add_child( root_0, tree_for_COLON21 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_exp_IN_variables_727 )
+          @state.following.push( TOKENS_FOLLOWING_exp_IN_variables_726 )
           exp22 = exp
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, exp22.tree )
           end
-          __SEMICOLON23__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_variables_729 )
+          __SEMICOLON23__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_variables_728 )
           if @state.backtracking == 0
 
             tree_for_SEMICOLON23 = @adaptor.create_with_payload( __SEMICOLON23__ )
@@ -671,7 +822,20 @@ module Simple
             # --> action
              
             	$var_info = { id: __ID20__.text, type: "[#{( data_type.nil? ? nil : data_type.type )}]" }
-            	addVariable($var_info)
+            	$scope_location = @vars_block_stack.last.scope_location
+            	if $scope_location == nil
+            	    if @vars_block_stack.last.global.has_key?($var_info[:id])
+            		abort("\nERROR: Variable #{$var_info[:id]} already defined in global\n")
+            	    else
+            		@vars_block_stack.last.global[$var_info[:id]] = $var_info
+            	    end
+            	else
+            	    if @vars_block_stack.last.procedures[$scope_location][:local_vars].has_key?($var_info[:id])
+            		abort("\nERROR: Variable #{$var_info[:id]} already defined in #{$scope_location}\n")
+            	    else
+            		@vars_block_stack.last.procedures[$scope_location][:local_vars][$var_info[:id]] = $var_info
+            	    end
+            	end
                 
             # <-- action
           end
@@ -705,7 +869,7 @@ module Simple
     # parser rule assignint
     # 
     # (in Simple_copy.g)
-    # 220:1: assignint returns [value] : ( | | ASSIGN CTEI );
+    # 333:1: assignint returns [value] : ( | | ASSIGN CTEI );
     # 
     def assignint
       # -> uncomment the next line to manually enable rule tracing
@@ -723,7 +887,7 @@ module Simple
       tree_for_CTEI25 = nil
 
       begin
-        # at line 220:25: ( | | ASSIGN CTEI )
+        # at line 333:25: ( | | ASSIGN CTEI )
         alt_3 = 3
         look_3_0 = @input.peek( 1 )
 
@@ -751,19 +915,19 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 221:5: 
+          # at line 334:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 222:5: 
+          # at line 335:5: 
 
         when 3
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 222:7: ASSIGN CTEI
+          # at line 335:7: ASSIGN CTEI
           __ASSIGN24__ = match( ASSIGN, TOKENS_FOLLOWING_ASSIGN_IN_assignint_761 )
           if @state.backtracking == 0
 
@@ -814,7 +978,7 @@ module Simple
     # parser rule assignfloat
     # 
     # (in Simple_copy.g)
-    # 225:1: assignfloat returns [value] : ( | | ASSIGN CTEF );
+    # 338:1: assignfloat returns [value] : ( | | ASSIGN CTEF );
     # 
     def assignfloat
       # -> uncomment the next line to manually enable rule tracing
@@ -832,7 +996,7 @@ module Simple
       tree_for_CTEF27 = nil
 
       begin
-        # at line 225:27: ( | | ASSIGN CTEF )
+        # at line 338:27: ( | | ASSIGN CTEF )
         alt_4 = 3
         look_4_0 = @input.peek( 1 )
 
@@ -860,19 +1024,19 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 226:5: 
+          # at line 339:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 227:5: 
+          # at line 340:5: 
 
         when 3
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 227:7: ASSIGN CTEF
+          # at line 340:7: ASSIGN CTEF
           __ASSIGN26__ = match( ASSIGN, TOKENS_FOLLOWING_ASSIGN_IN_assignfloat_794 )
           if @state.backtracking == 0
 
@@ -923,7 +1087,7 @@ module Simple
     # parser rule assignstring
     # 
     # (in Simple_copy.g)
-    # 230:1: assignstring returns [value] : ( | | ASSIGN CTES );
+    # 343:1: assignstring returns [value] : ( | | ASSIGN CTES );
     # 
     def assignstring
       # -> uncomment the next line to manually enable rule tracing
@@ -941,7 +1105,7 @@ module Simple
       tree_for_CTES29 = nil
 
       begin
-        # at line 230:28: ( | | ASSIGN CTES )
+        # at line 343:28: ( | | ASSIGN CTES )
         alt_5 = 3
         look_5_0 = @input.peek( 1 )
 
@@ -969,19 +1133,19 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 231:5: 
+          # at line 344:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 232:5: 
+          # at line 345:5: 
 
         when 3
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 232:7: ASSIGN CTES
+          # at line 345:7: ASSIGN CTES
           __ASSIGN28__ = match( ASSIGN, TOKENS_FOLLOWING_ASSIGN_IN_assignstring_828 )
           if @state.backtracking == 0
 
@@ -1032,7 +1196,7 @@ module Simple
     # parser rule assignboolean
     # 
     # (in Simple_copy.g)
-    # 235:1: assignboolean returns [value] : ( | | ASSIGN CTEB );
+    # 348:1: assignboolean returns [value] : ( | | ASSIGN CTEB );
     # 
     def assignboolean
       # -> uncomment the next line to manually enable rule tracing
@@ -1050,7 +1214,7 @@ module Simple
       tree_for_CTEB31 = nil
 
       begin
-        # at line 235:29: ( | | ASSIGN CTEB )
+        # at line 348:29: ( | | ASSIGN CTEB )
         alt_6 = 3
         look_6_0 = @input.peek( 1 )
 
@@ -1078,19 +1242,19 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 236:5: 
+          # at line 349:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 237:5: 
+          # at line 350:5: 
 
         when 3
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 237:7: ASSIGN CTEB
+          # at line 350:7: ASSIGN CTEB
           __ASSIGN30__ = match( ASSIGN, TOKENS_FOLLOWING_ASSIGN_IN_assignboolean_861 )
           if @state.backtracking == 0
 
@@ -1141,7 +1305,7 @@ module Simple
     # parser rule tipo
     # 
     # (in Simple_copy.g)
-    # 240:1: tipo returns [type] : ( INT | FLOAT | STRING | BOOLEAN );
+    # 353:1: tipo returns [type] : ( INT | FLOAT | STRING | BOOLEAN );
     # 
     def tipo
       # -> uncomment the next line to manually enable rule tracing
@@ -1163,7 +1327,7 @@ module Simple
       tree_for_BOOLEAN35 = nil
 
       begin
-        # at line 240:19: ( INT | FLOAT | STRING | BOOLEAN )
+        # at line 353:19: ( INT | FLOAT | STRING | BOOLEAN )
         alt_7 = 4
         case look_7 = @input.peek( 1 )
         when INT then alt_7 = 1
@@ -1180,8 +1344,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 241:5: INT
-          __INT32__ = match( INT, TOKENS_FOLLOWING_INT_IN_tipo_885 )
+          # at line 354:5: INT
+          __INT32__ = match( INT, TOKENS_FOLLOWING_INT_IN_tipo_886 )
           if @state.backtracking == 0
 
             tree_for_INT32 = @adaptor.create_with_payload( __INT32__ )
@@ -1199,8 +1363,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 242:7: FLOAT
-          __FLOAT33__ = match( FLOAT, TOKENS_FOLLOWING_FLOAT_IN_tipo_895 )
+          # at line 355:7: FLOAT
+          __FLOAT33__ = match( FLOAT, TOKENS_FOLLOWING_FLOAT_IN_tipo_896 )
           if @state.backtracking == 0
 
             tree_for_FLOAT33 = @adaptor.create_with_payload( __FLOAT33__ )
@@ -1218,8 +1382,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 243:7: STRING
-          __STRING34__ = match( STRING, TOKENS_FOLLOWING_STRING_IN_tipo_905 )
+          # at line 356:7: STRING
+          __STRING34__ = match( STRING, TOKENS_FOLLOWING_STRING_IN_tipo_906 )
           if @state.backtracking == 0
 
             tree_for_STRING34 = @adaptor.create_with_payload( __STRING34__ )
@@ -1237,8 +1401,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 244:7: BOOLEAN
-          __BOOLEAN35__ = match( BOOLEAN, TOKENS_FOLLOWING_BOOLEAN_IN_tipo_915 )
+          # at line 357:7: BOOLEAN
+          __BOOLEAN35__ = match( BOOLEAN, TOKENS_FOLLOWING_BOOLEAN_IN_tipo_916 )
           if @state.backtracking == 0
 
             tree_for_BOOLEAN35 = @adaptor.create_with_payload( __BOOLEAN35__ )
@@ -1281,7 +1445,7 @@ module Simple
     # parser rule func
     # 
     # (in Simple_copy.g)
-    # 247:1: func : ( | | funcion func );
+    # 360:1: func : ( | | funcion func );
     # 
     def func
       # -> uncomment the next line to manually enable rule tracing
@@ -1297,7 +1461,7 @@ module Simple
 
 
       begin
-        # at line 247:5: ( | | funcion func )
+        # at line 360:5: ( | | funcion func )
         alt_8 = 3
         look_8_0 = @input.peek( 1 )
 
@@ -1325,26 +1489,26 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 248:5: 
+          # at line 361:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 249:5: 
+          # at line 362:5: 
 
         when 3
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 249:7: funcion func
-          @state.following.push( TOKENS_FOLLOWING_funcion_IN_func_943 )
+          # at line 362:7: funcion func
+          @state.following.push( TOKENS_FOLLOWING_funcion_IN_func_944 )
           funcion36 = funcion
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, funcion36.tree )
           end
-          @state.following.push( TOKENS_FOLLOWING_func_IN_func_945 )
+          @state.following.push( TOKENS_FOLLOWING_func_IN_func_946 )
           func37 = func
           @state.following.pop
           if @state.backtracking == 0
@@ -1380,7 +1544,7 @@ module Simple
     # parser rule funcion
     # 
     # (in Simple_copy.g)
-    # 252:1: funcion : FUNCTION ID LPARENT arguments= argumentos RPARENT COLON return_type= retornofunc LBRACK var est RETURN retorno SEMICOLON RBRACK ;
+    # 365:1: funcion : FUNCTION ID LPARENT arguments= argumentos RPARENT COLON return_type= retornofunc LBRACK var est RETURN retorno SEMICOLON RBRACK ;
     # 
     def funcion
       # -> uncomment the next line to manually enable rule tracing
@@ -1420,15 +1584,15 @@ module Simple
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 253:5: FUNCTION ID LPARENT arguments= argumentos RPARENT COLON return_type= retornofunc LBRACK var est RETURN retorno SEMICOLON RBRACK
-        __FUNCTION38__ = match( FUNCTION, TOKENS_FOLLOWING_FUNCTION_IN_funcion_963 )
+        # at line 366:5: FUNCTION ID LPARENT arguments= argumentos RPARENT COLON return_type= retornofunc LBRACK var est RETURN retorno SEMICOLON RBRACK
+        __FUNCTION38__ = match( FUNCTION, TOKENS_FOLLOWING_FUNCTION_IN_funcion_964 )
         if @state.backtracking == 0
 
           tree_for_FUNCTION38 = @adaptor.create_with_payload( __FUNCTION38__ )
           @adaptor.add_child( root_0, tree_for_FUNCTION38 )
 
         end
-        __ID39__ = match( ID, TOKENS_FOLLOWING_ID_IN_funcion_965 )
+        __ID39__ = match( ID, TOKENS_FOLLOWING_ID_IN_funcion_966 )
         if @state.backtracking == 0
 
           tree_for_ID39 = @adaptor.create_with_payload( __ID39__ )
@@ -1441,34 +1605,34 @@ module Simple
            @vars_block_stack.last.scope_location = __ID39__.text 
           # <-- action
         end
-        __LPARENT40__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_funcion_969 )
+        __LPARENT40__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_funcion_970 )
         if @state.backtracking == 0
 
           tree_for_LPARENT40 = @adaptor.create_with_payload( __LPARENT40__ )
           @adaptor.add_child( root_0, tree_for_LPARENT40 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_argumentos_IN_funcion_973 )
+        @state.following.push( TOKENS_FOLLOWING_argumentos_IN_funcion_974 )
         arguments = argumentos
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, arguments.tree )
         end
-        __RPARENT41__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_funcion_975 )
+        __RPARENT41__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_funcion_976 )
         if @state.backtracking == 0
 
           tree_for_RPARENT41 = @adaptor.create_with_payload( __RPARENT41__ )
           @adaptor.add_child( root_0, tree_for_RPARENT41 )
 
         end
-        __COLON42__ = match( COLON, TOKENS_FOLLOWING_COLON_IN_funcion_977 )
+        __COLON42__ = match( COLON, TOKENS_FOLLOWING_COLON_IN_funcion_978 )
         if @state.backtracking == 0
 
           tree_for_COLON42 = @adaptor.create_with_payload( __COLON42__ )
           @adaptor.add_child( root_0, tree_for_COLON42 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_retornofunc_IN_funcion_981 )
+        @state.following.push( TOKENS_FOLLOWING_retornofunc_IN_funcion_982 )
         return_type = retornofunc
         @state.following.pop
         if @state.backtracking == 0
@@ -1477,49 +1641,56 @@ module Simple
         # syntactic predicate action gate test
         if @state.backtracking == 0
           # --> action
-           addProcedure(@vars_block_stack.last.scope_location, $arguments, $return_type) 
+           
+                $ident = @vars_block_stack.last.scope_location
+                if not @vars_block_stack.last.procedures.has_key?($ident)
+          	@vars_block_stack.last.procedures[$ident] = { id: $ident, args: $arguments, local_vars: Hash.new, return_type: $return_type }
+                else
+          	abort("\nERROR: Procedure #{$ident} already defined\n")
+                end
+              
           # <-- action
         end
-        __LBRACK43__ = match( LBRACK, TOKENS_FOLLOWING_LBRACK_IN_funcion_994 )
+        __LBRACK43__ = match( LBRACK, TOKENS_FOLLOWING_LBRACK_IN_funcion_990 )
         if @state.backtracking == 0
 
           tree_for_LBRACK43 = @adaptor.create_with_payload( __LBRACK43__ )
           @adaptor.add_child( root_0, tree_for_LBRACK43 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_var_IN_funcion_996 )
+        @state.following.push( TOKENS_FOLLOWING_var_IN_funcion_992 )
         var44 = var
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, var44.tree )
         end
-        @state.following.push( TOKENS_FOLLOWING_est_IN_funcion_998 )
+        @state.following.push( TOKENS_FOLLOWING_est_IN_funcion_994 )
         est45 = est
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, est45.tree )
         end
-        __RETURN46__ = match( RETURN, TOKENS_FOLLOWING_RETURN_IN_funcion_1000 )
+        __RETURN46__ = match( RETURN, TOKENS_FOLLOWING_RETURN_IN_funcion_996 )
         if @state.backtracking == 0
 
           tree_for_RETURN46 = @adaptor.create_with_payload( __RETURN46__ )
           @adaptor.add_child( root_0, tree_for_RETURN46 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_retorno_IN_funcion_1002 )
+        @state.following.push( TOKENS_FOLLOWING_retorno_IN_funcion_998 )
         retorno47 = retorno
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, retorno47.tree )
         end
-        __SEMICOLON48__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_funcion_1004 )
+        __SEMICOLON48__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_funcion_1000 )
         if @state.backtracking == 0
 
           tree_for_SEMICOLON48 = @adaptor.create_with_payload( __SEMICOLON48__ )
           @adaptor.add_child( root_0, tree_for_SEMICOLON48 )
 
         end
-        __RBRACK49__ = match( RBRACK, TOKENS_FOLLOWING_RBRACK_IN_funcion_1006 )
+        __RBRACK49__ = match( RBRACK, TOKENS_FOLLOWING_RBRACK_IN_funcion_1002 )
         if @state.backtracking == 0
 
           tree_for_RBRACK49 = @adaptor.create_with_payload( __RBRACK49__ )
@@ -1555,7 +1726,7 @@ module Simple
     # parser rule argumentos
     # 
     # (in Simple_copy.g)
-    # 258:1: argumentos returns [list] : ( | data_type= tipo ref ID more_args= argumentoaux );
+    # 377:1: argumentos returns [list] : ( | data_type= tipo ref ID more_args= argumentoaux );
     # 
     def argumentos
       # -> uncomment the next line to manually enable rule tracing
@@ -1574,7 +1745,7 @@ module Simple
       tree_for_ID51 = nil
 
       begin
-        # at line 258:25: ( | data_type= tipo ref ID more_args= argumentoaux )
+        # at line 377:25: ( | data_type= tipo ref ID more_args= argumentoaux )
         alt_9 = 2
         look_9_0 = @input.peek( 1 )
 
@@ -1592,33 +1763,33 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 259:5: 
+          # at line 378:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 259:7: data_type= tipo ref ID more_args= argumentoaux
-          @state.following.push( TOKENS_FOLLOWING_tipo_IN_argumentos_1032 )
+          # at line 378:7: data_type= tipo ref ID more_args= argumentoaux
+          @state.following.push( TOKENS_FOLLOWING_tipo_IN_argumentos_1028 )
           data_type = tipo
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, data_type.tree )
           end
-          @state.following.push( TOKENS_FOLLOWING_ref_IN_argumentos_1034 )
+          @state.following.push( TOKENS_FOLLOWING_ref_IN_argumentos_1030 )
           ref50 = ref
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, ref50.tree )
           end
-          __ID51__ = match( ID, TOKENS_FOLLOWING_ID_IN_argumentos_1036 )
+          __ID51__ = match( ID, TOKENS_FOLLOWING_ID_IN_argumentos_1032 )
           if @state.backtracking == 0
 
             tree_for_ID51 = @adaptor.create_with_payload( __ID51__ )
             @adaptor.add_child( root_0, tree_for_ID51 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_argumentoaux_IN_argumentos_1040 )
+          @state.following.push( TOKENS_FOLLOWING_argumentoaux_IN_argumentos_1036 )
           more_args = argumentoaux
           @state.following.pop
           if @state.backtracking == 0
@@ -1663,7 +1834,7 @@ module Simple
     # parser rule argumentoaux
     # 
     # (in Simple_copy.g)
-    # 265:1: argumentoaux returns [list] : ( | COMMA data_type= tipo ref ID more_args= argumentoaux );
+    # 384:1: argumentoaux returns [list] : ( | COMMA data_type= tipo ref ID more_args= argumentoaux );
     # 
     def argumentoaux
       # -> uncomment the next line to manually enable rule tracing
@@ -1684,7 +1855,7 @@ module Simple
       tree_for_ID54 = nil
 
       begin
-        # at line 265:27: ( | COMMA data_type= tipo ref ID more_args= argumentoaux )
+        # at line 384:27: ( | COMMA data_type= tipo ref ID more_args= argumentoaux )
         alt_10 = 2
         look_10_0 = @input.peek( 1 )
 
@@ -1702,40 +1873,40 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 266:5: 
+          # at line 385:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 266:7: COMMA data_type= tipo ref ID more_args= argumentoaux
-          __COMMA52__ = match( COMMA, TOKENS_FOLLOWING_COMMA_IN_argumentoaux_1065 )
+          # at line 385:7: COMMA data_type= tipo ref ID more_args= argumentoaux
+          __COMMA52__ = match( COMMA, TOKENS_FOLLOWING_COMMA_IN_argumentoaux_1061 )
           if @state.backtracking == 0
 
             tree_for_COMMA52 = @adaptor.create_with_payload( __COMMA52__ )
             @adaptor.add_child( root_0, tree_for_COMMA52 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_tipo_IN_argumentoaux_1069 )
+          @state.following.push( TOKENS_FOLLOWING_tipo_IN_argumentoaux_1065 )
           data_type = tipo
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, data_type.tree )
           end
-          @state.following.push( TOKENS_FOLLOWING_ref_IN_argumentoaux_1071 )
+          @state.following.push( TOKENS_FOLLOWING_ref_IN_argumentoaux_1067 )
           ref53 = ref
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, ref53.tree )
           end
-          __ID54__ = match( ID, TOKENS_FOLLOWING_ID_IN_argumentoaux_1073 )
+          __ID54__ = match( ID, TOKENS_FOLLOWING_ID_IN_argumentoaux_1069 )
           if @state.backtracking == 0
 
             tree_for_ID54 = @adaptor.create_with_payload( __ID54__ )
             @adaptor.add_child( root_0, tree_for_ID54 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_argumentoaux_IN_argumentoaux_1077 )
+          @state.following.push( TOKENS_FOLLOWING_argumentoaux_IN_argumentoaux_1073 )
           more_args = argumentoaux
           @state.following.pop
           if @state.backtracking == 0
@@ -1780,7 +1951,7 @@ module Simple
     # parser rule ref
     # 
     # (in Simple_copy.g)
-    # 272:1: ref : ( | REF );
+    # 391:1: ref : ( | REF );
     # 
     def ref
       # -> uncomment the next line to manually enable rule tracing
@@ -1796,7 +1967,7 @@ module Simple
       tree_for_REF55 = nil
 
       begin
-        # at line 272:4: ( | REF )
+        # at line 391:4: ( | REF )
         alt_11 = 2
         look_11_0 = @input.peek( 1 )
 
@@ -1814,14 +1985,14 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 273:5: 
+          # at line 392:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 273:7: REF
-          __REF55__ = match( REF, TOKENS_FOLLOWING_REF_IN_ref_1099 )
+          # at line 392:7: REF
+          __REF55__ = match( REF, TOKENS_FOLLOWING_REF_IN_ref_1095 )
           if @state.backtracking == 0
 
             tree_for_REF55 = @adaptor.create_with_payload( __REF55__ )
@@ -1864,7 +2035,7 @@ module Simple
     # parser rule retornofunc
     # 
     # (in Simple_copy.g)
-    # 276:1: retornofunc returns [type] : ( VOID | data_type= tipo );
+    # 395:1: retornofunc returns [type] : ( VOID | data_type= tipo );
     # 
     def retornofunc
       # -> uncomment the next line to manually enable rule tracing
@@ -1881,7 +2052,7 @@ module Simple
       tree_for_VOID56 = nil
 
       begin
-        # at line 276:26: ( VOID | data_type= tipo )
+        # at line 395:26: ( VOID | data_type= tipo )
         alt_12 = 2
         look_12_0 = @input.peek( 1 )
 
@@ -1899,8 +2070,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 277:5: VOID
-          __VOID56__ = match( VOID, TOKENS_FOLLOWING_VOID_IN_retornofunc_1120 )
+          # at line 396:5: VOID
+          __VOID56__ = match( VOID, TOKENS_FOLLOWING_VOID_IN_retornofunc_1116 )
           if @state.backtracking == 0
 
             tree_for_VOID56 = @adaptor.create_with_payload( __VOID56__ )
@@ -1918,8 +2089,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 278:7: data_type= tipo
-          @state.following.push( TOKENS_FOLLOWING_tipo_IN_retornofunc_1132 )
+          # at line 397:7: data_type= tipo
+          @state.following.push( TOKENS_FOLLOWING_tipo_IN_retornofunc_1128 )
           data_type = tipo
           @state.following.pop
           if @state.backtracking == 0
@@ -1961,7 +2132,7 @@ module Simple
     # parser rule est
     # 
     # (in Simple_copy.g)
-    # 281:1: est : estatutos estaux ;
+    # 400:1: est : estatutos estaux ;
     # 
     def est
       # -> uncomment the next line to manually enable rule tracing
@@ -1980,14 +2151,14 @@ module Simple
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 282:5: estatutos estaux
-        @state.following.push( TOKENS_FOLLOWING_estatutos_IN_est_1150 )
+        # at line 401:5: estatutos estaux
+        @state.following.push( TOKENS_FOLLOWING_estatutos_IN_est_1146 )
         estatutos57 = estatutos
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, estatutos57.tree )
         end
-        @state.following.push( TOKENS_FOLLOWING_estaux_IN_est_1152 )
+        @state.following.push( TOKENS_FOLLOWING_estaux_IN_est_1148 )
         estaux58 = estaux
         @state.following.pop
         if @state.backtracking == 0
@@ -2028,7 +2199,7 @@ module Simple
     # parser rule estaux
     # 
     # (in Simple_copy.g)
-    # 285:1: estaux : ( | estatutos estaux );
+    # 404:1: estaux : ( | estatutos estaux );
     # 
     def estaux
       # -> uncomment the next line to manually enable rule tracing
@@ -2044,7 +2215,7 @@ module Simple
 
 
       begin
-        # at line 285:7: ( | estatutos estaux )
+        # at line 404:7: ( | estatutos estaux )
         alt_13 = 2
         look_13_0 = @input.peek( 1 )
 
@@ -2062,20 +2233,20 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 286:5: 
+          # at line 405:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 286:7: estatutos estaux
-          @state.following.push( TOKENS_FOLLOWING_estatutos_IN_estaux_1174 )
+          # at line 405:7: estatutos estaux
+          @state.following.push( TOKENS_FOLLOWING_estatutos_IN_estaux_1170 )
           estatutos59 = estatutos
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, estatutos59.tree )
           end
-          @state.following.push( TOKENS_FOLLOWING_estaux_IN_estaux_1176 )
+          @state.following.push( TOKENS_FOLLOWING_estaux_IN_estaux_1172 )
           estaux60 = estaux
           @state.following.pop
           if @state.backtracking == 0
@@ -2117,7 +2288,7 @@ module Simple
     # parser rule estatutos
     # 
     # (in Simple_copy.g)
-    # 289:1: estatutos : ( ID idestatutos SEMICOLON | condicion | escritura | ciclo | lectura );
+    # 408:1: estatutos : ( ID idestatutos SEMICOLON | condicion | escritura | ciclo | lectura );
     # 
     def estatutos
       # -> uncomment the next line to manually enable rule tracing
@@ -2140,7 +2311,7 @@ module Simple
       tree_for_SEMICOLON63 = nil
 
       begin
-        # at line 289:10: ( ID idestatutos SEMICOLON | condicion | escritura | ciclo | lectura )
+        # at line 408:10: ( ID idestatutos SEMICOLON | condicion | escritura | ciclo | lectura )
         alt_14 = 5
         case look_14 = @input.peek( 1 )
         when ID then alt_14 = 1
@@ -2158,21 +2329,45 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 290:5: ID idestatutos SEMICOLON
-          __ID61__ = match( ID, TOKENS_FOLLOWING_ID_IN_estatutos_1194 )
+          # at line 409:5: ID idestatutos SEMICOLON
+          __ID61__ = match( ID, TOKENS_FOLLOWING_ID_IN_estatutos_1190 )
           if @state.backtracking == 0
 
             tree_for_ID61 = @adaptor.create_with_payload( __ID61__ )
             @adaptor.add_child( root_0, tree_for_ID61 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_idestatutos_IN_estatutos_1196 )
+          # syntactic predicate action gate test
+          if @state.backtracking == 0
+            # --> action
+             
+                  $id = __ID61__.text
+                  $scope_location = @vars_block_stack.last.scope_location
+                  if not $scope_location.nil?
+            	if @vars_block_stack.last.procedures[$scope_location][:local_vars].has_key?($id)
+            	  @vars_block_stack.last.operands_stack.push( @vars_block_stack.last.procedures[$scope_location][:local_vars][$id] )
+            	elsif @vars_block_stack.last.global.has_key?($id)
+            	  @vars_block_stack.last.operands_stack.push( @vars_block_stack.last.global[$id] )
+            	else
+            	  abort("\nERROR: Variable #{$id} not defined in the program\n")
+            	end
+                  else
+            	if @vars_block_stack.last.global.has_key?($id)
+            	  @vars_block_stack.last.operands_stack.push( @vars_block_stack.last.global[$id] )
+            	else
+            	  abort("\nERROR: Variable #{$id} not defined in the program\n")
+            	end
+                  end
+                
+            # <-- action
+          end
+          @state.following.push( TOKENS_FOLLOWING_idestatutos_IN_estatutos_1198 )
           idestatutos62 = idestatutos
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, idestatutos62.tree )
           end
-          __SEMICOLON63__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_estatutos_1198 )
+          __SEMICOLON63__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_estatutos_1200 )
           if @state.backtracking == 0
 
             tree_for_SEMICOLON63 = @adaptor.create_with_payload( __SEMICOLON63__ )
@@ -2182,7 +2377,20 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[ESTATUTOS] ") 
+             
+                  $next_operation = @vars_block_stack.last.operations_stack.look()
+                  @vars_block_stack.last.operations_stack.pop()
+                  $oper2 = @vars_block_stack.last.operands_stack.look()
+                  @vars_block_stack.last.operands_stack.pop()
+                  $oper1 = @vars_block_stack.last.operands_stack.look()
+                  @vars_block_stack.last.operands_stack.pop()
+                  print("\nop: #{$next_operation}, op1: #{$oper1}, op2: #{$oper2}\n")
+                  if $oper1[:type] != @vars_block_stack.last.semanthic_cube[$oper1[:type]][$oper2[:type]][$next_operation]
+            	print("\nWARNING: #{@vars_block_stack.last.semanthic_cube[$oper1[:type]][$oper2[:type]][$next_operation]} to #{$oper1[:type]}\n")
+                  end
+                  $cuadruple = { op: $next_operation, op1: $oper1, op2: nil, dest: $oper2}
+                  @vars_block_stack.last.lines_counter = @vars_block_stack.last.lines_counter + 1
+                
             # <-- action
           end
 
@@ -2190,8 +2398,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 291:7: condicion
-          @state.following.push( TOKENS_FOLLOWING_condicion_IN_estatutos_1208 )
+          # at line 442:7: condicion
+          @state.following.push( TOKENS_FOLLOWING_condicion_IN_estatutos_1210 )
           condicion64 = condicion
           @state.following.pop
           if @state.backtracking == 0
@@ -2208,8 +2416,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 292:7: escritura
-          @state.following.push( TOKENS_FOLLOWING_escritura_IN_estatutos_1218 )
+          # at line 443:7: escritura
+          @state.following.push( TOKENS_FOLLOWING_escritura_IN_estatutos_1220 )
           escritura65 = escritura
           @state.following.pop
           if @state.backtracking == 0
@@ -2226,8 +2434,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 293:7: ciclo
-          @state.following.push( TOKENS_FOLLOWING_ciclo_IN_estatutos_1228 )
+          # at line 444:7: ciclo
+          @state.following.push( TOKENS_FOLLOWING_ciclo_IN_estatutos_1230 )
           ciclo66 = ciclo
           @state.following.pop
           if @state.backtracking == 0
@@ -2244,8 +2452,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 294:7: lectura
-          @state.following.push( TOKENS_FOLLOWING_lectura_IN_estatutos_1238 )
+          # at line 445:7: lectura
+          @state.following.push( TOKENS_FOLLOWING_lectura_IN_estatutos_1240 )
           lectura67 = lectura
           @state.following.pop
           if @state.backtracking == 0
@@ -2287,7 +2495,7 @@ module Simple
     # parser rule idestatutos
     # 
     # (in Simple_copy.g)
-    # 297:1: idestatutos : ( llamada | array ASSIGN expresion | ASSIGN expresion );
+    # 448:1: idestatutos : ( llamada | array ASSIGN expresion | ASSIGN expresion );
     # 
     def idestatutos
       # -> uncomment the next line to manually enable rule tracing
@@ -2309,7 +2517,7 @@ module Simple
       tree_for_ASSIGN72 = nil
 
       begin
-        # at line 297:12: ( llamada | array ASSIGN expresion | ASSIGN expresion )
+        # at line 448:12: ( llamada | array ASSIGN expresion | ASSIGN expresion )
         alt_15 = 3
         case look_15 = @input.peek( 1 )
         when LPARENT then alt_15 = 1
@@ -2325,8 +2533,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 298:5: llamada
-          @state.following.push( TOKENS_FOLLOWING_llamada_IN_idestatutos_1256 )
+          # at line 449:5: llamada
+          @state.following.push( TOKENS_FOLLOWING_llamada_IN_idestatutos_1258 )
           llamada68 = llamada
           @state.following.pop
           if @state.backtracking == 0
@@ -2343,21 +2551,21 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 299:7: array ASSIGN expresion
-          @state.following.push( TOKENS_FOLLOWING_array_IN_idestatutos_1266 )
+          # at line 450:7: array ASSIGN expresion
+          @state.following.push( TOKENS_FOLLOWING_array_IN_idestatutos_1268 )
           array69 = array
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, array69.tree )
           end
-          __ASSIGN70__ = match( ASSIGN, TOKENS_FOLLOWING_ASSIGN_IN_idestatutos_1268 )
+          __ASSIGN70__ = match( ASSIGN, TOKENS_FOLLOWING_ASSIGN_IN_idestatutos_1270 )
           if @state.backtracking == 0
 
             tree_for_ASSIGN70 = @adaptor.create_with_payload( __ASSIGN70__ )
             @adaptor.add_child( root_0, tree_for_ASSIGN70 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_expresion_IN_idestatutos_1270 )
+          @state.following.push( TOKENS_FOLLOWING_expresion_IN_idestatutos_1272 )
           expresion71 = expresion
           @state.following.pop
           if @state.backtracking == 0
@@ -2374,25 +2582,27 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 300:7: ASSIGN expresion
-          __ASSIGN72__ = match( ASSIGN, TOKENS_FOLLOWING_ASSIGN_IN_idestatutos_1280 )
+          # at line 451:7: ASSIGN expresion
+          __ASSIGN72__ = match( ASSIGN, TOKENS_FOLLOWING_ASSIGN_IN_idestatutos_1282 )
           if @state.backtracking == 0
 
             tree_for_ASSIGN72 = @adaptor.create_with_payload( __ASSIGN72__ )
             @adaptor.add_child( root_0, tree_for_ASSIGN72 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_expresion_IN_idestatutos_1282 )
+          # syntactic predicate action gate test
+          if @state.backtracking == 0
+            # --> action
+
+                  @vars_block_stack.last.operations_stack.push( __ASSIGN72__.text )
+                
+            # <-- action
+          end
+          @state.following.push( TOKENS_FOLLOWING_expresion_IN_idestatutos_1290 )
           expresion73 = expresion
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, expresion73.tree )
-          end
-          # syntactic predicate action gate test
-          if @state.backtracking == 0
-            # --> action
-             print("[IDESTATUTOS] ") 
-            # <-- action
           end
 
         end# - - - - - - - rule clean up - - - - - - - -
@@ -2424,7 +2634,7 @@ module Simple
     # parser rule llamada
     # 
     # (in Simple_copy.g)
-    # 303:1: llamada : LPARENT llamadaargs RPARENT ;
+    # 457:1: llamada : LPARENT llamadaargs RPARENT ;
     # 
     def llamada
       # -> uncomment the next line to manually enable rule tracing
@@ -2446,21 +2656,21 @@ module Simple
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 304:5: LPARENT llamadaargs RPARENT
-        __LPARENT74__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_llamada_1300 )
+        # at line 458:5: LPARENT llamadaargs RPARENT
+        __LPARENT74__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_llamada_1307 )
         if @state.backtracking == 0
 
           tree_for_LPARENT74 = @adaptor.create_with_payload( __LPARENT74__ )
           @adaptor.add_child( root_0, tree_for_LPARENT74 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_llamadaargs_IN_llamada_1302 )
+        @state.following.push( TOKENS_FOLLOWING_llamadaargs_IN_llamada_1309 )
         llamadaargs75 = llamadaargs
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, llamadaargs75.tree )
         end
-        __RPARENT76__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_llamada_1304 )
+        __RPARENT76__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_llamada_1311 )
         if @state.backtracking == 0
 
           tree_for_RPARENT76 = @adaptor.create_with_payload( __RPARENT76__ )
@@ -2502,7 +2712,7 @@ module Simple
     # parser rule llamadaargs
     # 
     # (in Simple_copy.g)
-    # 307:1: llamadaargs : ( | exp llamadaargsaux );
+    # 461:1: llamadaargs : ( | exp llamadaargsaux );
     # 
     def llamadaargs
       # -> uncomment the next line to manually enable rule tracing
@@ -2518,13 +2728,13 @@ module Simple
 
 
       begin
-        # at line 307:12: ( | exp llamadaargsaux )
+        # at line 461:12: ( | exp llamadaargsaux )
         alt_16 = 2
         look_16_0 = @input.peek( 1 )
 
         if ( look_16_0 == RPARENT )
           alt_16 = 1
-        elsif ( look_16_0 == NOT || look_16_0.between?( PLUS, MINUS ) || look_16_0.between?( CTEI, CTEF ) || look_16_0.between?( CTES, CTEB ) || look_16_0 == ID )
+        elsif ( look_16_0 == NOT || look_16_0 == LPARENT || look_16_0.between?( CTEI, CTEF ) || look_16_0.between?( CTES, CTEB ) || look_16_0 == ID )
           alt_16 = 2
         else
           @state.backtracking > 0 and raise( ANTLR3::Error::BacktrackingFailed )
@@ -2536,20 +2746,20 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 308:5: 
+          # at line 462:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 308:7: exp llamadaargsaux
-          @state.following.push( TOKENS_FOLLOWING_exp_IN_llamadaargs_1326 )
+          # at line 462:7: exp llamadaargsaux
+          @state.following.push( TOKENS_FOLLOWING_exp_IN_llamadaargs_1333 )
           exp77 = exp
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, exp77.tree )
           end
-          @state.following.push( TOKENS_FOLLOWING_llamadaargsaux_IN_llamadaargs_1328 )
+          @state.following.push( TOKENS_FOLLOWING_llamadaargsaux_IN_llamadaargs_1335 )
           llamadaargsaux78 = llamadaargsaux
           @state.following.pop
           if @state.backtracking == 0
@@ -2591,7 +2801,7 @@ module Simple
     # parser rule llamadaargsaux
     # 
     # (in Simple_copy.g)
-    # 311:1: llamadaargsaux : ( | COMMA exp llamadaargsaux );
+    # 465:1: llamadaargsaux : ( | COMMA exp llamadaargsaux );
     # 
     def llamadaargsaux
       # -> uncomment the next line to manually enable rule tracing
@@ -2609,7 +2819,7 @@ module Simple
       tree_for_COMMA79 = nil
 
       begin
-        # at line 311:15: ( | COMMA exp llamadaargsaux )
+        # at line 465:15: ( | COMMA exp llamadaargsaux )
         alt_17 = 2
         look_17_0 = @input.peek( 1 )
 
@@ -2627,27 +2837,27 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 312:5: 
+          # at line 466:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 312:7: COMMA exp llamadaargsaux
-          __COMMA79__ = match( COMMA, TOKENS_FOLLOWING_COMMA_IN_llamadaargsaux_1350 )
+          # at line 466:7: COMMA exp llamadaargsaux
+          __COMMA79__ = match( COMMA, TOKENS_FOLLOWING_COMMA_IN_llamadaargsaux_1357 )
           if @state.backtracking == 0
 
             tree_for_COMMA79 = @adaptor.create_with_payload( __COMMA79__ )
             @adaptor.add_child( root_0, tree_for_COMMA79 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_exp_IN_llamadaargsaux_1352 )
+          @state.following.push( TOKENS_FOLLOWING_exp_IN_llamadaargsaux_1359 )
           exp80 = exp
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, exp80.tree )
           end
-          @state.following.push( TOKENS_FOLLOWING_llamadaargsaux_IN_llamadaargsaux_1354 )
+          @state.following.push( TOKENS_FOLLOWING_llamadaargsaux_IN_llamadaargsaux_1361 )
           llamadaargsaux81 = llamadaargsaux
           @state.following.pop
           if @state.backtracking == 0
@@ -2689,7 +2899,7 @@ module Simple
     # parser rule array
     # 
     # (in Simple_copy.g)
-    # 315:1: array : LSBRACK exp RSBRACK ;
+    # 469:1: array : LSBRACK exp RSBRACK ;
     # 
     def array
       # -> uncomment the next line to manually enable rule tracing
@@ -2711,21 +2921,21 @@ module Simple
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 316:5: LSBRACK exp RSBRACK
-        __LSBRACK82__ = match( LSBRACK, TOKENS_FOLLOWING_LSBRACK_IN_array_1372 )
+        # at line 470:5: LSBRACK exp RSBRACK
+        __LSBRACK82__ = match( LSBRACK, TOKENS_FOLLOWING_LSBRACK_IN_array_1379 )
         if @state.backtracking == 0
 
           tree_for_LSBRACK82 = @adaptor.create_with_payload( __LSBRACK82__ )
           @adaptor.add_child( root_0, tree_for_LSBRACK82 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_exp_IN_array_1374 )
+        @state.following.push( TOKENS_FOLLOWING_exp_IN_array_1381 )
         exp83 = exp
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, exp83.tree )
         end
-        __RSBRACK84__ = match( RSBRACK, TOKENS_FOLLOWING_RSBRACK_IN_array_1376 )
+        __RSBRACK84__ = match( RSBRACK, TOKENS_FOLLOWING_RSBRACK_IN_array_1383 )
         if @state.backtracking == 0
 
           tree_for_RSBRACK84 = @adaptor.create_with_payload( __RSBRACK84__ )
@@ -2767,7 +2977,7 @@ module Simple
     # parser rule expresion
     # 
     # (in Simple_copy.g)
-    # 319:1: expresion : exp expresionaux ;
+    # 473:1: expresion : exp ;
     # 
     def expresion
       # -> uncomment the next line to manually enable rule tracing
@@ -2779,25 +2989,18 @@ module Simple
 
       root_0 = nil
       exp85 = nil
-      expresionaux86 = nil
 
 
       begin
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 320:5: exp expresionaux
-        @state.following.push( TOKENS_FOLLOWING_exp_IN_expresion_1394 )
+        # at line 474:5: exp
+        @state.following.push( TOKENS_FOLLOWING_exp_IN_expresion_1401 )
         exp85 = exp
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, exp85.tree )
-        end
-        @state.following.push( TOKENS_FOLLOWING_expresionaux_IN_expresion_1396 )
-        expresionaux86 = expresionaux
-        @state.following.pop
-        if @state.backtracking == 0
-          @adaptor.add_child( root_0, expresionaux86.tree )
         end
         # syntactic predicate action gate test
         if @state.backtracking == 0
@@ -2834,7 +3037,7 @@ module Simple
     # parser rule expresionaux
     # 
     # (in Simple_copy.g)
-    # 323:1: expresionaux : ( | comparacion expresion | logico expresion );
+    # 478:1: expresionaux : ( | comparacion expresion | logico expresion );
     # 
     def expresionaux
       # -> uncomment the next line to manually enable rule tracing
@@ -2845,17 +3048,17 @@ module Simple
       return_value.start = @input.look
 
       root_0 = nil
-      comparacion87 = nil
-      expresion88 = nil
-      logico89 = nil
-      expresion90 = nil
+      comparacion86 = nil
+      expresion87 = nil
+      logico88 = nil
+      expresion89 = nil
 
 
       begin
-        # at line 323:13: ( | comparacion expresion | logico expresion )
+        # at line 478:13: ( | comparacion expresion | logico expresion )
         alt_18 = 3
         case look_18 = @input.peek( 1 )
-        when EOF, RPARENT, SEMICOLON then alt_18 = 1
+        when EOF then alt_18 = 1
         when LT, LE, GT, GE, EQ, NE then alt_18 = 2
         when AND, OR then alt_18 = 3
         else
@@ -2868,24 +3071,24 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 324:5: 
+          # at line 479:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 324:7: comparacion expresion
-          @state.following.push( TOKENS_FOLLOWING_comparacion_IN_expresionaux_1418 )
-          comparacion87 = comparacion
+          # at line 479:7: comparacion expresion
+          @state.following.push( TOKENS_FOLLOWING_comparacion_IN_expresionaux_1427 )
+          comparacion86 = comparacion
           @state.following.pop
           if @state.backtracking == 0
-            @adaptor.add_child( root_0, comparacion87.tree )
+            @adaptor.add_child( root_0, comparacion86.tree )
           end
-          @state.following.push( TOKENS_FOLLOWING_expresion_IN_expresionaux_1420 )
-          expresion88 = expresion
+          @state.following.push( TOKENS_FOLLOWING_expresion_IN_expresionaux_1429 )
+          expresion87 = expresion
           @state.following.pop
           if @state.backtracking == 0
-            @adaptor.add_child( root_0, expresion88.tree )
+            @adaptor.add_child( root_0, expresion87.tree )
           end
           # syntactic predicate action gate test
           if @state.backtracking == 0
@@ -2898,18 +3101,18 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 325:7: logico expresion
-          @state.following.push( TOKENS_FOLLOWING_logico_IN_expresionaux_1430 )
-          logico89 = logico
+          # at line 480:7: logico expresion
+          @state.following.push( TOKENS_FOLLOWING_logico_IN_expresionaux_1440 )
+          logico88 = logico
           @state.following.pop
           if @state.backtracking == 0
-            @adaptor.add_child( root_0, logico89.tree )
+            @adaptor.add_child( root_0, logico88.tree )
           end
-          @state.following.push( TOKENS_FOLLOWING_expresion_IN_expresionaux_1432 )
-          expresion90 = expresion
+          @state.following.push( TOKENS_FOLLOWING_expresion_IN_expresionaux_1442 )
+          expresion89 = expresion
           @state.following.pop
           if @state.backtracking == 0
-            @adaptor.add_child( root_0, expresion90.tree )
+            @adaptor.add_child( root_0, expresion89.tree )
           end
           # syntactic predicate action gate test
           if @state.backtracking == 0
@@ -2947,7 +3150,7 @@ module Simple
     # parser rule exp
     # 
     # (in Simple_copy.g)
-    # 328:1: exp : termino expaux ;
+    # 483:1: exp : termino expaux ;
     # 
     def exp
       # -> uncomment the next line to manually enable rule tracing
@@ -2958,32 +3161,54 @@ module Simple
       return_value.start = @input.look
 
       root_0 = nil
-      termino91 = nil
-      expaux92 = nil
+      termino90 = nil
+      expaux91 = nil
 
 
       begin
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 329:5: termino expaux
-        @state.following.push( TOKENS_FOLLOWING_termino_IN_exp_1450 )
-        termino91 = termino
+        # at line 484:5: termino expaux
+        @state.following.push( TOKENS_FOLLOWING_termino_IN_exp_1460 )
+        termino90 = termino
         @state.following.pop
         if @state.backtracking == 0
-          @adaptor.add_child( root_0, termino91.tree )
-        end
-        @state.following.push( TOKENS_FOLLOWING_expaux_IN_exp_1452 )
-        expaux92 = expaux
-        @state.following.pop
-        if @state.backtracking == 0
-          @adaptor.add_child( root_0, expaux92.tree )
+          @adaptor.add_child( root_0, termino90.tree )
         end
         # syntactic predicate action gate test
         if @state.backtracking == 0
           # --> action
-           print("[EXP] ") 
+
+                $next_operation = @vars_block_stack.last.operations_stack.look()
+                if (not $next_operation.nil?) && ($next_operation == '+' || $next_operation == '-')
+          	@vars_block_stack.last.operations_stack.pop()
+          	$oper2 = @vars_block_stack.last.operands_stack.look()
+          	@vars_block_stack.last.operations_stack.pop()
+          	$oper1 = @vars_block_stack.last.operands_stack.look()
+          	@vars_block_stack.last.operands_stack.pop()
+          	if (not @vars_block_stack.last.semanthic_cube[$oper1[:type]][$oper2[:type]].nil?) && 
+          	    (not @vars_block_stack.last.semanthic_cube[$oper1[:type]][$oper2[:type]][$next_operation].nil?)
+          	  $resulting_type = @vars_block_stack.last.semanthic_cube[$oper1[:type]][$oper2[:type]][$next_operation]
+          	  $temp = 't' + @vars_block_stack.last.next_temp.to_s
+          	  @vars_block_stack.last.next_temp = @vars_block_stack.last.next_temp + 1
+          	  $destiny = { id: $temp, type: $resulting_type, value: nil }
+          	  $cuadruple = { op: $next_operation, op1: $oper1, op2: $oper2, dest: $destiny }
+          	  @vars_block_stack.last.lines_counter = @vars_block_stack.last.lines_counter + 1
+          	  @vars_block_stack.last.cuadruples_array << $cuadruple
+          	  @vars_block_stack.last.operands_stack.push( $destiny )
+          	else
+          	  abort("\nERROR: #{$oper1[:type]} #{$next_operation} #{$oper2[:type]} is invalid\n")
+          	end
+                end
+              
           # <-- action
+        end
+        @state.following.push( TOKENS_FOLLOWING_expaux_IN_exp_1474 )
+        expaux91 = expaux
+        @state.following.pop
+        if @state.backtracking == 0
+          @adaptor.add_child( root_0, expaux91.tree )
         end
         # - - - - - - - rule clean up - - - - - - - -
         return_value.stop = @input.look( -1 )
@@ -3014,7 +3239,7 @@ module Simple
     # parser rule expaux
     # 
     # (in Simple_copy.g)
-    # 332:1: expaux : ( | PLUS exp | MINUS exp );
+    # 510:1: expaux : ( | PLUS exp | MINUS exp );
     # 
     def expaux
       # -> uncomment the next line to manually enable rule tracing
@@ -3025,19 +3250,19 @@ module Simple
       return_value.start = @input.look
 
       root_0 = nil
-      __PLUS93__ = nil
-      __MINUS95__ = nil
-      exp94 = nil
-      exp96 = nil
+      __PLUS92__ = nil
+      __MINUS94__ = nil
+      exp93 = nil
+      exp95 = nil
 
-      tree_for_PLUS93 = nil
-      tree_for_MINUS95 = nil
+      tree_for_PLUS92 = nil
+      tree_for_MINUS94 = nil
 
       begin
-        # at line 332:7: ( | PLUS exp | MINUS exp )
+        # at line 510:7: ( | PLUS exp | MINUS exp )
         alt_19 = 3
         case look_19 = @input.peek( 1 )
-        when EOF, LT, LE, GT, GE, EQ, NE, AND, OR, RPARENT, RSBRACK, COMMA, SEMICOLON then alt_19 = 1
+        when EOF, RPARENT, RSBRACK, COMMA, SEMICOLON then alt_19 = 1
         when PLUS then alt_19 = 2
         when MINUS then alt_19 = 3
         else
@@ -3050,56 +3275,60 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 333:5: 
+          # at line 511:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 333:7: PLUS exp
-          __PLUS93__ = match( PLUS, TOKENS_FOLLOWING_PLUS_IN_expaux_1474 )
+          # at line 511:7: PLUS exp
+          __PLUS92__ = match( PLUS, TOKENS_FOLLOWING_PLUS_IN_expaux_1494 )
           if @state.backtracking == 0
 
-            tree_for_PLUS93 = @adaptor.create_with_payload( __PLUS93__ )
-            @adaptor.add_child( root_0, tree_for_PLUS93 )
+            tree_for_PLUS92 = @adaptor.create_with_payload( __PLUS92__ )
+            @adaptor.add_child( root_0, tree_for_PLUS92 )
 
-          end
-          @state.following.push( TOKENS_FOLLOWING_exp_IN_expaux_1476 )
-          exp94 = exp
-          @state.following.pop
-          if @state.backtracking == 0
-            @adaptor.add_child( root_0, exp94.tree )
           end
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[EXPAUX] ") 
+
+                  @vars_block_stack.last.operations_stack.push( __PLUS92__.text )
+                
             # <-- action
+          end
+          @state.following.push( TOKENS_FOLLOWING_exp_IN_expaux_1502 )
+          exp93 = exp
+          @state.following.pop
+          if @state.backtracking == 0
+            @adaptor.add_child( root_0, exp93.tree )
           end
 
         when 3
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 334:7: MINUS exp
-          __MINUS95__ = match( MINUS, TOKENS_FOLLOWING_MINUS_IN_expaux_1486 )
+          # at line 515:7: MINUS exp
+          __MINUS94__ = match( MINUS, TOKENS_FOLLOWING_MINUS_IN_expaux_1511 )
           if @state.backtracking == 0
 
-            tree_for_MINUS95 = @adaptor.create_with_payload( __MINUS95__ )
-            @adaptor.add_child( root_0, tree_for_MINUS95 )
+            tree_for_MINUS94 = @adaptor.create_with_payload( __MINUS94__ )
+            @adaptor.add_child( root_0, tree_for_MINUS94 )
 
-          end
-          @state.following.push( TOKENS_FOLLOWING_exp_IN_expaux_1488 )
-          exp96 = exp
-          @state.following.pop
-          if @state.backtracking == 0
-            @adaptor.add_child( root_0, exp96.tree )
           end
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[EXPAUX] ") 
+
+                  @vars_block_stack.last.operations_stack.push( __MINUS94__.text )
+                
             # <-- action
+          end
+          @state.following.push( TOKENS_FOLLOWING_exp_IN_expaux_1519 )
+          exp95 = exp
+          @state.following.pop
+          if @state.backtracking == 0
+            @adaptor.add_child( root_0, exp95.tree )
           end
 
         end# - - - - - - - rule clean up - - - - - - - -
@@ -3131,7 +3360,7 @@ module Simple
     # parser rule termino
     # 
     # (in Simple_copy.g)
-    # 337:1: termino : factor terminoaux ;
+    # 521:1: termino : factor terminoaux ;
     # 
     def termino
       # -> uncomment the next line to manually enable rule tracing
@@ -3142,32 +3371,54 @@ module Simple
       return_value.start = @input.look
 
       root_0 = nil
-      factor97 = nil
-      terminoaux98 = nil
+      factor96 = nil
+      terminoaux97 = nil
 
 
       begin
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 338:5: factor terminoaux
-        @state.following.push( TOKENS_FOLLOWING_factor_IN_termino_1506 )
-        factor97 = factor
+        # at line 522:5: factor terminoaux
+        @state.following.push( TOKENS_FOLLOWING_factor_IN_termino_1536 )
+        factor96 = factor
         @state.following.pop
         if @state.backtracking == 0
-          @adaptor.add_child( root_0, factor97.tree )
-        end
-        @state.following.push( TOKENS_FOLLOWING_terminoaux_IN_termino_1508 )
-        terminoaux98 = terminoaux
-        @state.following.pop
-        if @state.backtracking == 0
-          @adaptor.add_child( root_0, terminoaux98.tree )
+          @adaptor.add_child( root_0, factor96.tree )
         end
         # syntactic predicate action gate test
         if @state.backtracking == 0
           # --> action
-           print("[TERMINO] ") 
+           
+                $next_operation = @vars_block_stack.last.operations_stack.look()
+                if (not $next_operation.nil?) && ($next_operation == '*' || $next_operation == '/')
+          	@vars_block_stack.last.operations_stack.pop()
+          	$oper2 = @vars_block_stack.last.operands_stack.look()
+          	@vars_block_stack.last.operations_stack.pop()
+          	$oper1 = @vars_block_stack.last.operands_stack.look()
+          	@vars_block_stack.last.operands_stack.pop()
+          	if (not @vars_block_stack.last.semanthic_cube[$oper1[:type]][$oper2[:type]].nil?) &&
+          	    (not @vars_block_stack.last.semanthic_cube[$oper1[:type]][$oper2[:type]][$next_operation].nil?)
+          	  $resulting_type = @vars_block_stack.last.semanthic_cube[$oper1[:type]][$oper2[:type]][$next_operation]
+          	  $temp = 't' + @vars_block_stack.last.next_temp.to_s
+          	  @vars_block_stack.last.next_temp = @vars_block_stack.last.next_temp + 1
+          	  $destiny = { id: $temp, type: $resulting_type, value: nil }
+          	  $cuadruple = { op: $next_operation, op1: $oper1, op2: $oper2, dest: $destiny }
+          	  @vars_block_stack.last.lines_counter = @vars_block_stack.last.lines_counter + 1
+          	  @vars_block_stack.last.cuadruples_array << $cuadruple
+          	  @vars_block_stack.last.operands_stack.push( $destiny )
+          	else
+          	  abort("\nERROR: #{$oper1[:type]} #{$next_operation} #{$oper2[:type]} is invalid\n")
+          	end
+                end
+              
           # <-- action
+        end
+        @state.following.push( TOKENS_FOLLOWING_terminoaux_IN_termino_1545 )
+        terminoaux97 = terminoaux
+        @state.following.pop
+        if @state.backtracking == 0
+          @adaptor.add_child( root_0, terminoaux97.tree )
         end
         # - - - - - - - rule clean up - - - - - - - -
         return_value.stop = @input.look( -1 )
@@ -3198,7 +3449,7 @@ module Simple
     # parser rule terminoaux
     # 
     # (in Simple_copy.g)
-    # 341:1: terminoaux : ( | TIMES termino | DIVIDE termino );
+    # 548:1: terminoaux : ( | TIMES termino | DIVIDE termino );
     # 
     def terminoaux
       # -> uncomment the next line to manually enable rule tracing
@@ -3209,19 +3460,19 @@ module Simple
       return_value.start = @input.look
 
       root_0 = nil
-      __TIMES99__ = nil
-      __DIVIDE101__ = nil
-      termino100 = nil
-      termino102 = nil
+      __TIMES98__ = nil
+      __DIVIDE100__ = nil
+      termino99 = nil
+      termino101 = nil
 
-      tree_for_TIMES99 = nil
-      tree_for_DIVIDE101 = nil
+      tree_for_TIMES98 = nil
+      tree_for_DIVIDE100 = nil
 
       begin
-        # at line 341:11: ( | TIMES termino | DIVIDE termino )
+        # at line 548:11: ( | TIMES termino | DIVIDE termino )
         alt_20 = 3
         case look_20 = @input.peek( 1 )
-        when EOF, LT, LE, GT, GE, EQ, NE, AND, OR, RPARENT, RSBRACK, COMMA, SEMICOLON, PLUS, MINUS then alt_20 = 1
+        when EOF, RPARENT, RSBRACK, COMMA, SEMICOLON, PLUS, MINUS then alt_20 = 1
         when TIMES then alt_20 = 2
         when DIVIDE then alt_20 = 3
         else
@@ -3234,56 +3485,60 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 342:5: 
+          # at line 549:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 342:7: TIMES termino
-          __TIMES99__ = match( TIMES, TOKENS_FOLLOWING_TIMES_IN_terminoaux_1530 )
+          # at line 549:7: TIMES termino
+          __TIMES98__ = match( TIMES, TOKENS_FOLLOWING_TIMES_IN_terminoaux_1565 )
           if @state.backtracking == 0
 
-            tree_for_TIMES99 = @adaptor.create_with_payload( __TIMES99__ )
-            @adaptor.add_child( root_0, tree_for_TIMES99 )
+            tree_for_TIMES98 = @adaptor.create_with_payload( __TIMES98__ )
+            @adaptor.add_child( root_0, tree_for_TIMES98 )
 
-          end
-          @state.following.push( TOKENS_FOLLOWING_termino_IN_terminoaux_1532 )
-          termino100 = termino
-          @state.following.pop
-          if @state.backtracking == 0
-            @adaptor.add_child( root_0, termino100.tree )
           end
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[TERMINOAUX] ") 
+
+                  @vars_block_stack.last.operations_stack.push( __TIMES98__.text )
+                
             # <-- action
+          end
+          @state.following.push( TOKENS_FOLLOWING_termino_IN_terminoaux_1574 )
+          termino99 = termino
+          @state.following.pop
+          if @state.backtracking == 0
+            @adaptor.add_child( root_0, termino99.tree )
           end
 
         when 3
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 343:7: DIVIDE termino
-          __DIVIDE101__ = match( DIVIDE, TOKENS_FOLLOWING_DIVIDE_IN_terminoaux_1542 )
+          # at line 553:7: DIVIDE termino
+          __DIVIDE100__ = match( DIVIDE, TOKENS_FOLLOWING_DIVIDE_IN_terminoaux_1583 )
           if @state.backtracking == 0
 
-            tree_for_DIVIDE101 = @adaptor.create_with_payload( __DIVIDE101__ )
-            @adaptor.add_child( root_0, tree_for_DIVIDE101 )
+            tree_for_DIVIDE100 = @adaptor.create_with_payload( __DIVIDE100__ )
+            @adaptor.add_child( root_0, tree_for_DIVIDE100 )
 
-          end
-          @state.following.push( TOKENS_FOLLOWING_termino_IN_terminoaux_1544 )
-          termino102 = termino
-          @state.following.pop
-          if @state.backtracking == 0
-            @adaptor.add_child( root_0, termino102.tree )
           end
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[TERMINOAUX] ") 
+
+                  @vars_block_stack.last.operations_stack.push( __DIVIDE100__.text )
+                
             # <-- action
+          end
+          @state.following.push( TOKENS_FOLLOWING_termino_IN_terminoaux_1591 )
+          termino101 = termino
+          @state.following.pop
+          if @state.backtracking == 0
+            @adaptor.add_child( root_0, termino101.tree )
           end
 
         end# - - - - - - - rule clean up - - - - - - - -
@@ -3315,7 +3570,7 @@ module Simple
     # parser rule factor
     # 
     # (in Simple_copy.g)
-    # 346:1: factor : ( NOT notfactor | sign varcte | varcte );
+    # 560:1: factor : ( NOT notfactor | LPARENT exp RPARENT | varcte );
     # 
     def factor
       # -> uncomment the next line to manually enable rule tracing
@@ -3326,20 +3581,23 @@ module Simple
       return_value.start = @input.look
 
       root_0 = nil
-      __NOT103__ = nil
-      notfactor104 = nil
-      sign105 = nil
-      varcte106 = nil
+      __NOT102__ = nil
+      __LPARENT104__ = nil
+      __RPARENT106__ = nil
+      notfactor103 = nil
+      exp105 = nil
       varcte107 = nil
 
-      tree_for_NOT103 = nil
+      tree_for_NOT102 = nil
+      tree_for_LPARENT104 = nil
+      tree_for_RPARENT106 = nil
 
       begin
-        # at line 346:7: ( NOT notfactor | sign varcte | varcte )
+        # at line 560:7: ( NOT notfactor | LPARENT exp RPARENT | varcte )
         alt_21 = 3
         case look_21 = @input.peek( 1 )
         when NOT then alt_21 = 1
-        when PLUS, MINUS then alt_21 = 2
+        when LPARENT then alt_21 = 2
         when CTEI, CTEF, CTES, CTEB, ID then alt_21 = 3
         else
           @state.backtracking > 0 and raise( ANTLR3::Error::BacktrackingFailed )
@@ -3351,19 +3609,19 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 347:5: NOT notfactor
-          __NOT103__ = match( NOT, TOKENS_FOLLOWING_NOT_IN_factor_1562 )
+          # at line 561:5: NOT notfactor
+          __NOT102__ = match( NOT, TOKENS_FOLLOWING_NOT_IN_factor_1610 )
           if @state.backtracking == 0
 
-            tree_for_NOT103 = @adaptor.create_with_payload( __NOT103__ )
-            @adaptor.add_child( root_0, tree_for_NOT103 )
+            tree_for_NOT102 = @adaptor.create_with_payload( __NOT102__ )
+            @adaptor.add_child( root_0, tree_for_NOT102 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_notfactor_IN_factor_1564 )
-          notfactor104 = notfactor
+          @state.following.push( TOKENS_FOLLOWING_notfactor_IN_factor_1612 )
+          notfactor103 = notfactor
           @state.following.pop
           if @state.backtracking == 0
-            @adaptor.add_child( root_0, notfactor104.tree )
+            @adaptor.add_child( root_0, notfactor103.tree )
           end
           # syntactic predicate action gate test
           if @state.backtracking == 0
@@ -3376,23 +3634,41 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 348:7: sign varcte
-          @state.following.push( TOKENS_FOLLOWING_sign_IN_factor_1574 )
-          sign105 = sign
-          @state.following.pop
+          # at line 562:7: LPARENT exp RPARENT
+          __LPARENT104__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_factor_1622 )
           if @state.backtracking == 0
-            @adaptor.add_child( root_0, sign105.tree )
-          end
-          @state.following.push( TOKENS_FOLLOWING_varcte_IN_factor_1576 )
-          varcte106 = varcte
-          @state.following.pop
-          if @state.backtracking == 0
-            @adaptor.add_child( root_0, varcte106.tree )
+
+            tree_for_LPARENT104 = @adaptor.create_with_payload( __LPARENT104__ )
+            @adaptor.add_child( root_0, tree_for_LPARENT104 )
+
           end
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[FACTOR] ") 
+
+                  @vars_block_stack.last.operations_stack.push( __LPARENT104__.text )
+                
+            # <-- action
+          end
+          @state.following.push( TOKENS_FOLLOWING_exp_IN_factor_1626 )
+          exp105 = exp
+          @state.following.pop
+          if @state.backtracking == 0
+            @adaptor.add_child( root_0, exp105.tree )
+          end
+          __RPARENT106__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_factor_1628 )
+          if @state.backtracking == 0
+
+            tree_for_RPARENT106 = @adaptor.create_with_payload( __RPARENT106__ )
+            @adaptor.add_child( root_0, tree_for_RPARENT106 )
+
+          end
+          # syntactic predicate action gate test
+          if @state.backtracking == 0
+            # --> action
+
+                  @vars_block_stack.last.operations_stack.pop()
+                
             # <-- action
           end
 
@@ -3400,8 +3676,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 349:7: varcte
-          @state.following.push( TOKENS_FOLLOWING_varcte_IN_factor_1586 )
+          # at line 568:7: varcte
+          @state.following.push( TOKENS_FOLLOWING_varcte_IN_factor_1644 )
           varcte107 = varcte
           @state.following.pop
           if @state.backtracking == 0
@@ -3410,7 +3686,9 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[FACTOR] ") 
+
+            	@vars_block_stack.last.sign_variable = nil
+                
             # <-- action
           end
 
@@ -3443,7 +3721,7 @@ module Simple
     # parser rule notfactor
     # 
     # (in Simple_copy.g)
-    # 352:1: notfactor : ( LPARENT exp RPARENT | varcte );
+    # 573:1: notfactor : ( LPARENT exp RPARENT | varcte );
     # 
     def notfactor
       # -> uncomment the next line to manually enable rule tracing
@@ -3463,7 +3741,7 @@ module Simple
       tree_for_RPARENT110 = nil
 
       begin
-        # at line 352:10: ( LPARENT exp RPARENT | varcte )
+        # at line 573:10: ( LPARENT exp RPARENT | varcte )
         alt_22 = 2
         look_22_0 = @input.peek( 1 )
 
@@ -3481,21 +3759,21 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 353:5: LPARENT exp RPARENT
-          __LPARENT108__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_notfactor_1604 )
+          # at line 574:5: LPARENT exp RPARENT
+          __LPARENT108__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_notfactor_1662 )
           if @state.backtracking == 0
 
             tree_for_LPARENT108 = @adaptor.create_with_payload( __LPARENT108__ )
             @adaptor.add_child( root_0, tree_for_LPARENT108 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_exp_IN_notfactor_1606 )
+          @state.following.push( TOKENS_FOLLOWING_exp_IN_notfactor_1664 )
           exp109 = exp
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, exp109.tree )
           end
-          __RPARENT110__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_notfactor_1608 )
+          __RPARENT110__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_notfactor_1666 )
           if @state.backtracking == 0
 
             tree_for_RPARENT110 = @adaptor.create_with_payload( __RPARENT110__ )
@@ -3513,8 +3791,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 354:7: varcte
-          @state.following.push( TOKENS_FOLLOWING_varcte_IN_notfactor_1618 )
+          # at line 575:7: varcte
+          @state.following.push( TOKENS_FOLLOWING_varcte_IN_notfactor_1676 )
           varcte111 = varcte
           @state.following.pop
           if @state.backtracking == 0
@@ -3556,7 +3834,7 @@ module Simple
     # parser rule sign
     # 
     # (in Simple_copy.g)
-    # 357:1: sign : ( PLUS | MINUS );
+    # 578:1: sign : ( PLUS | MINUS );
     # 
     def sign
       # -> uncomment the next line to manually enable rule tracing
@@ -3574,7 +3852,7 @@ module Simple
       tree_for_MINUS113 = nil
 
       begin
-        # at line 357:5: ( PLUS | MINUS )
+        # at line 578:5: ( PLUS | MINUS )
         alt_23 = 2
         look_23_0 = @input.peek( 1 )
 
@@ -3592,8 +3870,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 358:5: PLUS
-          __PLUS112__ = match( PLUS, TOKENS_FOLLOWING_PLUS_IN_sign_1636 )
+          # at line 579:5: PLUS
+          __PLUS112__ = match( PLUS, TOKENS_FOLLOWING_PLUS_IN_sign_1694 )
           if @state.backtracking == 0
 
             tree_for_PLUS112 = @adaptor.create_with_payload( __PLUS112__ )
@@ -3603,7 +3881,9 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[SIGN] ") 
+
+            	@vars_block_stack.last.sign_variable = __PLUS112__.text
+                
             # <-- action
           end
 
@@ -3611,8 +3891,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 359:7: MINUS
-          __MINUS113__ = match( MINUS, TOKENS_FOLLOWING_MINUS_IN_sign_1646 )
+          # at line 582:7: MINUS
+          __MINUS113__ = match( MINUS, TOKENS_FOLLOWING_MINUS_IN_sign_1704 )
           if @state.backtracking == 0
 
             tree_for_MINUS113 = @adaptor.create_with_payload( __MINUS113__ )
@@ -3622,7 +3902,9 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[SIGN] ") 
+
+            	@vars_block_stack.last.sign_variable = __MINUS113__.text
+                
             # <-- action
           end
 
@@ -3655,7 +3937,7 @@ module Simple
     # parser rule varcte
     # 
     # (in Simple_copy.g)
-    # 362:1: varcte : ( ID idvarcte | CTEI | CTEF | CTES | CTEB );
+    # 587:1: varcte : ( ID idvarcte | CTEI | CTEF | CTES | CTEB );
     # 
     def varcte
       # -> uncomment the next line to manually enable rule tracing
@@ -3680,7 +3962,7 @@ module Simple
       tree_for_CTEB119 = nil
 
       begin
-        # at line 362:7: ( ID idvarcte | CTEI | CTEF | CTES | CTEB )
+        # at line 587:7: ( ID idvarcte | CTEI | CTEF | CTES | CTEB )
         alt_24 = 5
         case look_24 = @input.peek( 1 )
         when ID then alt_24 = 1
@@ -3698,15 +3980,15 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 363:5: ID idvarcte
-          __ID114__ = match( ID, TOKENS_FOLLOWING_ID_IN_varcte_1664 )
+          # at line 588:5: ID idvarcte
+          __ID114__ = match( ID, TOKENS_FOLLOWING_ID_IN_varcte_1722 )
           if @state.backtracking == 0
 
             tree_for_ID114 = @adaptor.create_with_payload( __ID114__ )
             @adaptor.add_child( root_0, tree_for_ID114 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_idvarcte_IN_varcte_1666 )
+          @state.following.push( TOKENS_FOLLOWING_idvarcte_IN_varcte_1724 )
           idvarcte115 = idvarcte
           @state.following.pop
           if @state.backtracking == 0
@@ -3715,8 +3997,34 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             
-            	addVariableToOperadStack(__ID114__.text)
+
+                  $id = __ID114__.text
+                  $scope_location = @vars_block_stack.last.scope_location
+                  $found = false
+                  if not $scope_location.nil? && @vars_block_stack.last.procedures.has_key?($scope_location)
+            	if @vars_block_stack.last.procedures[$scope_location][:local_vars].has_key?($id)
+            	  $var = @vars_block_stack.last.procedures[$scope_location][:local_vars][$id]
+            	  $found = true
+            	end
+                  end
+                  if not $found
+            	if @vars_block_stack.last.global.has_key?($id)
+            	  $var = @vars_block_stack.last.global[$id]
+            	else
+            	  abort("\nERROR: Variable #{$id} is not defined\n")
+            	end
+                  end
+                  if not @vars_block_stack.last.sign_variable.nil?
+            	if $var[:type] == 'string'
+            	  abort("\nERROR: Cannot apply #{@vars_block_stack.last.sign_variable} to string #{$var[:id]}\n")
+            	elsif $var[:type] == 'boolean'
+            	  abort("\nERRO: Cannot apply #{@vars_block_stack.last.sign_variable} to boolean #{$var[:id]}\n")
+            	elsif @vars_block_stack.last.sign_variable == '-'
+            	  $var[:value] = - $var[:value]
+            	  @vars_block_stack.last.sign_variable = nil
+            	end
+                  end
+                  @vars_block_stack.last.operands_stack.push( $var )
                 
             # <-- action
           end
@@ -3725,8 +4033,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 366:7: CTEI
-          __CTEI116__ = match( CTEI, TOKENS_FOLLOWING_CTEI_IN_varcte_1676 )
+          # at line 617:7: CTEI
+          __CTEI116__ = match( CTEI, TOKENS_FOLLOWING_CTEI_IN_varcte_1734 )
           if @state.backtracking == 0
 
             tree_for_CTEI116 = @adaptor.create_with_payload( __CTEI116__ )
@@ -3736,7 +4044,14 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[VARCTE] ") 
+
+                  $var = { id: nil, type: 'int', value: __CTEI116__.text.to_i }
+                  if not @vars_block_stack.last.sign_variable.nil? && @vars_block_stack.last.sign_variable == '-'
+            	$var[:value] = - $var[:value]
+            	@vars_block_stack.last.sign_variable = nil
+                  end
+                  @vars_block_stack.last.operands_stack.push( $var )
+                
             # <-- action
           end
 
@@ -3744,8 +4059,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 367:7: CTEF
-          __CTEF117__ = match( CTEF, TOKENS_FOLLOWING_CTEF_IN_varcte_1686 )
+          # at line 625:7: CTEF
+          __CTEF117__ = match( CTEF, TOKENS_FOLLOWING_CTEF_IN_varcte_1744 )
           if @state.backtracking == 0
 
             tree_for_CTEF117 = @adaptor.create_with_payload( __CTEF117__ )
@@ -3755,7 +4070,14 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[VARCTE] ") 
+
+                  $var = { id: nil, type: 'float', value: __CTEF117__.text.to_f }
+                  if not @vars_block_stack.last.sign_variable.nil? && @vars_block_stack.last.sign_variable == '-'
+                    $var[:value] = - $var[:value]
+                    @vars_block_stack.last.sign_variable = nil
+                  end
+                  @vars_block_stack.last.operands_stack.push( $var )
+                
             # <-- action
           end
 
@@ -3763,8 +4085,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 368:7: CTES
-          __CTES118__ = match( CTES, TOKENS_FOLLOWING_CTES_IN_varcte_1696 )
+          # at line 633:7: CTES
+          __CTES118__ = match( CTES, TOKENS_FOLLOWING_CTES_IN_varcte_1754 )
           if @state.backtracking == 0
 
             tree_for_CTES118 = @adaptor.create_with_payload( __CTES118__ )
@@ -3774,7 +4096,12 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[VARCTE] ") 
+             
+                  if not @vars_block_stack.last.sign_variable.nil?
+            	abort("\nERROR: You cannot apply '+' or '-' to the string #{__CTES118__.text}\n")
+                  end
+                  @vars_block_stack.last.operands_stack.push({ id: nil, type: 'string', value: __CTES118__.text })
+                
             # <-- action
           end
 
@@ -3782,8 +4109,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 369:7: CTEB
-          __CTEB119__ = match( CTEB, TOKENS_FOLLOWING_CTEB_IN_varcte_1706 )
+          # at line 639:7: CTEB
+          __CTEB119__ = match( CTEB, TOKENS_FOLLOWING_CTEB_IN_varcte_1764 )
           if @state.backtracking == 0
 
             tree_for_CTEB119 = @adaptor.create_with_payload( __CTEB119__ )
@@ -3793,7 +4120,12 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[VARCTE] ") 
+             
+                  if not @vars_block_stack.last.sign_variable.nil?
+            	abort("\nERROR: You cannot apply '+' or '-' to boolean\n")
+                  end
+                  @vars_block_stack.last.operands_stack.push({ id: nil, type: 'boolean', value: __CTEB119__.text == 'true' })
+                
             # <-- action
           end
 
@@ -3826,7 +4158,7 @@ module Simple
     # parser rule idvarcte
     # 
     # (in Simple_copy.g)
-    # 372:1: idvarcte : ( | llamada | array );
+    # 647:1: idvarcte : ( | llamada | array );
     # 
     def idvarcte
       # -> uncomment the next line to manually enable rule tracing
@@ -3842,10 +4174,10 @@ module Simple
 
 
       begin
-        # at line 372:9: ( | llamada | array )
+        # at line 647:9: ( | llamada | array )
         alt_25 = 3
         case look_25 = @input.peek( 1 )
-        when EOF, LT, LE, GT, GE, EQ, NE, AND, OR, RPARENT, RSBRACK, COMMA, SEMICOLON, PLUS, MINUS, TIMES, DIVIDE then alt_25 = 1
+        when EOF, RPARENT, RSBRACK, COMMA, SEMICOLON, PLUS, MINUS, TIMES, DIVIDE then alt_25 = 1
         when LPARENT then alt_25 = 2
         when LSBRACK then alt_25 = 3
         else
@@ -3858,14 +4190,14 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 373:5: 
+          # at line 648:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 373:7: llamada
-          @state.following.push( TOKENS_FOLLOWING_llamada_IN_idvarcte_1728 )
+          # at line 648:7: llamada
+          @state.following.push( TOKENS_FOLLOWING_llamada_IN_idvarcte_1786 )
           llamada120 = llamada
           @state.following.pop
           if @state.backtracking == 0
@@ -3882,8 +4214,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 374:7: array
-          @state.following.push( TOKENS_FOLLOWING_array_IN_idvarcte_1738 )
+          # at line 649:7: array
+          @state.following.push( TOKENS_FOLLOWING_array_IN_idvarcte_1796 )
           array121 = array
           @state.following.pop
           if @state.backtracking == 0
@@ -3925,7 +4257,7 @@ module Simple
     # parser rule comparacion
     # 
     # (in Simple_copy.g)
-    # 377:1: comparacion : ( LT | LE | GT | GE | EQ | NE );
+    # 652:1: comparacion : ( LT | LE | GT | GE | EQ | NE );
     # 
     def comparacion
       # -> uncomment the next line to manually enable rule tracing
@@ -3951,7 +4283,7 @@ module Simple
       tree_for_NE127 = nil
 
       begin
-        # at line 377:12: ( LT | LE | GT | GE | EQ | NE )
+        # at line 652:12: ( LT | LE | GT | GE | EQ | NE )
         alt_26 = 6
         case look_26 = @input.peek( 1 )
         when LT then alt_26 = 1
@@ -3970,8 +4302,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 378:5: LT
-          __LT122__ = match( LT, TOKENS_FOLLOWING_LT_IN_comparacion_1756 )
+          # at line 653:5: LT
+          __LT122__ = match( LT, TOKENS_FOLLOWING_LT_IN_comparacion_1814 )
           if @state.backtracking == 0
 
             tree_for_LT122 = @adaptor.create_with_payload( __LT122__ )
@@ -3981,7 +4313,9 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[COMPARACION] ") 
+             
+            	@vars_block_stack.last.operations_stack.push( __LT122__.text )
+                
             # <-- action
           end
 
@@ -3989,8 +4323,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 379:7: LE
-          __LE123__ = match( LE, TOKENS_FOLLOWING_LE_IN_comparacion_1766 )
+          # at line 656:7: LE
+          __LE123__ = match( LE, TOKENS_FOLLOWING_LE_IN_comparacion_1824 )
           if @state.backtracking == 0
 
             tree_for_LE123 = @adaptor.create_with_payload( __LE123__ )
@@ -4000,7 +4334,9 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[COMPARACION] ") 
+             
+            	@vars_block_stack.last.operations_stack.push( __LE123__.text )
+                
             # <-- action
           end
 
@@ -4008,8 +4344,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 380:7: GT
-          __GT124__ = match( GT, TOKENS_FOLLOWING_GT_IN_comparacion_1776 )
+          # at line 659:7: GT
+          __GT124__ = match( GT, TOKENS_FOLLOWING_GT_IN_comparacion_1834 )
           if @state.backtracking == 0
 
             tree_for_GT124 = @adaptor.create_with_payload( __GT124__ )
@@ -4019,7 +4355,9 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[COMPARACION] ") 
+             
+            	@vars_block_stack.last.operations_stack.push( __GT124__.text )
+                
             # <-- action
           end
 
@@ -4027,8 +4365,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 381:7: GE
-          __GE125__ = match( GE, TOKENS_FOLLOWING_GE_IN_comparacion_1786 )
+          # at line 662:7: GE
+          __GE125__ = match( GE, TOKENS_FOLLOWING_GE_IN_comparacion_1844 )
           if @state.backtracking == 0
 
             tree_for_GE125 = @adaptor.create_with_payload( __GE125__ )
@@ -4038,7 +4376,9 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[COMPARACION] ") 
+
+            	@vars_block_stack.last.operations_stack.push( __GE125__.text )
+                
             # <-- action
           end
 
@@ -4046,8 +4386,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 382:7: EQ
-          __EQ126__ = match( EQ, TOKENS_FOLLOWING_EQ_IN_comparacion_1796 )
+          # at line 665:7: EQ
+          __EQ126__ = match( EQ, TOKENS_FOLLOWING_EQ_IN_comparacion_1854 )
           if @state.backtracking == 0
 
             tree_for_EQ126 = @adaptor.create_with_payload( __EQ126__ )
@@ -4057,7 +4397,9 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[COMPARACION] ") 
+
+            	@vars_block_stack.last.operations_stack.push( __EQ126__.text )
+                
             # <-- action
           end
 
@@ -4065,8 +4407,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 383:7: NE
-          __NE127__ = match( NE, TOKENS_FOLLOWING_NE_IN_comparacion_1806 )
+          # at line 668:7: NE
+          __NE127__ = match( NE, TOKENS_FOLLOWING_NE_IN_comparacion_1864 )
           if @state.backtracking == 0
 
             tree_for_NE127 = @adaptor.create_with_payload( __NE127__ )
@@ -4109,7 +4451,7 @@ module Simple
     # parser rule logico
     # 
     # (in Simple_copy.g)
-    # 386:1: logico : ( AND | OR );
+    # 671:1: logico : ( AND | OR );
     # 
     def logico
       # -> uncomment the next line to manually enable rule tracing
@@ -4127,7 +4469,7 @@ module Simple
       tree_for_OR129 = nil
 
       begin
-        # at line 386:7: ( AND | OR )
+        # at line 671:7: ( AND | OR )
         alt_27 = 2
         look_27_0 = @input.peek( 1 )
 
@@ -4145,8 +4487,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 387:5: AND
-          __AND128__ = match( AND, TOKENS_FOLLOWING_AND_IN_logico_1824 )
+          # at line 672:5: AND
+          __AND128__ = match( AND, TOKENS_FOLLOWING_AND_IN_logico_1882 )
           if @state.backtracking == 0
 
             tree_for_AND128 = @adaptor.create_with_payload( __AND128__ )
@@ -4156,7 +4498,9 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[LOGICO] ") 
+
+            	@vars_block_stack.last.operations_stack.push( __AND128__.text )
+                
             # <-- action
           end
 
@@ -4164,8 +4508,8 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 388:7: OR
-          __OR129__ = match( OR, TOKENS_FOLLOWING_OR_IN_logico_1834 )
+          # at line 675:7: OR
+          __OR129__ = match( OR, TOKENS_FOLLOWING_OR_IN_logico_1892 )
           if @state.backtracking == 0
 
             tree_for_OR129 = @adaptor.create_with_payload( __OR129__ )
@@ -4175,7 +4519,9 @@ module Simple
           # syntactic predicate action gate test
           if @state.backtracking == 0
             # --> action
-             print("[LOGICO] ") 
+             
+            	@vars_block_stack.last.operations_stack.push( __OR129__.text )
+                
             # <-- action
           end
 
@@ -4208,7 +4554,7 @@ module Simple
     # parser rule retorno
     # 
     # (in Simple_copy.g)
-    # 391:1: retorno : ( | exp );
+    # 680:1: retorno : ( | exp );
     # 
     def retorno
       # -> uncomment the next line to manually enable rule tracing
@@ -4223,13 +4569,13 @@ module Simple
 
 
       begin
-        # at line 391:8: ( | exp )
+        # at line 680:8: ( | exp )
         alt_28 = 2
         look_28_0 = @input.peek( 1 )
 
         if ( look_28_0 == SEMICOLON )
           alt_28 = 1
-        elsif ( look_28_0 == NOT || look_28_0.between?( PLUS, MINUS ) || look_28_0.between?( CTEI, CTEF ) || look_28_0.between?( CTES, CTEB ) || look_28_0 == ID )
+        elsif ( look_28_0 == NOT || look_28_0 == LPARENT || look_28_0.between?( CTEI, CTEF ) || look_28_0.between?( CTES, CTEB ) || look_28_0 == ID )
           alt_28 = 2
         else
           @state.backtracking > 0 and raise( ANTLR3::Error::BacktrackingFailed )
@@ -4241,14 +4587,14 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 392:5: 
+          # at line 681:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 392:7: exp
-          @state.following.push( TOKENS_FOLLOWING_exp_IN_retorno_1856 )
+          # at line 681:7: exp
+          @state.following.push( TOKENS_FOLLOWING_exp_IN_retorno_1914 )
           exp130 = exp
           @state.following.pop
           if @state.backtracking == 0
@@ -4290,7 +4636,7 @@ module Simple
     # parser rule condicion
     # 
     # (in Simple_copy.g)
-    # 395:1: condicion : IF LPARENT expresion RPARENT LBRACK est RBRACK elsecondicion ;
+    # 684:1: condicion : IF LPARENT expresion RPARENT LBRACK est RBRACK elsecondicion ;
     # 
     def condicion
       # -> uncomment the next line to manually enable rule tracing
@@ -4320,55 +4666,55 @@ module Simple
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 396:5: IF LPARENT expresion RPARENT LBRACK est RBRACK elsecondicion
-        __IF131__ = match( IF, TOKENS_FOLLOWING_IF_IN_condicion_1874 )
+        # at line 685:5: IF LPARENT expresion RPARENT LBRACK est RBRACK elsecondicion
+        __IF131__ = match( IF, TOKENS_FOLLOWING_IF_IN_condicion_1932 )
         if @state.backtracking == 0
 
           tree_for_IF131 = @adaptor.create_with_payload( __IF131__ )
           @adaptor.add_child( root_0, tree_for_IF131 )
 
         end
-        __LPARENT132__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_condicion_1876 )
+        __LPARENT132__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_condicion_1934 )
         if @state.backtracking == 0
 
           tree_for_LPARENT132 = @adaptor.create_with_payload( __LPARENT132__ )
           @adaptor.add_child( root_0, tree_for_LPARENT132 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_expresion_IN_condicion_1878 )
+        @state.following.push( TOKENS_FOLLOWING_expresion_IN_condicion_1936 )
         expresion133 = expresion
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, expresion133.tree )
         end
-        __RPARENT134__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_condicion_1880 )
+        __RPARENT134__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_condicion_1938 )
         if @state.backtracking == 0
 
           tree_for_RPARENT134 = @adaptor.create_with_payload( __RPARENT134__ )
           @adaptor.add_child( root_0, tree_for_RPARENT134 )
 
         end
-        __LBRACK135__ = match( LBRACK, TOKENS_FOLLOWING_LBRACK_IN_condicion_1882 )
+        __LBRACK135__ = match( LBRACK, TOKENS_FOLLOWING_LBRACK_IN_condicion_1940 )
         if @state.backtracking == 0
 
           tree_for_LBRACK135 = @adaptor.create_with_payload( __LBRACK135__ )
           @adaptor.add_child( root_0, tree_for_LBRACK135 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_est_IN_condicion_1884 )
+        @state.following.push( TOKENS_FOLLOWING_est_IN_condicion_1942 )
         est136 = est
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, est136.tree )
         end
-        __RBRACK137__ = match( RBRACK, TOKENS_FOLLOWING_RBRACK_IN_condicion_1886 )
+        __RBRACK137__ = match( RBRACK, TOKENS_FOLLOWING_RBRACK_IN_condicion_1944 )
         if @state.backtracking == 0
 
           tree_for_RBRACK137 = @adaptor.create_with_payload( __RBRACK137__ )
           @adaptor.add_child( root_0, tree_for_RBRACK137 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_elsecondicion_IN_condicion_1888 )
+        @state.following.push( TOKENS_FOLLOWING_elsecondicion_IN_condicion_1946 )
         elsecondicion138 = elsecondicion
         @state.following.pop
         if @state.backtracking == 0
@@ -4409,7 +4755,7 @@ module Simple
     # parser rule elsecondicion
     # 
     # (in Simple_copy.g)
-    # 399:1: elsecondicion : ( | ELSE LBRACK est RBRACK );
+    # 688:1: elsecondicion : ( | ELSE LBRACK est RBRACK );
     # 
     def elsecondicion
       # -> uncomment the next line to manually enable rule tracing
@@ -4430,7 +4776,7 @@ module Simple
       tree_for_RBRACK142 = nil
 
       begin
-        # at line 399:14: ( | ELSE LBRACK est RBRACK )
+        # at line 688:14: ( | ELSE LBRACK est RBRACK )
         alt_29 = 2
         look_29_0 = @input.peek( 1 )
 
@@ -4448,34 +4794,34 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 400:5: 
+          # at line 689:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 400:7: ELSE LBRACK est RBRACK
-          __ELSE139__ = match( ELSE, TOKENS_FOLLOWING_ELSE_IN_elsecondicion_1910 )
+          # at line 689:7: ELSE LBRACK est RBRACK
+          __ELSE139__ = match( ELSE, TOKENS_FOLLOWING_ELSE_IN_elsecondicion_1968 )
           if @state.backtracking == 0
 
             tree_for_ELSE139 = @adaptor.create_with_payload( __ELSE139__ )
             @adaptor.add_child( root_0, tree_for_ELSE139 )
 
           end
-          __LBRACK140__ = match( LBRACK, TOKENS_FOLLOWING_LBRACK_IN_elsecondicion_1912 )
+          __LBRACK140__ = match( LBRACK, TOKENS_FOLLOWING_LBRACK_IN_elsecondicion_1970 )
           if @state.backtracking == 0
 
             tree_for_LBRACK140 = @adaptor.create_with_payload( __LBRACK140__ )
             @adaptor.add_child( root_0, tree_for_LBRACK140 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_est_IN_elsecondicion_1914 )
+          @state.following.push( TOKENS_FOLLOWING_est_IN_elsecondicion_1972 )
           est141 = est
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, est141.tree )
           end
-          __RBRACK142__ = match( RBRACK, TOKENS_FOLLOWING_RBRACK_IN_elsecondicion_1916 )
+          __RBRACK142__ = match( RBRACK, TOKENS_FOLLOWING_RBRACK_IN_elsecondicion_1974 )
           if @state.backtracking == 0
 
             tree_for_RBRACK142 = @adaptor.create_with_payload( __RBRACK142__ )
@@ -4518,7 +4864,7 @@ module Simple
     # parser rule escritura
     # 
     # (in Simple_copy.g)
-    # 403:1: escritura : PRINT LPARENT argsescritura RPARENT SEMICOLON ;
+    # 692:1: escritura : PRINT LPARENT argsescritura RPARENT SEMICOLON ;
     # 
     def escritura
       # -> uncomment the next line to manually enable rule tracing
@@ -4544,35 +4890,35 @@ module Simple
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 404:5: PRINT LPARENT argsescritura RPARENT SEMICOLON
-        __PRINT143__ = match( PRINT, TOKENS_FOLLOWING_PRINT_IN_escritura_1934 )
+        # at line 693:5: PRINT LPARENT argsescritura RPARENT SEMICOLON
+        __PRINT143__ = match( PRINT, TOKENS_FOLLOWING_PRINT_IN_escritura_1992 )
         if @state.backtracking == 0
 
           tree_for_PRINT143 = @adaptor.create_with_payload( __PRINT143__ )
           @adaptor.add_child( root_0, tree_for_PRINT143 )
 
         end
-        __LPARENT144__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_escritura_1936 )
+        __LPARENT144__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_escritura_1994 )
         if @state.backtracking == 0
 
           tree_for_LPARENT144 = @adaptor.create_with_payload( __LPARENT144__ )
           @adaptor.add_child( root_0, tree_for_LPARENT144 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_argsescritura_IN_escritura_1938 )
+        @state.following.push( TOKENS_FOLLOWING_argsescritura_IN_escritura_1996 )
         argsescritura145 = argsescritura
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, argsescritura145.tree )
         end
-        __RPARENT146__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_escritura_1940 )
+        __RPARENT146__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_escritura_1998 )
         if @state.backtracking == 0
 
           tree_for_RPARENT146 = @adaptor.create_with_payload( __RPARENT146__ )
           @adaptor.add_child( root_0, tree_for_RPARENT146 )
 
         end
-        __SEMICOLON147__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_escritura_1942 )
+        __SEMICOLON147__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_escritura_2000 )
         if @state.backtracking == 0
 
           tree_for_SEMICOLON147 = @adaptor.create_with_payload( __SEMICOLON147__ )
@@ -4614,7 +4960,7 @@ module Simple
     # parser rule argsescritura
     # 
     # (in Simple_copy.g)
-    # 407:1: argsescritura : exp argsescrituraaux ;
+    # 696:1: argsescritura : exp argsescrituraaux ;
     # 
     def argsescritura
       # -> uncomment the next line to manually enable rule tracing
@@ -4633,14 +4979,14 @@ module Simple
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 408:5: exp argsescrituraaux
-        @state.following.push( TOKENS_FOLLOWING_exp_IN_argsescritura_1960 )
+        # at line 697:5: exp argsescrituraaux
+        @state.following.push( TOKENS_FOLLOWING_exp_IN_argsescritura_2018 )
         exp148 = exp
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, exp148.tree )
         end
-        @state.following.push( TOKENS_FOLLOWING_argsescrituraaux_IN_argsescritura_1962 )
+        @state.following.push( TOKENS_FOLLOWING_argsescrituraaux_IN_argsescritura_2020 )
         argsescrituraaux149 = argsescrituraaux
         @state.following.pop
         if @state.backtracking == 0
@@ -4681,7 +5027,7 @@ module Simple
     # parser rule argsescrituraaux
     # 
     # (in Simple_copy.g)
-    # 411:1: argsescrituraaux : ( | COMMA argsescritura );
+    # 700:1: argsescrituraaux : ( | COMMA argsescritura );
     # 
     def argsescrituraaux
       # -> uncomment the next line to manually enable rule tracing
@@ -4698,7 +5044,7 @@ module Simple
       tree_for_COMMA150 = nil
 
       begin
-        # at line 411:17: ( | COMMA argsescritura )
+        # at line 700:17: ( | COMMA argsescritura )
         alt_30 = 2
         look_30_0 = @input.peek( 1 )
 
@@ -4716,21 +5062,21 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 412:5: 
+          # at line 701:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 412:7: COMMA argsescritura
-          __COMMA150__ = match( COMMA, TOKENS_FOLLOWING_COMMA_IN_argsescrituraaux_1984 )
+          # at line 701:7: COMMA argsescritura
+          __COMMA150__ = match( COMMA, TOKENS_FOLLOWING_COMMA_IN_argsescrituraaux_2042 )
           if @state.backtracking == 0
 
             tree_for_COMMA150 = @adaptor.create_with_payload( __COMMA150__ )
             @adaptor.add_child( root_0, tree_for_COMMA150 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_argsescritura_IN_argsescrituraaux_1986 )
+          @state.following.push( TOKENS_FOLLOWING_argsescritura_IN_argsescrituraaux_2044 )
           argsescritura151 = argsescritura
           @state.following.pop
           if @state.backtracking == 0
@@ -4772,7 +5118,7 @@ module Simple
     # parser rule ciclo
     # 
     # (in Simple_copy.g)
-    # 415:1: ciclo : FOR LPARENT cicloaux SEMICOLON expresion SEMICOLON cicloaux RPARENT LBRACK est RBRACK ;
+    # 704:1: ciclo : FOR LPARENT cicloaux SEMICOLON expresion SEMICOLON cicloaux RPARENT LBRACK est RBRACK ;
     # 
     def ciclo
       # -> uncomment the next line to manually enable rule tracing
@@ -4807,74 +5153,74 @@ module Simple
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 416:5: FOR LPARENT cicloaux SEMICOLON expresion SEMICOLON cicloaux RPARENT LBRACK est RBRACK
-        __FOR152__ = match( FOR, TOKENS_FOLLOWING_FOR_IN_ciclo_2004 )
+        # at line 705:5: FOR LPARENT cicloaux SEMICOLON expresion SEMICOLON cicloaux RPARENT LBRACK est RBRACK
+        __FOR152__ = match( FOR, TOKENS_FOLLOWING_FOR_IN_ciclo_2062 )
         if @state.backtracking == 0
 
           tree_for_FOR152 = @adaptor.create_with_payload( __FOR152__ )
           @adaptor.add_child( root_0, tree_for_FOR152 )
 
         end
-        __LPARENT153__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_ciclo_2006 )
+        __LPARENT153__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_ciclo_2064 )
         if @state.backtracking == 0
 
           tree_for_LPARENT153 = @adaptor.create_with_payload( __LPARENT153__ )
           @adaptor.add_child( root_0, tree_for_LPARENT153 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_cicloaux_IN_ciclo_2008 )
+        @state.following.push( TOKENS_FOLLOWING_cicloaux_IN_ciclo_2066 )
         cicloaux154 = cicloaux
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, cicloaux154.tree )
         end
-        __SEMICOLON155__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_ciclo_2010 )
+        __SEMICOLON155__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_ciclo_2068 )
         if @state.backtracking == 0
 
           tree_for_SEMICOLON155 = @adaptor.create_with_payload( __SEMICOLON155__ )
           @adaptor.add_child( root_0, tree_for_SEMICOLON155 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_expresion_IN_ciclo_2012 )
+        @state.following.push( TOKENS_FOLLOWING_expresion_IN_ciclo_2070 )
         expresion156 = expresion
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, expresion156.tree )
         end
-        __SEMICOLON157__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_ciclo_2014 )
+        __SEMICOLON157__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_ciclo_2072 )
         if @state.backtracking == 0
 
           tree_for_SEMICOLON157 = @adaptor.create_with_payload( __SEMICOLON157__ )
           @adaptor.add_child( root_0, tree_for_SEMICOLON157 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_cicloaux_IN_ciclo_2016 )
+        @state.following.push( TOKENS_FOLLOWING_cicloaux_IN_ciclo_2074 )
         cicloaux158 = cicloaux
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, cicloaux158.tree )
         end
-        __RPARENT159__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_ciclo_2018 )
+        __RPARENT159__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_ciclo_2076 )
         if @state.backtracking == 0
 
           tree_for_RPARENT159 = @adaptor.create_with_payload( __RPARENT159__ )
           @adaptor.add_child( root_0, tree_for_RPARENT159 )
 
         end
-        __LBRACK160__ = match( LBRACK, TOKENS_FOLLOWING_LBRACK_IN_ciclo_2020 )
+        __LBRACK160__ = match( LBRACK, TOKENS_FOLLOWING_LBRACK_IN_ciclo_2078 )
         if @state.backtracking == 0
 
           tree_for_LBRACK160 = @adaptor.create_with_payload( __LBRACK160__ )
           @adaptor.add_child( root_0, tree_for_LBRACK160 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_est_IN_ciclo_2022 )
+        @state.following.push( TOKENS_FOLLOWING_est_IN_ciclo_2080 )
         est161 = est
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, est161.tree )
         end
-        __RBRACK162__ = match( RBRACK, TOKENS_FOLLOWING_RBRACK_IN_ciclo_2024 )
+        __RBRACK162__ = match( RBRACK, TOKENS_FOLLOWING_RBRACK_IN_ciclo_2082 )
         if @state.backtracking == 0
 
           tree_for_RBRACK162 = @adaptor.create_with_payload( __RBRACK162__ )
@@ -4916,7 +5262,7 @@ module Simple
     # parser rule cicloaux
     # 
     # (in Simple_copy.g)
-    # 419:1: cicloaux : ( | ID cicloauxx ASSIGN exp );
+    # 708:1: cicloaux : ( | ID cicloauxx ASSIGN exp );
     # 
     def cicloaux
       # -> uncomment the next line to manually enable rule tracing
@@ -4936,7 +5282,7 @@ module Simple
       tree_for_ASSIGN165 = nil
 
       begin
-        # at line 419:9: ( | ID cicloauxx ASSIGN exp )
+        # at line 708:9: ( | ID cicloauxx ASSIGN exp )
         alt_31 = 2
         look_31_0 = @input.peek( 1 )
 
@@ -4954,34 +5300,34 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 420:5: 
+          # at line 709:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 420:7: ID cicloauxx ASSIGN exp
-          __ID163__ = match( ID, TOKENS_FOLLOWING_ID_IN_cicloaux_2046 )
+          # at line 709:7: ID cicloauxx ASSIGN exp
+          __ID163__ = match( ID, TOKENS_FOLLOWING_ID_IN_cicloaux_2104 )
           if @state.backtracking == 0
 
             tree_for_ID163 = @adaptor.create_with_payload( __ID163__ )
             @adaptor.add_child( root_0, tree_for_ID163 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_cicloauxx_IN_cicloaux_2048 )
+          @state.following.push( TOKENS_FOLLOWING_cicloauxx_IN_cicloaux_2106 )
           cicloauxx164 = cicloauxx
           @state.following.pop
           if @state.backtracking == 0
             @adaptor.add_child( root_0, cicloauxx164.tree )
           end
-          __ASSIGN165__ = match( ASSIGN, TOKENS_FOLLOWING_ASSIGN_IN_cicloaux_2050 )
+          __ASSIGN165__ = match( ASSIGN, TOKENS_FOLLOWING_ASSIGN_IN_cicloaux_2108 )
           if @state.backtracking == 0
 
             tree_for_ASSIGN165 = @adaptor.create_with_payload( __ASSIGN165__ )
             @adaptor.add_child( root_0, tree_for_ASSIGN165 )
 
           end
-          @state.following.push( TOKENS_FOLLOWING_exp_IN_cicloaux_2052 )
+          @state.following.push( TOKENS_FOLLOWING_exp_IN_cicloaux_2110 )
           exp166 = exp
           @state.following.pop
           if @state.backtracking == 0
@@ -5023,7 +5369,7 @@ module Simple
     # parser rule cicloauxx
     # 
     # (in Simple_copy.g)
-    # 423:1: cicloauxx : ( | array );
+    # 712:1: cicloauxx : ( | array );
     # 
     def cicloauxx
       # -> uncomment the next line to manually enable rule tracing
@@ -5038,7 +5384,7 @@ module Simple
 
 
       begin
-        # at line 423:10: ( | array )
+        # at line 712:10: ( | array )
         alt_32 = 2
         look_32_0 = @input.peek( 1 )
 
@@ -5056,14 +5402,14 @@ module Simple
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 424:5: 
+          # at line 713:5: 
 
         when 2
           root_0 = @adaptor.create_flat_list
 
 
-          # at line 424:7: array
-          @state.following.push( TOKENS_FOLLOWING_array_IN_cicloauxx_2074 )
+          # at line 713:7: array
+          @state.following.push( TOKENS_FOLLOWING_array_IN_cicloauxx_2132 )
           array167 = array
           @state.following.pop
           if @state.backtracking == 0
@@ -5105,7 +5451,7 @@ module Simple
     # parser rule lectura
     # 
     # (in Simple_copy.g)
-    # 427:1: lectura : INPUT LPARENT tipo COMMA ID RPARENT SEMICOLON ;
+    # 716:1: lectura : INPUT LPARENT tipo COMMA ID RPARENT SEMICOLON ;
     # 
     def lectura
       # -> uncomment the next line to manually enable rule tracing
@@ -5135,49 +5481,49 @@ module Simple
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 428:5: INPUT LPARENT tipo COMMA ID RPARENT SEMICOLON
-        __INPUT168__ = match( INPUT, TOKENS_FOLLOWING_INPUT_IN_lectura_2092 )
+        # at line 717:5: INPUT LPARENT tipo COMMA ID RPARENT SEMICOLON
+        __INPUT168__ = match( INPUT, TOKENS_FOLLOWING_INPUT_IN_lectura_2150 )
         if @state.backtracking == 0
 
           tree_for_INPUT168 = @adaptor.create_with_payload( __INPUT168__ )
           @adaptor.add_child( root_0, tree_for_INPUT168 )
 
         end
-        __LPARENT169__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_lectura_2094 )
+        __LPARENT169__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_lectura_2152 )
         if @state.backtracking == 0
 
           tree_for_LPARENT169 = @adaptor.create_with_payload( __LPARENT169__ )
           @adaptor.add_child( root_0, tree_for_LPARENT169 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_tipo_IN_lectura_2096 )
+        @state.following.push( TOKENS_FOLLOWING_tipo_IN_lectura_2154 )
         tipo170 = tipo
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, tipo170.tree )
         end
-        __COMMA171__ = match( COMMA, TOKENS_FOLLOWING_COMMA_IN_lectura_2098 )
+        __COMMA171__ = match( COMMA, TOKENS_FOLLOWING_COMMA_IN_lectura_2156 )
         if @state.backtracking == 0
 
           tree_for_COMMA171 = @adaptor.create_with_payload( __COMMA171__ )
           @adaptor.add_child( root_0, tree_for_COMMA171 )
 
         end
-        __ID172__ = match( ID, TOKENS_FOLLOWING_ID_IN_lectura_2100 )
+        __ID172__ = match( ID, TOKENS_FOLLOWING_ID_IN_lectura_2158 )
         if @state.backtracking == 0
 
           tree_for_ID172 = @adaptor.create_with_payload( __ID172__ )
           @adaptor.add_child( root_0, tree_for_ID172 )
 
         end
-        __RPARENT173__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_lectura_2102 )
+        __RPARENT173__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_lectura_2160 )
         if @state.backtracking == 0
 
           tree_for_RPARENT173 = @adaptor.create_with_payload( __RPARENT173__ )
           @adaptor.add_child( root_0, tree_for_RPARENT173 )
 
         end
-        __SEMICOLON174__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_lectura_2104 )
+        __SEMICOLON174__ = match( SEMICOLON, TOKENS_FOLLOWING_SEMICOLON_IN_lectura_2162 )
         if @state.backtracking == 0
 
           tree_for_SEMICOLON174 = @adaptor.create_with_payload( __SEMICOLON174__ )
@@ -5219,7 +5565,7 @@ module Simple
     # parser rule main
     # 
     # (in Simple_copy.g)
-    # 431:1: main : MAIN LPARENT RPARENT LBRACK var est RBRACK ;
+    # 720:1: main : MAIN LPARENT RPARENT LBRACK var est RBRACK ;
     # 
     def main
       # -> uncomment the next line to manually enable rule tracing
@@ -5248,48 +5594,61 @@ module Simple
         root_0 = @adaptor.create_flat_list
 
 
-        # at line 432:5: MAIN LPARENT RPARENT LBRACK var est RBRACK
-        __MAIN175__ = match( MAIN, TOKENS_FOLLOWING_MAIN_IN_main_2122 )
+        # at line 721:5: MAIN LPARENT RPARENT LBRACK var est RBRACK
+        __MAIN175__ = match( MAIN, TOKENS_FOLLOWING_MAIN_IN_main_2180 )
         if @state.backtracking == 0
 
           tree_for_MAIN175 = @adaptor.create_with_payload( __MAIN175__ )
           @adaptor.add_child( root_0, tree_for_MAIN175 )
 
         end
-        __LPARENT176__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_main_2124 )
+        # syntactic predicate action gate test
+        if @state.backtracking == 0
+          # --> action
+           
+          	@vars_block_stack.last.scope_location = __MAIN175__.text 
+          	if not @vars_block_stack.last.procedures.has_key?(@vars_block_stack.last.scope_location)
+          	  @vars_block_stack.last.procedures[@vars_block_stack.last.scope_location] = { id: @vars_block_stack.last.scope_location, args: nil, local_vars: Hash.new, return_type: 'void' }
+          	else
+          	  abort("\nERROR: The program can only have one main procedure\n")
+          	end
+              
+          # <-- action
+        end
+        __LPARENT176__ = match( LPARENT, TOKENS_FOLLOWING_LPARENT_IN_main_2184 )
         if @state.backtracking == 0
 
           tree_for_LPARENT176 = @adaptor.create_with_payload( __LPARENT176__ )
           @adaptor.add_child( root_0, tree_for_LPARENT176 )
 
         end
-        __RPARENT177__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_main_2126 )
+        __RPARENT177__ = match( RPARENT, TOKENS_FOLLOWING_RPARENT_IN_main_2186 )
         if @state.backtracking == 0
 
           tree_for_RPARENT177 = @adaptor.create_with_payload( __RPARENT177__ )
           @adaptor.add_child( root_0, tree_for_RPARENT177 )
 
         end
-        __LBRACK178__ = match( LBRACK, TOKENS_FOLLOWING_LBRACK_IN_main_2128 )
+        __LBRACK178__ = match( LBRACK, TOKENS_FOLLOWING_LBRACK_IN_main_2188 )
         if @state.backtracking == 0
 
           tree_for_LBRACK178 = @adaptor.create_with_payload( __LBRACK178__ )
           @adaptor.add_child( root_0, tree_for_LBRACK178 )
 
         end
-        @state.following.push( TOKENS_FOLLOWING_var_IN_main_2130 )
+        @state.following.push( TOKENS_FOLLOWING_var_IN_main_2190 )
         var179 = var
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, var179.tree )
         end
-        @state.following.push( TOKENS_FOLLOWING_est_IN_main_2132 )
+        @state.following.push( TOKENS_FOLLOWING_est_IN_main_2192 )
         est180 = est
         @state.following.pop
         if @state.backtracking == 0
           @adaptor.add_child( root_0, est180.tree )
         end
-        __RBRACK181__ = match( RBRACK, TOKENS_FOLLOWING_RBRACK_IN_main_2134 )
+        __RBRACK181__ = match( RBRACK, TOKENS_FOLLOWING_RBRACK_IN_main_2194 )
         if @state.backtracking == 0
 
           tree_for_RBRACK181 = @adaptor.create_with_payload( __RBRACK181__ )
@@ -5329,7 +5688,7 @@ module Simple
     # syntactic predicate synpred6_Simple
     # 
     # (in Simple_copy.g)
-    # 221:5: synpred6_Simple : ;
+    # 334:5: synpred6_Simple : ;
     # 
     # This is an imaginary rule inserted by ANTLR to
     # implement a syntactic predicate decision
@@ -5338,7 +5697,7 @@ module Simple
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 53 )
 
-      # at line 221:5: 
+      # at line 334:5: 
 
     ensure
       # -> uncomment the next line to manually enable rule tracing
@@ -5349,7 +5708,7 @@ module Simple
     # syntactic predicate synpred7_Simple
     # 
     # (in Simple_copy.g)
-    # 222:5: synpred7_Simple : ;
+    # 335:5: synpred7_Simple : ;
     # 
     # This is an imaginary rule inserted by ANTLR to
     # implement a syntactic predicate decision
@@ -5358,7 +5717,7 @@ module Simple
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 54 )
 
-      # at line 222:5: 
+      # at line 335:5: 
 
     ensure
       # -> uncomment the next line to manually enable rule tracing
@@ -5369,7 +5728,7 @@ module Simple
     # syntactic predicate synpred8_Simple
     # 
     # (in Simple_copy.g)
-    # 226:5: synpred8_Simple : ;
+    # 339:5: synpred8_Simple : ;
     # 
     # This is an imaginary rule inserted by ANTLR to
     # implement a syntactic predicate decision
@@ -5378,7 +5737,7 @@ module Simple
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 55 )
 
-      # at line 226:5: 
+      # at line 339:5: 
 
     ensure
       # -> uncomment the next line to manually enable rule tracing
@@ -5389,7 +5748,7 @@ module Simple
     # syntactic predicate synpred9_Simple
     # 
     # (in Simple_copy.g)
-    # 227:5: synpred9_Simple : ;
+    # 340:5: synpred9_Simple : ;
     # 
     # This is an imaginary rule inserted by ANTLR to
     # implement a syntactic predicate decision
@@ -5398,7 +5757,7 @@ module Simple
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 56 )
 
-      # at line 227:5: 
+      # at line 340:5: 
 
     ensure
       # -> uncomment the next line to manually enable rule tracing
@@ -5409,7 +5768,7 @@ module Simple
     # syntactic predicate synpred10_Simple
     # 
     # (in Simple_copy.g)
-    # 231:5: synpred10_Simple : ;
+    # 344:5: synpred10_Simple : ;
     # 
     # This is an imaginary rule inserted by ANTLR to
     # implement a syntactic predicate decision
@@ -5418,7 +5777,7 @@ module Simple
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 57 )
 
-      # at line 231:5: 
+      # at line 344:5: 
 
     ensure
       # -> uncomment the next line to manually enable rule tracing
@@ -5429,7 +5788,7 @@ module Simple
     # syntactic predicate synpred11_Simple
     # 
     # (in Simple_copy.g)
-    # 232:5: synpred11_Simple : ;
+    # 345:5: synpred11_Simple : ;
     # 
     # This is an imaginary rule inserted by ANTLR to
     # implement a syntactic predicate decision
@@ -5438,7 +5797,7 @@ module Simple
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 58 )
 
-      # at line 232:5: 
+      # at line 345:5: 
 
     ensure
       # -> uncomment the next line to manually enable rule tracing
@@ -5449,7 +5808,7 @@ module Simple
     # syntactic predicate synpred12_Simple
     # 
     # (in Simple_copy.g)
-    # 236:5: synpred12_Simple : ;
+    # 349:5: synpred12_Simple : ;
     # 
     # This is an imaginary rule inserted by ANTLR to
     # implement a syntactic predicate decision
@@ -5458,7 +5817,7 @@ module Simple
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 59 )
 
-      # at line 236:5: 
+      # at line 349:5: 
 
     ensure
       # -> uncomment the next line to manually enable rule tracing
@@ -5469,7 +5828,7 @@ module Simple
     # syntactic predicate synpred13_Simple
     # 
     # (in Simple_copy.g)
-    # 237:5: synpred13_Simple : ;
+    # 350:5: synpred13_Simple : ;
     # 
     # This is an imaginary rule inserted by ANTLR to
     # implement a syntactic predicate decision
@@ -5478,7 +5837,7 @@ module Simple
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 60 )
 
-      # at line 237:5: 
+      # at line 350:5: 
 
     ensure
       # -> uncomment the next line to manually enable rule tracing
@@ -5489,7 +5848,7 @@ module Simple
     # syntactic predicate synpred17_Simple
     # 
     # (in Simple_copy.g)
-    # 248:5: synpred17_Simple : ;
+    # 361:5: synpred17_Simple : ;
     # 
     # This is an imaginary rule inserted by ANTLR to
     # implement a syntactic predicate decision
@@ -5498,7 +5857,7 @@ module Simple
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 64 )
 
-      # at line 248:5: 
+      # at line 361:5: 
 
     ensure
       # -> uncomment the next line to manually enable rule tracing
@@ -5509,7 +5868,7 @@ module Simple
     # syntactic predicate synpred18_Simple
     # 
     # (in Simple_copy.g)
-    # 249:5: synpred18_Simple : ;
+    # 362:5: synpred18_Simple : ;
     # 
     # This is an imaginary rule inserted by ANTLR to
     # implement a syntactic predicate decision
@@ -5518,7 +5877,7 @@ module Simple
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 65 )
 
-      # at line 249:5: 
+      # at line 362:5: 
 
     ensure
       # -> uncomment the next line to manually enable rule tracing
@@ -5527,34 +5886,34 @@ module Simple
     end
 
 
-    TOKENS_FOLLOWING_programa_IN_vars_block_87 = Set[ 1 ]
-    TOKENS_FOLLOWING_var_IN_programa_605 = Set[ 9, 11 ]
-    TOKENS_FOLLOWING_func_IN_programa_607 = Set[ 9, 11 ]
-    TOKENS_FOLLOWING_main_IN_programa_609 = Set[ 1 ]
-    TOKENS_FOLLOWING_variables_IN_var_627 = Set[ 4, 5, 6, 7, 8 ]
-    TOKENS_FOLLOWING_var_IN_var_629 = Set[ 1 ]
-    TOKENS_FOLLOWING_INT_IN_variables_645 = Set[ 49 ]
-    TOKENS_FOLLOWING_ID_IN_variables_647 = Set[ 18, 36 ]
-    TOKENS_FOLLOWING_assignint_IN_variables_651 = Set[ 36 ]
-    TOKENS_FOLLOWING_SEMICOLON_IN_variables_653 = Set[ 1 ]
-    TOKENS_FOLLOWING_FLOAT_IN_variables_663 = Set[ 49 ]
-    TOKENS_FOLLOWING_ID_IN_variables_665 = Set[ 18, 36 ]
-    TOKENS_FOLLOWING_assignfloat_IN_variables_669 = Set[ 36 ]
-    TOKENS_FOLLOWING_SEMICOLON_IN_variables_671 = Set[ 1 ]
-    TOKENS_FOLLOWING_STRING_IN_variables_681 = Set[ 49 ]
-    TOKENS_FOLLOWING_ID_IN_variables_683 = Set[ 18, 36 ]
-    TOKENS_FOLLOWING_assignstring_IN_variables_687 = Set[ 36 ]
-    TOKENS_FOLLOWING_SEMICOLON_IN_variables_689 = Set[ 1 ]
-    TOKENS_FOLLOWING_BOOLEAN_IN_variables_699 = Set[ 49 ]
-    TOKENS_FOLLOWING_ID_IN_variables_701 = Set[ 18, 36 ]
-    TOKENS_FOLLOWING_assignboolean_IN_variables_705 = Set[ 36 ]
-    TOKENS_FOLLOWING_SEMICOLON_IN_variables_707 = Set[ 1 ]
-    TOKENS_FOLLOWING_ARRAY_IN_variables_717 = Set[ 4, 5, 6, 7 ]
-    TOKENS_FOLLOWING_tipo_IN_variables_721 = Set[ 49 ]
-    TOKENS_FOLLOWING_ID_IN_variables_723 = Set[ 37 ]
-    TOKENS_FOLLOWING_COLON_IN_variables_725 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_exp_IN_variables_727 = Set[ 36 ]
-    TOKENS_FOLLOWING_SEMICOLON_IN_variables_729 = Set[ 1 ]
+    TOKENS_FOLLOWING_programa_IN_vars_block_589 = Set[ 1 ]
+    TOKENS_FOLLOWING_var_IN_programa_604 = Set[ 9, 11 ]
+    TOKENS_FOLLOWING_func_IN_programa_606 = Set[ 9, 11 ]
+    TOKENS_FOLLOWING_main_IN_programa_608 = Set[ 1 ]
+    TOKENS_FOLLOWING_variables_IN_var_626 = Set[ 4, 5, 6, 7, 8 ]
+    TOKENS_FOLLOWING_var_IN_var_628 = Set[ 1 ]
+    TOKENS_FOLLOWING_INT_IN_variables_644 = Set[ 49 ]
+    TOKENS_FOLLOWING_ID_IN_variables_646 = Set[ 18, 36 ]
+    TOKENS_FOLLOWING_assignint_IN_variables_650 = Set[ 36 ]
+    TOKENS_FOLLOWING_SEMICOLON_IN_variables_652 = Set[ 1 ]
+    TOKENS_FOLLOWING_FLOAT_IN_variables_662 = Set[ 49 ]
+    TOKENS_FOLLOWING_ID_IN_variables_664 = Set[ 18, 36 ]
+    TOKENS_FOLLOWING_assignfloat_IN_variables_668 = Set[ 36 ]
+    TOKENS_FOLLOWING_SEMICOLON_IN_variables_670 = Set[ 1 ]
+    TOKENS_FOLLOWING_STRING_IN_variables_680 = Set[ 49 ]
+    TOKENS_FOLLOWING_ID_IN_variables_682 = Set[ 18, 36 ]
+    TOKENS_FOLLOWING_assignstring_IN_variables_686 = Set[ 36 ]
+    TOKENS_FOLLOWING_SEMICOLON_IN_variables_688 = Set[ 1 ]
+    TOKENS_FOLLOWING_BOOLEAN_IN_variables_698 = Set[ 49 ]
+    TOKENS_FOLLOWING_ID_IN_variables_700 = Set[ 18, 36 ]
+    TOKENS_FOLLOWING_assignboolean_IN_variables_704 = Set[ 36 ]
+    TOKENS_FOLLOWING_SEMICOLON_IN_variables_706 = Set[ 1 ]
+    TOKENS_FOLLOWING_ARRAY_IN_variables_716 = Set[ 4, 5, 6, 7 ]
+    TOKENS_FOLLOWING_tipo_IN_variables_720 = Set[ 49 ]
+    TOKENS_FOLLOWING_ID_IN_variables_722 = Set[ 37 ]
+    TOKENS_FOLLOWING_COLON_IN_variables_724 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_exp_IN_variables_726 = Set[ 36 ]
+    TOKENS_FOLLOWING_SEMICOLON_IN_variables_728 = Set[ 1 ]
     TOKENS_FOLLOWING_ASSIGN_IN_assignint_761 = Set[ 43 ]
     TOKENS_FOLLOWING_CTEI_IN_assignint_763 = Set[ 1 ]
     TOKENS_FOLLOWING_ASSIGN_IN_assignfloat_794 = Set[ 44 ]
@@ -5563,163 +5922,163 @@ module Simple
     TOKENS_FOLLOWING_CTES_IN_assignstring_830 = Set[ 1 ]
     TOKENS_FOLLOWING_ASSIGN_IN_assignboolean_861 = Set[ 47 ]
     TOKENS_FOLLOWING_CTEB_IN_assignboolean_863 = Set[ 1 ]
-    TOKENS_FOLLOWING_INT_IN_tipo_885 = Set[ 1 ]
-    TOKENS_FOLLOWING_FLOAT_IN_tipo_895 = Set[ 1 ]
-    TOKENS_FOLLOWING_STRING_IN_tipo_905 = Set[ 1 ]
-    TOKENS_FOLLOWING_BOOLEAN_IN_tipo_915 = Set[ 1 ]
-    TOKENS_FOLLOWING_funcion_IN_func_943 = Set[ 11 ]
-    TOKENS_FOLLOWING_func_IN_func_945 = Set[ 1 ]
-    TOKENS_FOLLOWING_FUNCTION_IN_funcion_963 = Set[ 49 ]
-    TOKENS_FOLLOWING_ID_IN_funcion_965 = Set[ 30 ]
-    TOKENS_FOLLOWING_LPARENT_IN_funcion_969 = Set[ 4, 5, 6, 7, 31 ]
-    TOKENS_FOLLOWING_argumentos_IN_funcion_973 = Set[ 31 ]
-    TOKENS_FOLLOWING_RPARENT_IN_funcion_975 = Set[ 37 ]
-    TOKENS_FOLLOWING_COLON_IN_funcion_977 = Set[ 4, 5, 6, 7, 10 ]
-    TOKENS_FOLLOWING_retornofunc_IN_funcion_981 = Set[ 28 ]
-    TOKENS_FOLLOWING_LBRACK_IN_funcion_994 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
-    TOKENS_FOLLOWING_var_IN_funcion_996 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
-    TOKENS_FOLLOWING_est_IN_funcion_998 = Set[ 12 ]
-    TOKENS_FOLLOWING_RETURN_IN_funcion_1000 = Set[ 25, 36, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_retorno_IN_funcion_1002 = Set[ 36 ]
-    TOKENS_FOLLOWING_SEMICOLON_IN_funcion_1004 = Set[ 29 ]
-    TOKENS_FOLLOWING_RBRACK_IN_funcion_1006 = Set[ 1 ]
-    TOKENS_FOLLOWING_tipo_IN_argumentos_1032 = Set[ 35, 49 ]
-    TOKENS_FOLLOWING_ref_IN_argumentos_1034 = Set[ 49 ]
-    TOKENS_FOLLOWING_ID_IN_argumentos_1036 = Set[ 34 ]
-    TOKENS_FOLLOWING_argumentoaux_IN_argumentos_1040 = Set[ 1 ]
-    TOKENS_FOLLOWING_COMMA_IN_argumentoaux_1065 = Set[ 4, 5, 6, 7 ]
-    TOKENS_FOLLOWING_tipo_IN_argumentoaux_1069 = Set[ 35, 49 ]
-    TOKENS_FOLLOWING_ref_IN_argumentoaux_1071 = Set[ 49 ]
-    TOKENS_FOLLOWING_ID_IN_argumentoaux_1073 = Set[ 34 ]
-    TOKENS_FOLLOWING_argumentoaux_IN_argumentoaux_1077 = Set[ 1 ]
-    TOKENS_FOLLOWING_REF_IN_ref_1099 = Set[ 1 ]
-    TOKENS_FOLLOWING_VOID_IN_retornofunc_1120 = Set[ 1 ]
-    TOKENS_FOLLOWING_tipo_IN_retornofunc_1132 = Set[ 1 ]
-    TOKENS_FOLLOWING_estatutos_IN_est_1150 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
-    TOKENS_FOLLOWING_estaux_IN_est_1152 = Set[ 1 ]
-    TOKENS_FOLLOWING_estatutos_IN_estaux_1174 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
-    TOKENS_FOLLOWING_estaux_IN_estaux_1176 = Set[ 1 ]
-    TOKENS_FOLLOWING_ID_IN_estatutos_1194 = Set[ 18, 30, 32 ]
-    TOKENS_FOLLOWING_idestatutos_IN_estatutos_1196 = Set[ 36 ]
-    TOKENS_FOLLOWING_SEMICOLON_IN_estatutos_1198 = Set[ 1 ]
-    TOKENS_FOLLOWING_condicion_IN_estatutos_1208 = Set[ 1 ]
-    TOKENS_FOLLOWING_escritura_IN_estatutos_1218 = Set[ 1 ]
-    TOKENS_FOLLOWING_ciclo_IN_estatutos_1228 = Set[ 1 ]
-    TOKENS_FOLLOWING_lectura_IN_estatutos_1238 = Set[ 1 ]
-    TOKENS_FOLLOWING_llamada_IN_idestatutos_1256 = Set[ 1 ]
-    TOKENS_FOLLOWING_array_IN_idestatutos_1266 = Set[ 18 ]
-    TOKENS_FOLLOWING_ASSIGN_IN_idestatutos_1268 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_expresion_IN_idestatutos_1270 = Set[ 1 ]
-    TOKENS_FOLLOWING_ASSIGN_IN_idestatutos_1280 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_expresion_IN_idestatutos_1282 = Set[ 1 ]
-    TOKENS_FOLLOWING_LPARENT_IN_llamada_1300 = Set[ 25, 31, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_llamadaargs_IN_llamada_1302 = Set[ 31 ]
-    TOKENS_FOLLOWING_RPARENT_IN_llamada_1304 = Set[ 1 ]
-    TOKENS_FOLLOWING_exp_IN_llamadaargs_1326 = Set[ 34 ]
-    TOKENS_FOLLOWING_llamadaargsaux_IN_llamadaargs_1328 = Set[ 1 ]
-    TOKENS_FOLLOWING_COMMA_IN_llamadaargsaux_1350 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_exp_IN_llamadaargsaux_1352 = Set[ 34 ]
-    TOKENS_FOLLOWING_llamadaargsaux_IN_llamadaargsaux_1354 = Set[ 1 ]
-    TOKENS_FOLLOWING_LSBRACK_IN_array_1372 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_exp_IN_array_1374 = Set[ 33 ]
-    TOKENS_FOLLOWING_RSBRACK_IN_array_1376 = Set[ 1 ]
-    TOKENS_FOLLOWING_exp_IN_expresion_1394 = Set[ 19, 20, 21, 22, 23, 24, 26, 27 ]
-    TOKENS_FOLLOWING_expresionaux_IN_expresion_1396 = Set[ 1 ]
-    TOKENS_FOLLOWING_comparacion_IN_expresionaux_1418 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_expresion_IN_expresionaux_1420 = Set[ 1 ]
-    TOKENS_FOLLOWING_logico_IN_expresionaux_1430 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_expresion_IN_expresionaux_1432 = Set[ 1 ]
-    TOKENS_FOLLOWING_termino_IN_exp_1450 = Set[ 38, 39 ]
-    TOKENS_FOLLOWING_expaux_IN_exp_1452 = Set[ 1 ]
-    TOKENS_FOLLOWING_PLUS_IN_expaux_1474 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_exp_IN_expaux_1476 = Set[ 1 ]
-    TOKENS_FOLLOWING_MINUS_IN_expaux_1486 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_exp_IN_expaux_1488 = Set[ 1 ]
-    TOKENS_FOLLOWING_factor_IN_termino_1506 = Set[ 40, 41 ]
-    TOKENS_FOLLOWING_terminoaux_IN_termino_1508 = Set[ 1 ]
-    TOKENS_FOLLOWING_TIMES_IN_terminoaux_1530 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_termino_IN_terminoaux_1532 = Set[ 1 ]
-    TOKENS_FOLLOWING_DIVIDE_IN_terminoaux_1542 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_termino_IN_terminoaux_1544 = Set[ 1 ]
-    TOKENS_FOLLOWING_NOT_IN_factor_1562 = Set[ 25, 30, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_notfactor_IN_factor_1564 = Set[ 1 ]
-    TOKENS_FOLLOWING_sign_IN_factor_1574 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_varcte_IN_factor_1576 = Set[ 1 ]
-    TOKENS_FOLLOWING_varcte_IN_factor_1586 = Set[ 1 ]
-    TOKENS_FOLLOWING_LPARENT_IN_notfactor_1604 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_exp_IN_notfactor_1606 = Set[ 31 ]
-    TOKENS_FOLLOWING_RPARENT_IN_notfactor_1608 = Set[ 1 ]
-    TOKENS_FOLLOWING_varcte_IN_notfactor_1618 = Set[ 1 ]
-    TOKENS_FOLLOWING_PLUS_IN_sign_1636 = Set[ 1 ]
-    TOKENS_FOLLOWING_MINUS_IN_sign_1646 = Set[ 1 ]
-    TOKENS_FOLLOWING_ID_IN_varcte_1664 = Set[ 30, 32 ]
-    TOKENS_FOLLOWING_idvarcte_IN_varcte_1666 = Set[ 1 ]
-    TOKENS_FOLLOWING_CTEI_IN_varcte_1676 = Set[ 1 ]
-    TOKENS_FOLLOWING_CTEF_IN_varcte_1686 = Set[ 1 ]
-    TOKENS_FOLLOWING_CTES_IN_varcte_1696 = Set[ 1 ]
-    TOKENS_FOLLOWING_CTEB_IN_varcte_1706 = Set[ 1 ]
-    TOKENS_FOLLOWING_llamada_IN_idvarcte_1728 = Set[ 1 ]
-    TOKENS_FOLLOWING_array_IN_idvarcte_1738 = Set[ 1 ]
-    TOKENS_FOLLOWING_LT_IN_comparacion_1756 = Set[ 1 ]
-    TOKENS_FOLLOWING_LE_IN_comparacion_1766 = Set[ 1 ]
-    TOKENS_FOLLOWING_GT_IN_comparacion_1776 = Set[ 1 ]
-    TOKENS_FOLLOWING_GE_IN_comparacion_1786 = Set[ 1 ]
-    TOKENS_FOLLOWING_EQ_IN_comparacion_1796 = Set[ 1 ]
-    TOKENS_FOLLOWING_NE_IN_comparacion_1806 = Set[ 1 ]
-    TOKENS_FOLLOWING_AND_IN_logico_1824 = Set[ 1 ]
-    TOKENS_FOLLOWING_OR_IN_logico_1834 = Set[ 1 ]
-    TOKENS_FOLLOWING_exp_IN_retorno_1856 = Set[ 1 ]
-    TOKENS_FOLLOWING_IF_IN_condicion_1874 = Set[ 30 ]
-    TOKENS_FOLLOWING_LPARENT_IN_condicion_1876 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_expresion_IN_condicion_1878 = Set[ 31 ]
-    TOKENS_FOLLOWING_RPARENT_IN_condicion_1880 = Set[ 28 ]
-    TOKENS_FOLLOWING_LBRACK_IN_condicion_1882 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
-    TOKENS_FOLLOWING_est_IN_condicion_1884 = Set[ 29 ]
-    TOKENS_FOLLOWING_RBRACK_IN_condicion_1886 = Set[ 15 ]
-    TOKENS_FOLLOWING_elsecondicion_IN_condicion_1888 = Set[ 1 ]
-    TOKENS_FOLLOWING_ELSE_IN_elsecondicion_1910 = Set[ 28 ]
-    TOKENS_FOLLOWING_LBRACK_IN_elsecondicion_1912 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
-    TOKENS_FOLLOWING_est_IN_elsecondicion_1914 = Set[ 29 ]
-    TOKENS_FOLLOWING_RBRACK_IN_elsecondicion_1916 = Set[ 1 ]
-    TOKENS_FOLLOWING_PRINT_IN_escritura_1934 = Set[ 30 ]
-    TOKENS_FOLLOWING_LPARENT_IN_escritura_1936 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_argsescritura_IN_escritura_1938 = Set[ 31 ]
-    TOKENS_FOLLOWING_RPARENT_IN_escritura_1940 = Set[ 36 ]
-    TOKENS_FOLLOWING_SEMICOLON_IN_escritura_1942 = Set[ 1 ]
-    TOKENS_FOLLOWING_exp_IN_argsescritura_1960 = Set[ 34 ]
-    TOKENS_FOLLOWING_argsescrituraaux_IN_argsescritura_1962 = Set[ 1 ]
-    TOKENS_FOLLOWING_COMMA_IN_argsescrituraaux_1984 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_argsescritura_IN_argsescrituraaux_1986 = Set[ 1 ]
-    TOKENS_FOLLOWING_FOR_IN_ciclo_2004 = Set[ 30 ]
-    TOKENS_FOLLOWING_LPARENT_IN_ciclo_2006 = Set[ 36, 49 ]
-    TOKENS_FOLLOWING_cicloaux_IN_ciclo_2008 = Set[ 36 ]
-    TOKENS_FOLLOWING_SEMICOLON_IN_ciclo_2010 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_expresion_IN_ciclo_2012 = Set[ 36 ]
-    TOKENS_FOLLOWING_SEMICOLON_IN_ciclo_2014 = Set[ 31, 49 ]
-    TOKENS_FOLLOWING_cicloaux_IN_ciclo_2016 = Set[ 31 ]
-    TOKENS_FOLLOWING_RPARENT_IN_ciclo_2018 = Set[ 28 ]
-    TOKENS_FOLLOWING_LBRACK_IN_ciclo_2020 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
-    TOKENS_FOLLOWING_est_IN_ciclo_2022 = Set[ 29 ]
-    TOKENS_FOLLOWING_RBRACK_IN_ciclo_2024 = Set[ 1 ]
-    TOKENS_FOLLOWING_ID_IN_cicloaux_2046 = Set[ 18, 32 ]
-    TOKENS_FOLLOWING_cicloauxx_IN_cicloaux_2048 = Set[ 18 ]
-    TOKENS_FOLLOWING_ASSIGN_IN_cicloaux_2050 = Set[ 25, 38, 39, 43, 44, 46, 47, 49 ]
-    TOKENS_FOLLOWING_exp_IN_cicloaux_2052 = Set[ 1 ]
-    TOKENS_FOLLOWING_array_IN_cicloauxx_2074 = Set[ 1 ]
-    TOKENS_FOLLOWING_INPUT_IN_lectura_2092 = Set[ 30 ]
-    TOKENS_FOLLOWING_LPARENT_IN_lectura_2094 = Set[ 4, 5, 6, 7 ]
-    TOKENS_FOLLOWING_tipo_IN_lectura_2096 = Set[ 34 ]
-    TOKENS_FOLLOWING_COMMA_IN_lectura_2098 = Set[ 49 ]
-    TOKENS_FOLLOWING_ID_IN_lectura_2100 = Set[ 31 ]
-    TOKENS_FOLLOWING_RPARENT_IN_lectura_2102 = Set[ 36 ]
-    TOKENS_FOLLOWING_SEMICOLON_IN_lectura_2104 = Set[ 1 ]
-    TOKENS_FOLLOWING_MAIN_IN_main_2122 = Set[ 30 ]
-    TOKENS_FOLLOWING_LPARENT_IN_main_2124 = Set[ 31 ]
-    TOKENS_FOLLOWING_RPARENT_IN_main_2126 = Set[ 28 ]
-    TOKENS_FOLLOWING_LBRACK_IN_main_2128 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
-    TOKENS_FOLLOWING_var_IN_main_2130 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
-    TOKENS_FOLLOWING_est_IN_main_2132 = Set[ 29 ]
-    TOKENS_FOLLOWING_RBRACK_IN_main_2134 = Set[ 1 ]
+    TOKENS_FOLLOWING_INT_IN_tipo_886 = Set[ 1 ]
+    TOKENS_FOLLOWING_FLOAT_IN_tipo_896 = Set[ 1 ]
+    TOKENS_FOLLOWING_STRING_IN_tipo_906 = Set[ 1 ]
+    TOKENS_FOLLOWING_BOOLEAN_IN_tipo_916 = Set[ 1 ]
+    TOKENS_FOLLOWING_funcion_IN_func_944 = Set[ 11 ]
+    TOKENS_FOLLOWING_func_IN_func_946 = Set[ 1 ]
+    TOKENS_FOLLOWING_FUNCTION_IN_funcion_964 = Set[ 49 ]
+    TOKENS_FOLLOWING_ID_IN_funcion_966 = Set[ 30 ]
+    TOKENS_FOLLOWING_LPARENT_IN_funcion_970 = Set[ 4, 5, 6, 7, 31 ]
+    TOKENS_FOLLOWING_argumentos_IN_funcion_974 = Set[ 31 ]
+    TOKENS_FOLLOWING_RPARENT_IN_funcion_976 = Set[ 37 ]
+    TOKENS_FOLLOWING_COLON_IN_funcion_978 = Set[ 4, 5, 6, 7, 10 ]
+    TOKENS_FOLLOWING_retornofunc_IN_funcion_982 = Set[ 28 ]
+    TOKENS_FOLLOWING_LBRACK_IN_funcion_990 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
+    TOKENS_FOLLOWING_var_IN_funcion_992 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
+    TOKENS_FOLLOWING_est_IN_funcion_994 = Set[ 12 ]
+    TOKENS_FOLLOWING_RETURN_IN_funcion_996 = Set[ 25, 30, 36, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_retorno_IN_funcion_998 = Set[ 36 ]
+    TOKENS_FOLLOWING_SEMICOLON_IN_funcion_1000 = Set[ 29 ]
+    TOKENS_FOLLOWING_RBRACK_IN_funcion_1002 = Set[ 1 ]
+    TOKENS_FOLLOWING_tipo_IN_argumentos_1028 = Set[ 35, 49 ]
+    TOKENS_FOLLOWING_ref_IN_argumentos_1030 = Set[ 49 ]
+    TOKENS_FOLLOWING_ID_IN_argumentos_1032 = Set[ 34 ]
+    TOKENS_FOLLOWING_argumentoaux_IN_argumentos_1036 = Set[ 1 ]
+    TOKENS_FOLLOWING_COMMA_IN_argumentoaux_1061 = Set[ 4, 5, 6, 7 ]
+    TOKENS_FOLLOWING_tipo_IN_argumentoaux_1065 = Set[ 35, 49 ]
+    TOKENS_FOLLOWING_ref_IN_argumentoaux_1067 = Set[ 49 ]
+    TOKENS_FOLLOWING_ID_IN_argumentoaux_1069 = Set[ 34 ]
+    TOKENS_FOLLOWING_argumentoaux_IN_argumentoaux_1073 = Set[ 1 ]
+    TOKENS_FOLLOWING_REF_IN_ref_1095 = Set[ 1 ]
+    TOKENS_FOLLOWING_VOID_IN_retornofunc_1116 = Set[ 1 ]
+    TOKENS_FOLLOWING_tipo_IN_retornofunc_1128 = Set[ 1 ]
+    TOKENS_FOLLOWING_estatutos_IN_est_1146 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
+    TOKENS_FOLLOWING_estaux_IN_est_1148 = Set[ 1 ]
+    TOKENS_FOLLOWING_estatutos_IN_estaux_1170 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
+    TOKENS_FOLLOWING_estaux_IN_estaux_1172 = Set[ 1 ]
+    TOKENS_FOLLOWING_ID_IN_estatutos_1190 = Set[ 18, 30, 32 ]
+    TOKENS_FOLLOWING_idestatutos_IN_estatutos_1198 = Set[ 36 ]
+    TOKENS_FOLLOWING_SEMICOLON_IN_estatutos_1200 = Set[ 1 ]
+    TOKENS_FOLLOWING_condicion_IN_estatutos_1210 = Set[ 1 ]
+    TOKENS_FOLLOWING_escritura_IN_estatutos_1220 = Set[ 1 ]
+    TOKENS_FOLLOWING_ciclo_IN_estatutos_1230 = Set[ 1 ]
+    TOKENS_FOLLOWING_lectura_IN_estatutos_1240 = Set[ 1 ]
+    TOKENS_FOLLOWING_llamada_IN_idestatutos_1258 = Set[ 1 ]
+    TOKENS_FOLLOWING_array_IN_idestatutos_1268 = Set[ 18 ]
+    TOKENS_FOLLOWING_ASSIGN_IN_idestatutos_1270 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_expresion_IN_idestatutos_1272 = Set[ 1 ]
+    TOKENS_FOLLOWING_ASSIGN_IN_idestatutos_1282 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_expresion_IN_idestatutos_1290 = Set[ 1 ]
+    TOKENS_FOLLOWING_LPARENT_IN_llamada_1307 = Set[ 25, 30, 31, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_llamadaargs_IN_llamada_1309 = Set[ 31 ]
+    TOKENS_FOLLOWING_RPARENT_IN_llamada_1311 = Set[ 1 ]
+    TOKENS_FOLLOWING_exp_IN_llamadaargs_1333 = Set[ 34 ]
+    TOKENS_FOLLOWING_llamadaargsaux_IN_llamadaargs_1335 = Set[ 1 ]
+    TOKENS_FOLLOWING_COMMA_IN_llamadaargsaux_1357 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_exp_IN_llamadaargsaux_1359 = Set[ 34 ]
+    TOKENS_FOLLOWING_llamadaargsaux_IN_llamadaargsaux_1361 = Set[ 1 ]
+    TOKENS_FOLLOWING_LSBRACK_IN_array_1379 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_exp_IN_array_1381 = Set[ 33 ]
+    TOKENS_FOLLOWING_RSBRACK_IN_array_1383 = Set[ 1 ]
+    TOKENS_FOLLOWING_exp_IN_expresion_1401 = Set[ 1 ]
+    TOKENS_FOLLOWING_comparacion_IN_expresionaux_1427 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_expresion_IN_expresionaux_1429 = Set[ 1 ]
+    TOKENS_FOLLOWING_logico_IN_expresionaux_1440 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_expresion_IN_expresionaux_1442 = Set[ 1 ]
+    TOKENS_FOLLOWING_termino_IN_exp_1460 = Set[ 38, 39 ]
+    TOKENS_FOLLOWING_expaux_IN_exp_1474 = Set[ 1 ]
+    TOKENS_FOLLOWING_PLUS_IN_expaux_1494 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_exp_IN_expaux_1502 = Set[ 1 ]
+    TOKENS_FOLLOWING_MINUS_IN_expaux_1511 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_exp_IN_expaux_1519 = Set[ 1 ]
+    TOKENS_FOLLOWING_factor_IN_termino_1536 = Set[ 40, 41 ]
+    TOKENS_FOLLOWING_terminoaux_IN_termino_1545 = Set[ 1 ]
+    TOKENS_FOLLOWING_TIMES_IN_terminoaux_1565 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_termino_IN_terminoaux_1574 = Set[ 1 ]
+    TOKENS_FOLLOWING_DIVIDE_IN_terminoaux_1583 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_termino_IN_terminoaux_1591 = Set[ 1 ]
+    TOKENS_FOLLOWING_NOT_IN_factor_1610 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_notfactor_IN_factor_1612 = Set[ 1 ]
+    TOKENS_FOLLOWING_LPARENT_IN_factor_1622 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_exp_IN_factor_1626 = Set[ 31 ]
+    TOKENS_FOLLOWING_RPARENT_IN_factor_1628 = Set[ 1 ]
+    TOKENS_FOLLOWING_varcte_IN_factor_1644 = Set[ 1 ]
+    TOKENS_FOLLOWING_LPARENT_IN_notfactor_1662 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_exp_IN_notfactor_1664 = Set[ 31 ]
+    TOKENS_FOLLOWING_RPARENT_IN_notfactor_1666 = Set[ 1 ]
+    TOKENS_FOLLOWING_varcte_IN_notfactor_1676 = Set[ 1 ]
+    TOKENS_FOLLOWING_PLUS_IN_sign_1694 = Set[ 1 ]
+    TOKENS_FOLLOWING_MINUS_IN_sign_1704 = Set[ 1 ]
+    TOKENS_FOLLOWING_ID_IN_varcte_1722 = Set[ 30, 32 ]
+    TOKENS_FOLLOWING_idvarcte_IN_varcte_1724 = Set[ 1 ]
+    TOKENS_FOLLOWING_CTEI_IN_varcte_1734 = Set[ 1 ]
+    TOKENS_FOLLOWING_CTEF_IN_varcte_1744 = Set[ 1 ]
+    TOKENS_FOLLOWING_CTES_IN_varcte_1754 = Set[ 1 ]
+    TOKENS_FOLLOWING_CTEB_IN_varcte_1764 = Set[ 1 ]
+    TOKENS_FOLLOWING_llamada_IN_idvarcte_1786 = Set[ 1 ]
+    TOKENS_FOLLOWING_array_IN_idvarcte_1796 = Set[ 1 ]
+    TOKENS_FOLLOWING_LT_IN_comparacion_1814 = Set[ 1 ]
+    TOKENS_FOLLOWING_LE_IN_comparacion_1824 = Set[ 1 ]
+    TOKENS_FOLLOWING_GT_IN_comparacion_1834 = Set[ 1 ]
+    TOKENS_FOLLOWING_GE_IN_comparacion_1844 = Set[ 1 ]
+    TOKENS_FOLLOWING_EQ_IN_comparacion_1854 = Set[ 1 ]
+    TOKENS_FOLLOWING_NE_IN_comparacion_1864 = Set[ 1 ]
+    TOKENS_FOLLOWING_AND_IN_logico_1882 = Set[ 1 ]
+    TOKENS_FOLLOWING_OR_IN_logico_1892 = Set[ 1 ]
+    TOKENS_FOLLOWING_exp_IN_retorno_1914 = Set[ 1 ]
+    TOKENS_FOLLOWING_IF_IN_condicion_1932 = Set[ 30 ]
+    TOKENS_FOLLOWING_LPARENT_IN_condicion_1934 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_expresion_IN_condicion_1936 = Set[ 31 ]
+    TOKENS_FOLLOWING_RPARENT_IN_condicion_1938 = Set[ 28 ]
+    TOKENS_FOLLOWING_LBRACK_IN_condicion_1940 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
+    TOKENS_FOLLOWING_est_IN_condicion_1942 = Set[ 29 ]
+    TOKENS_FOLLOWING_RBRACK_IN_condicion_1944 = Set[ 15 ]
+    TOKENS_FOLLOWING_elsecondicion_IN_condicion_1946 = Set[ 1 ]
+    TOKENS_FOLLOWING_ELSE_IN_elsecondicion_1968 = Set[ 28 ]
+    TOKENS_FOLLOWING_LBRACK_IN_elsecondicion_1970 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
+    TOKENS_FOLLOWING_est_IN_elsecondicion_1972 = Set[ 29 ]
+    TOKENS_FOLLOWING_RBRACK_IN_elsecondicion_1974 = Set[ 1 ]
+    TOKENS_FOLLOWING_PRINT_IN_escritura_1992 = Set[ 30 ]
+    TOKENS_FOLLOWING_LPARENT_IN_escritura_1994 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_argsescritura_IN_escritura_1996 = Set[ 31 ]
+    TOKENS_FOLLOWING_RPARENT_IN_escritura_1998 = Set[ 36 ]
+    TOKENS_FOLLOWING_SEMICOLON_IN_escritura_2000 = Set[ 1 ]
+    TOKENS_FOLLOWING_exp_IN_argsescritura_2018 = Set[ 34 ]
+    TOKENS_FOLLOWING_argsescrituraaux_IN_argsescritura_2020 = Set[ 1 ]
+    TOKENS_FOLLOWING_COMMA_IN_argsescrituraaux_2042 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_argsescritura_IN_argsescrituraaux_2044 = Set[ 1 ]
+    TOKENS_FOLLOWING_FOR_IN_ciclo_2062 = Set[ 30 ]
+    TOKENS_FOLLOWING_LPARENT_IN_ciclo_2064 = Set[ 36, 49 ]
+    TOKENS_FOLLOWING_cicloaux_IN_ciclo_2066 = Set[ 36 ]
+    TOKENS_FOLLOWING_SEMICOLON_IN_ciclo_2068 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_expresion_IN_ciclo_2070 = Set[ 36 ]
+    TOKENS_FOLLOWING_SEMICOLON_IN_ciclo_2072 = Set[ 31, 49 ]
+    TOKENS_FOLLOWING_cicloaux_IN_ciclo_2074 = Set[ 31 ]
+    TOKENS_FOLLOWING_RPARENT_IN_ciclo_2076 = Set[ 28 ]
+    TOKENS_FOLLOWING_LBRACK_IN_ciclo_2078 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
+    TOKENS_FOLLOWING_est_IN_ciclo_2080 = Set[ 29 ]
+    TOKENS_FOLLOWING_RBRACK_IN_ciclo_2082 = Set[ 1 ]
+    TOKENS_FOLLOWING_ID_IN_cicloaux_2104 = Set[ 18, 32 ]
+    TOKENS_FOLLOWING_cicloauxx_IN_cicloaux_2106 = Set[ 18 ]
+    TOKENS_FOLLOWING_ASSIGN_IN_cicloaux_2108 = Set[ 25, 30, 43, 44, 46, 47, 49 ]
+    TOKENS_FOLLOWING_exp_IN_cicloaux_2110 = Set[ 1 ]
+    TOKENS_FOLLOWING_array_IN_cicloauxx_2132 = Set[ 1 ]
+    TOKENS_FOLLOWING_INPUT_IN_lectura_2150 = Set[ 30 ]
+    TOKENS_FOLLOWING_LPARENT_IN_lectura_2152 = Set[ 4, 5, 6, 7 ]
+    TOKENS_FOLLOWING_tipo_IN_lectura_2154 = Set[ 34 ]
+    TOKENS_FOLLOWING_COMMA_IN_lectura_2156 = Set[ 49 ]
+    TOKENS_FOLLOWING_ID_IN_lectura_2158 = Set[ 31 ]
+    TOKENS_FOLLOWING_RPARENT_IN_lectura_2160 = Set[ 36 ]
+    TOKENS_FOLLOWING_SEMICOLON_IN_lectura_2162 = Set[ 1 ]
+    TOKENS_FOLLOWING_MAIN_IN_main_2180 = Set[ 30 ]
+    TOKENS_FOLLOWING_LPARENT_IN_main_2184 = Set[ 31 ]
+    TOKENS_FOLLOWING_RPARENT_IN_main_2186 = Set[ 28 ]
+    TOKENS_FOLLOWING_LBRACK_IN_main_2188 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
+    TOKENS_FOLLOWING_var_IN_main_2190 = Set[ 4, 5, 6, 7, 8, 13, 14, 16, 17, 49 ]
+    TOKENS_FOLLOWING_est_IN_main_2192 = Set[ 29 ]
+    TOKENS_FOLLOWING_RBRACK_IN_main_2194 = Set[ 1 ]
 
   end # class Parser < ANTLR3::Parser
 

@@ -6,17 +6,15 @@ string mensaje = "Hola mundo";
 function inicializa_array() : void
 {
     int iterador;
-    for (iterador = 0; iterador < rows; iterador = iterador + 1) {
-	    flags = false;
-    }
+    iterador = rows * contador + 5 / 2;
     return;
 }
 
-function numero_impresiones(int foo, float bar) : int
+function numero_impresiones() : void
 {
     contador = contador + 1;
     print(mensaje);
-    return contador;
+    return;
 }
 
 main()
@@ -24,13 +22,11 @@ main()
     int j;
     int num;
     print("Inicializando array.");
-    for (j = 0; j < rows; j = j + 1) {
-	    num = 5;
-	if (num != 2) {
-	    j = rows;
-	} else {
-	    flags = true;
-	}
-    }
+    num = 5;
+    j = 0;
+    j = j + 1;
+    j = rows * (2 + 3);
+    num = num / 2.0;
+    flags = true;
     print("Fin de programa.");
 }
