@@ -6,13 +6,15 @@ string mensaje = "Hola mundo";
 function inicializa_array() : void
 {
     int iterador;
+    float p;
     iterador = rows * contador + 5 / 2;
+    p = 2.5 * 3.2 - 4.1 + (iterador * 0.5);
     return;
 }
 
 function numero_impresiones() : void
 {
-    contador = contador + 1;
+    contador = contador + 1 - 2 * 4 / (2 + 2 * 3);
     print(mensaje);
     return;
 }
