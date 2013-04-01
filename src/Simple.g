@@ -199,7 +199,7 @@ funcion:
 
 argumentos returns[list]: /* empty */
     | data_type=tipo ref ID more_args=argumentoaux {
-        $list = [ {type: $data_type.type, id: $ID.text } ]
+        $list = [ {type: $data_type.text, id: $ID.text } ]
         $list.concat(more_args.list) unless more_args.list.nil?
       }
     ;
