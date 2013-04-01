@@ -3,7 +3,7 @@ int contador = 0;
 boolean flags;
 string mensaje = "Hola mundo";
 
-function inicializa_array() : void
+function inicializa_array(int a) : void
 {
     int iterador;
     float p;
@@ -12,7 +12,7 @@ function inicializa_array() : void
     return;
 }
 
-function numero_impresiones() : void
+function numero_impresiones() : int
 {
     contador = contador + 1 - 2 * 4 / (2 + 2 * 3);
     print(mensaje);

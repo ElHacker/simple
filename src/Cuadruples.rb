@@ -6,4 +6,8 @@ class Cuadruples
     @operand_two = operand_two
     @destiny = destiny
   end
+
+  def to_s
+    return "Operation: #{@operation}, Operand one: #{@operand_one}, Operand two: #{@operand_two}, Destination: #{@destiny}"
+  end
 end

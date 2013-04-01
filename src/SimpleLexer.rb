@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 #
-# Simple_copy.g
+# Simple.g
 # --
 # Generated using ANTLR version: 3.2.1-SNAPSHOT Jul 31, 2010 19:34:52
 # Ruby runtime library version: 1.8.11
-# Input grammar file: Simple_copy.g
-# Generated at: 2013-03-21 00:08:44
+# Input grammar file: Simple.g
+# Generated at: 2013-03-31 20:47:58
 # 
 
 # ~~~> start load path setup
@@ -88,7 +88,7 @@ module Simple
 
     
     begin
-      generated_using( "Simple_copy.g", "3.2.1-SNAPSHOT Jul 31, 2010 19:34:52", "1.8.11" )
+      generated_using( "Simple.g", "3.2.1-SNAPSHOT Jul 31, 2010 19:34:52", "1.8.11" )
     rescue NoMethodError => error
       # ignore
     end
@@ -119,7 +119,7 @@ module Simple
     
     # - - - - - - - - - - - lexer rules - - - - - - - - - - - -
     # lexer rule int! (INT)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def int!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 1 )
@@ -129,7 +129,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 24:6: 'int'
+      # at line 25:6: 'int'
       match( "int" )
       # --> action
        print("<INT> ") 
@@ -146,7 +146,7 @@ module Simple
     end
 
     # lexer rule float! (FLOAT)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def float!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 2 )
@@ -156,7 +156,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 25:8: 'float'
+      # at line 26:8: 'float'
       match( "float" )
       # --> action
        print("<FLOAT> ") 
@@ -173,7 +173,7 @@ module Simple
     end
 
     # lexer rule boolean! (BOOLEAN)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def boolean!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 3 )
@@ -183,7 +183,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 26:10: 'boolean'
+      # at line 27:10: 'boolean'
       match( "boolean" )
       # --> action
        print("<BOOLEAN> ") 
@@ -200,7 +200,7 @@ module Simple
     end
 
     # lexer rule string! (STRING)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def string!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 4 )
@@ -210,7 +210,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 27:9: 'string'
+      # at line 28:9: 'string'
       match( "string" )
       # --> action
        print("<STRING> ") 
@@ -227,7 +227,7 @@ module Simple
     end
 
     # lexer rule array! (ARRAY)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def array!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 5 )
@@ -237,7 +237,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 28:8: 'array'
+      # at line 29:8: 'array'
       match( "array" )
       # --> action
        print("<ARRAY> ") 
@@ -254,7 +254,7 @@ module Simple
     end
 
     # lexer rule main! (MAIN)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def main!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 6 )
@@ -264,7 +264,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 29:7: 'main'
+      # at line 30:7: 'main'
       match( "main" )
       # --> action
        print("<MAIN> ") 
@@ -281,7 +281,7 @@ module Simple
     end
 
     # lexer rule void! (VOID)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def void!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 7 )
@@ -291,7 +291,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 30:7: 'void'
+      # at line 31:7: 'void'
       match( "void" )
       # --> action
        print("<VOID> ") 
@@ -308,7 +308,7 @@ module Simple
     end
 
     # lexer rule function! (FUNCTION)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def function!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 8 )
@@ -318,7 +318,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 31:11: 'function'
+      # at line 32:11: 'function'
       match( "function" )
       # --> action
        print("<FUNCTION> ") 
@@ -335,7 +335,7 @@ module Simple
     end
 
     # lexer rule return! (RETURN)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def return!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 9 )
@@ -345,7 +345,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 32:9: 'return'
+      # at line 33:9: 'return'
       match( "return" )
       # --> action
        print("<RETURN> ") 
@@ -362,7 +362,7 @@ module Simple
     end
 
     # lexer rule for! (FOR)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def for!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 10 )
@@ -372,7 +372,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 33:6: 'for'
+      # at line 34:6: 'for'
       match( "for" )
       # --> action
        print("<FOR> ") 
@@ -389,7 +389,7 @@ module Simple
     end
 
     # lexer rule if! (IF)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def if!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 11 )
@@ -399,7 +399,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 34:5: 'if'
+      # at line 35:5: 'if'
       match( "if" )
       # --> action
        print("<IF> ") 
@@ -416,7 +416,7 @@ module Simple
     end
 
     # lexer rule else! (ELSE)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def else!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 12 )
@@ -426,7 +426,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 35:7: 'else'
+      # at line 36:7: 'else'
       match( "else" )
       # --> action
        print("<ELSE> ") 
@@ -443,7 +443,7 @@ module Simple
     end
 
     # lexer rule print! (PRINT)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def print!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 13 )
@@ -453,7 +453,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 36:8: 'print'
+      # at line 37:8: 'print'
       match( "print" )
       # --> action
        print("<PRINT> ") 
@@ -470,7 +470,7 @@ module Simple
     end
 
     # lexer rule input! (INPUT)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def input!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 14 )
@@ -480,7 +480,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 37:8: 'input'
+      # at line 38:8: 'input'
       match( "input" )
       # --> action
        print("<INPUT> ") 
@@ -497,7 +497,7 @@ module Simple
     end
 
     # lexer rule assign! (ASSIGN)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def assign!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 15 )
@@ -507,7 +507,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 38:9: '='
+      # at line 39:9: '='
       match( 0x3d )
       # --> action
        print("<ASSIGN> ") 
@@ -524,7 +524,7 @@ module Simple
     end
 
     # lexer rule lt! (LT)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def lt!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 16 )
@@ -534,7 +534,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 39:5: '<'
+      # at line 40:5: '<'
       match( 0x3c )
       # --> action
        print("<LT> ") 
@@ -551,7 +551,7 @@ module Simple
     end
 
     # lexer rule le! (LE)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def le!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 17 )
@@ -561,7 +561,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 40:5: '<='
+      # at line 41:5: '<='
       match( "<=" )
       # --> action
        print("<LE> ") 
@@ -578,7 +578,7 @@ module Simple
     end
 
     # lexer rule gt! (GT)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def gt!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 18 )
@@ -588,7 +588,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 41:5: '>'
+      # at line 42:5: '>'
       match( 0x3e )
       # --> action
        print("<GT> ") 
@@ -605,7 +605,7 @@ module Simple
     end
 
     # lexer rule ge! (GE)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def ge!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 19 )
@@ -615,7 +615,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 42:5: '>='
+      # at line 43:5: '>='
       match( ">=" )
       # --> action
        print("<GE> ") 
@@ -632,7 +632,7 @@ module Simple
     end
 
     # lexer rule eq! (EQ)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def eq!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 20 )
@@ -642,7 +642,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 43:5: '=='
+      # at line 44:5: '=='
       match( "==" )
       # --> action
        print("<EQ> ") 
@@ -659,7 +659,7 @@ module Simple
     end
 
     # lexer rule ne! (NE)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def ne!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 21 )
@@ -669,7 +669,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 44:5: '!='
+      # at line 45:5: '!='
       match( "!=" )
       # --> action
        print("<NE> ") 
@@ -686,7 +686,7 @@ module Simple
     end
 
     # lexer rule not! (NOT)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def not!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 22 )
@@ -696,7 +696,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 45:6: 'not'
+      # at line 46:6: 'not'
       match( "not" )
       # --> action
        print("<NOT> ") 
@@ -713,7 +713,7 @@ module Simple
     end
 
     # lexer rule and! (AND)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def and!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 23 )
@@ -723,7 +723,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 46:6: 'and'
+      # at line 47:6: 'and'
       match( "and" )
       # --> action
        print("<AND> ") 
@@ -740,7 +740,7 @@ module Simple
     end
 
     # lexer rule or! (OR)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def or!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 24 )
@@ -750,7 +750,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 47:5: 'or'
+      # at line 48:5: 'or'
       match( "or" )
       # --> action
        print("<OR> ") 
@@ -767,7 +767,7 @@ module Simple
     end
 
     # lexer rule lbrack! (LBRACK)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def lbrack!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 25 )
@@ -777,7 +777,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 48:9: '{'
+      # at line 49:9: '{'
       match( 0x7b )
       # --> action
        print("<LBRACK> ") 
@@ -794,7 +794,7 @@ module Simple
     end
 
     # lexer rule rbrack! (RBRACK)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def rbrack!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 26 )
@@ -804,7 +804,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 49:9: '}'
+      # at line 50:9: '}'
       match( 0x7d )
       # --> action
        print("<RBRACK> ") 
@@ -821,7 +821,7 @@ module Simple
     end
 
     # lexer rule lparent! (LPARENT)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def lparent!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 27 )
@@ -831,7 +831,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 50:10: '('
+      # at line 51:10: '('
       match( 0x28 )
       # --> action
        print("<LPARENT> ") 
@@ -848,7 +848,7 @@ module Simple
     end
 
     # lexer rule rparent! (RPARENT)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def rparent!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 28 )
@@ -858,7 +858,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 51:10: ')'
+      # at line 52:10: ')'
       match( 0x29 )
       # --> action
        print("<RPARENT> ") 
@@ -875,7 +875,7 @@ module Simple
     end
 
     # lexer rule lsbrack! (LSBRACK)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def lsbrack!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 29 )
@@ -885,7 +885,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 52:10: '['
+      # at line 53:10: '['
       match( 0x5b )
       # --> action
        print("<LSBRACK> ") 
@@ -902,7 +902,7 @@ module Simple
     end
 
     # lexer rule rsbrack! (RSBRACK)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def rsbrack!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 30 )
@@ -912,7 +912,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 53:10: ']'
+      # at line 54:10: ']'
       match( 0x5d )
       # --> action
        print("<RSBRACK> ") 
@@ -929,7 +929,7 @@ module Simple
     end
 
     # lexer rule comma! (COMMA)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def comma!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 31 )
@@ -939,7 +939,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 54:8: ','
+      # at line 55:8: ','
       match( 0x2c )
       # --> action
        print("<COMMA> ") 
@@ -956,7 +956,7 @@ module Simple
     end
 
     # lexer rule ref! (REF)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def ref!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 32 )
@@ -966,7 +966,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 55:6: '&'
+      # at line 56:6: '&'
       match( 0x26 )
       # --> action
        print("<REF> ") 
@@ -983,7 +983,7 @@ module Simple
     end
 
     # lexer rule semicolon! (SEMICOLON)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def semicolon!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 33 )
@@ -993,7 +993,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 56:12: ';'
+      # at line 57:12: ';'
       match( 0x3b )
       # --> action
        print("<SEMICOLON> ") 
@@ -1010,7 +1010,7 @@ module Simple
     end
 
     # lexer rule colon! (COLON)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def colon!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 34 )
@@ -1020,7 +1020,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 57:8: ':'
+      # at line 58:8: ':'
       match( 0x3a )
       # --> action
        print("<COLON> ") 
@@ -1037,7 +1037,7 @@ module Simple
     end
 
     # lexer rule plus! (PLUS)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def plus!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 35 )
@@ -1047,7 +1047,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 58:7: '+'
+      # at line 59:7: '+'
       match( 0x2b )
       # --> action
        print("<PLUS> ") 
@@ -1064,7 +1064,7 @@ module Simple
     end
 
     # lexer rule minus! (MINUS)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def minus!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 36 )
@@ -1074,7 +1074,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 59:8: '-'
+      # at line 60:8: '-'
       match( 0x2d )
       # --> action
        print("<MINUS> ") 
@@ -1091,7 +1091,7 @@ module Simple
     end
 
     # lexer rule times! (TIMES)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def times!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 37 )
@@ -1101,7 +1101,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 60:8: '*'
+      # at line 61:8: '*'
       match( 0x2a )
       # --> action
        print("<TIMES> ") 
@@ -1118,7 +1118,7 @@ module Simple
     end
 
     # lexer rule divide! (DIVIDE)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def divide!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 38 )
@@ -1128,7 +1128,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 61:9: '/'
+      # at line 62:9: '/'
       match( 0x2f )
       # --> action
        print("<DIVIDE> ") 
@@ -1145,7 +1145,7 @@ module Simple
     end
 
     # lexer rule ctei! (CTEI)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def ctei!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 39 )
@@ -1155,7 +1155,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 62:7: DIGITS
+      # at line 63:7: DIGITS
       digits!
       # --> action
        print("<CTEI> ") 
@@ -1172,7 +1172,7 @@ module Simple
     end
 
     # lexer rule ctef! (CTEF)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def ctef!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 40 )
@@ -1182,7 +1182,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 63:7: DIGITS '.' DIGITS
+      # at line 64:7: DIGITS '.' DIGITS
       digits!
       match( 0x2e )
       digits!
@@ -1201,7 +1201,7 @@ module Simple
     end
 
     # lexer rule ctes! (CTES)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def ctes!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 41 )
@@ -1211,9 +1211,9 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 64:7: '\"' ( NormalChar )* '\"'
+      # at line 65:7: '\"' ( NormalChar )* '\"'
       match( 0x22 )
-      # at line 64:11: ( NormalChar )*
+      # at line 65:11: ( NormalChar )*
       while true # decision 1
         alt_1 = 2
         look_1_0 = @input.peek( 1 )
@@ -1224,7 +1224,7 @@ module Simple
         end
         case alt_1
         when 1
-          # at line 64:12: NormalChar
+          # at line 65:12: NormalChar
           normal_char!
 
         else
@@ -1247,7 +1247,7 @@ module Simple
     end
 
     # lexer rule cteb! (CTEB)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def cteb!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 42 )
@@ -1257,7 +1257,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 65:5: ( 'true' | 'false' )
+      # at line 66:5: ( 'true' | 'false' )
       alt_2 = 2
       look_2_0 = @input.peek( 1 )
 
@@ -1270,11 +1270,11 @@ module Simple
       end
       case alt_2
       when 1
-        # at line 65:7: 'true'
+        # at line 66:7: 'true'
         match( "true" )
 
       when 2
-        # at line 65:16: 'false'
+        # at line 66:16: 'false'
         match( "false" )
         # --> action
          print("<CTEB> ") 
@@ -1292,7 +1292,7 @@ module Simple
     end
 
     # lexer rule id! (ID)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def id!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 43 )
@@ -1302,7 +1302,7 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 66:5: Identifier
+      # at line 67:5: Identifier
       identifier!
       # --> action
        print("<ID> ") 
@@ -1319,7 +1319,7 @@ module Simple
     end
 
     # lexer rule whitespace! (WHITESPACE)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def whitespace!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 44 )
@@ -1329,8 +1329,8 @@ module Simple
 
       
       # - - - - main rule block - - - -
-      # at line 67:13: ( '\\t' | ' ' | '\\r' | '\\n' )+
-      # at file 67:13: ( '\\t' | ' ' | '\\r' | '\\n' )+
+      # at line 68:13: ( '\\t' | ' ' | '\\r' | '\\n' )+
+      # at file 68:13: ( '\\t' | ' ' | '\\r' | '\\n' )+
       match_count_3 = 0
       while true
         alt_3 = 2
@@ -1378,14 +1378,14 @@ module Simple
     end
 
     # lexer rule identifier! (Identifier)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def identifier!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 45 )
 
       
       # - - - - main rule block - - - -
-      # at line 71:7: ( 'a' .. 'z' | 'A' .. 'Z' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+      # at line 72:7: ( 'a' .. 'z' | 'A' .. 'Z' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
       if @input.peek( 1 ).between?( 0x41, 0x5a ) || @input.peek( 1 ).between?( 0x61, 0x7a )
         @input.consume
       else
@@ -1395,7 +1395,7 @@ module Simple
       end
 
 
-      # at line 71:28: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+      # at line 72:28: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
       while true # decision 4
         alt_4 = 2
         look_4_0 = @input.peek( 1 )
@@ -1429,7 +1429,7 @@ module Simple
     end
 
     # lexer rule special_char! (SpecialChar)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def special_char!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 46 )
@@ -1454,14 +1454,14 @@ module Simple
     end
 
     # lexer rule normal_char! (NormalChar)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def normal_char!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 47 )
 
       
       # - - - - main rule block - - - -
-      # at line 81:7: ~ SpecialChar
+      # at line 82:7: ~ SpecialChar
       if @input.peek( 1 ).between?( 0x0, 0x32 ) || @input.peek( 1 ).between?( 0x34, 0xff )
         @input.consume
       else
@@ -1479,15 +1479,15 @@ module Simple
     end
 
     # lexer rule digits! (DIGITS)
-    # (in Simple_copy.g)
+    # (in Simple.g)
     def digits!
       # -> uncomment the next line to manually enable rule tracing
       # trace_in( __method__, 48 )
 
       
       # - - - - main rule block - - - -
-      # at line 86:7: ( '0' .. '9' )+
-      # at file 86:7: ( '0' .. '9' )+
+      # at line 87:7: ( '0' .. '9' )+
+      # at file 87:7: ( '0' .. '9' )+
       match_count_5 = 0
       while true
         alt_5 = 2
@@ -1499,7 +1499,7 @@ module Simple
         end
         case alt_5
         when 1
-          # at line 86:8: '0' .. '9'
+          # at line 87:8: '0' .. '9'
           match_range( 0x30, 0x39 )
 
         else
