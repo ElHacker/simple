@@ -11,7 +11,7 @@ class Stack
 		@stack.push item
 	end
 
-	# Remove an item from the top of the stack
+	# Removes and returns an item from the top of the stack
 	def pop
 		@stack.pop
 	end

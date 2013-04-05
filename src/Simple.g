@@ -116,8 +116,8 @@ scope {
 
   puts("\n\nCuadruples:\n")
 	\$cuadruples = $vars_block::auxiliar.cuadruples_array
-	\$cuadruples.each do | cuadruple |
-    puts(cuadruple.to_s)
+	\$cuadruples.each_with_index do | cuadruple, index |
+    puts( "#{index} : #{cuadruple.to_s}")
   end
 }
   : programa 
@@ -454,11 +454,44 @@ retorno: /* empty */
     ;
 
 condicion:
-    IF LPARENT expresion RPARENT LBRACK est RBRACK elsecondicion { print("[CONDICION] ") }
+    IF LPARENT expresion RPARENT {
+      # Generate
+      # GotoF, condition,nil,__
+      # Push count-1 to jumps stack
+      \$goto_false = "GotoF"
+      \$condition = $vars_block::auxiliar.operands_stack.look()
+      \$count = $vars_block::auxiliar.lines_counter
+      $vars_block::auxiliar.jumps_stack.push(\$count)
+			# $vars_block::auxiliar.checkCuadruple(\$goto_false, \$condition, nil)
+			\$cuadruple = Cuadruples.new(\$goto_false, \$condition, nil, nil)
+      $vars_block::auxiliar.lines_counter = $vars_block::auxiliar.lines_counter + 1
+      $vars_block::auxiliar.cuadruples_array << \$cuadruple 
+    } LBRACK est RBRACK elsecondicion { 
+      # jump = pop(jumps_stack)
+      # fill(jump, count)
+      \$jump = $vars_block::auxiliar.jumps_stack.pop()
+      \$count = $vars_block::auxiliar.lines_counter
+      $vars_block::auxiliar.cuadruples_array[\$jump].destiny = \$count 
+    }
     ;
 
 elsecondicion: /* empty */
-    | ELSE LBRACK est RBRACK { print("[ELSECONDICION] ") }
+    | ELSE {
+      # False  = pop(jumps_stack)
+      # Generate
+      #   Goto, nil, nil, __
+      #   Push count-1 to jumps stack
+      #   Fill(false, count)
+      \$goto_line = "Goto"
+      \$jump = $vars_block::auxiliar.jumps_stack.pop()
+      \$count = $vars_block::auxiliar.lines_counter
+			# $vars_block::auxiliar.checkCuadruple(\$goto_line, nil, nil)
+      \$cuadruple = Cuadruples.new(\$goto_line, nil, nil, nil)
+      $vars_block::auxiliar.cuadruples_array << \$cuadruple
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.jumps_stack.push(\$count)
+      $vars_block::auxiliar.cuadruples_array[\$jump].destiny = \$count
+    } LBRACK est RBRACK { print("[ELSECONDICION] ") }
     ;
 
 escritura:
