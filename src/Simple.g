@@ -125,7 +125,7 @@ scope {
 
 
 programa:
-    var func main
+    var func main { print("[PROGRAMA] -> Entrada aceptada\n") }
     ;
 
 var:
