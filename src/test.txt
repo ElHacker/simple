@@ -3,40 +3,15 @@ int contador = 0;
 boolean flags;
 string mensaje = "Hola mundo";
 
-function inicializa_array(int a) : void
-{
-    int iterador;
-    float p;
-    iterador = rows * contador + 5 / 2;
-    p = 2.5 * 3.2 - 4.1 + (iterador * 0.5);
-    return;
-}
-
-function numero_impresiones() : int
-{
-    contador = contador + 1 - 2 * 4 / (2 + 2 * 3);
-    print(mensaje);
-    return;
-}
-
 main()
 {
     int j;
     int num;
-    print("Inicializando array.");
-    num = 5;
-    j = 0;
-    j = j + 1;
-    j = rows * (2 + 3);
-    if ( j * 2 ) {
-      j = 3;
-      if ( j + 3) {
-        j = 6;
+    for(j = 0; j * 10; j = j + 1) {
+      if ( j + 10) {
+        j = j - 10;
+      } else {
+        j = j + 10;
       }
-    } else {
-      j = 5;
     }
-    num = num / 2.0;
-    flags = true;
-    print("Fin de programa.");
 }

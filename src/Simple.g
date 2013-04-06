@@ -253,7 +253,7 @@ idestatutos:
       $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper2, \$oper1)
       \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, nil, \$oper2)
       $vars_block::auxiliar.lines_counter = $vars_block::auxiliar.lines_counter + 1
-      $vars_block::auxiliar.cuadruples_array << \$cuadruple 
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
     }
     ;
 
@@ -299,10 +299,10 @@ exp:
 				\$destiny = { id: \$temp, type: \$resulting_type, value: nil }
 				\$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
 				$vars_block::auxiliar.lines_counter = $vars_block::auxiliar.lines_counter + 1
-				$vars_block::auxiliar.cuadruples_array << \$cuadruple
+				$vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
 				$vars_block::auxiliar.operands_stack.push( \$destiny )
 			end
-    }      
+    }
     expaux
     ;
 
@@ -332,7 +332,7 @@ termino:
 				\$destiny = { id: \$temp, type: \$resulting_type, value: nil }
 				\$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
 				$vars_block::auxiliar.lines_counter = $vars_block::auxiliar.lines_counter + 1
-				$vars_block::auxiliar.cuadruples_array << \$cuadruple
+				$vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
 				$vars_block::auxiliar.operands_stack.push( \$destiny )
 			end
     } 
@@ -457,19 +457,19 @@ condicion:
       # GotoF, condition,nil,__
       # Push count-1 to jumps stack
       \$goto_false = "GotoF"
-      \$condition = $vars_block::auxiliar.operands_stack.look()
+      \$condition = $vars_block::auxiliar.operands_stack.pop()
       \$count = $vars_block::auxiliar.lines_counter
       $vars_block::auxiliar.jumps_stack.push(\$count)
       # $vars_block::auxiliar.checkCuadruple(\$goto_false, \$condition, nil)
       \$cuadruple = Cuadruples.new(\$goto_false, \$condition, nil, nil)
-      $vars_block::auxiliar.lines_counter = $vars_block::auxiliar.lines_counter + 1
-      $vars_block::auxiliar.cuadruples_array << \$cuadruple 
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+      $vars_block::auxiliar.lines_counter += 1
     } LBRACK est RBRACK elsecondicion { 
       # jump = pop(jumps_stack)
       # fill(jump, count)
       \$jump = $vars_block::auxiliar.jumps_stack.pop()
       \$count = $vars_block::auxiliar.lines_counter
-      $vars_block::auxiliar.cuadruples_array[\$jump].destiny = \$count 
+      $vars_block::auxiliar.cuadruples_array[\$jump].destiny = \$count
     }
     ;
 
@@ -485,11 +485,11 @@ elsecondicion: /* empty */
       \$count = $vars_block::auxiliar.lines_counter
       # $vars_block::auxiliar.checkCuadruple(\$goto_line, nil, nil)
       \$cuadruple = Cuadruples.new(\$goto_line, nil, nil, nil)
-      $vars_block::auxiliar.cuadruples_array << \$cuadruple
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.jumps_stack.push(\$count)
-      $vars_block::auxiliar.cuadruples_array[\$jump].destiny = \$count
-    } LBRACK est RBRACK { print("[ELSECONDICION] ") }
+      $vars_block::auxiliar.cuadruples_array[\$jump].destiny = $vars_block::auxiliar.lines_counter 
+    } LBRACK est RBRACK
     ;
 
 escritura:
@@ -507,64 +507,58 @@ argsescrituraaux: /* empty */
 ciclo:
     FOR LPARENT cicloaux SEMICOLON {
       # Insert the next line cuadruple in jumps_stack
-      $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter )
+      $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter)
     } expresion SEMICOLON {
-      \$condition = $vars_block::auxiliar.operands_stack.look()
-      $vars_block::auxiliar.operands_stack.pop()
+      \$condition = $vars_block::auxiliar.operands_stack.pop()
       # Insert the next line cuadruple in jumps_stack
-      $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter )
+      $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter)
       # Create the GotoF cuadruple
       \$goto_line = "GotoF"
-      \$cuadruple = Cuadruple.new(\$goto_line, \$condition, nil, nil)
+      \$cuadruple = Cuadruples.new(\$goto_line, \$condition, nil, nil)
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       $vars_block::auxiliar.lines_counter += 1
       # Insert the next line cuadruple in jumps_stack
-      $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter )
+      $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter)
       # Create the Goto cuadruple
       \$goto_line = "Goto"
-      \$cuadruple = Cuadruple.new(\$goto_line, nil, nil, nil)
+      \$cuadruple = Cuadruples.new(\$goto_line, nil, nil, nil)
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       $vars_block::auxiliar.lines_counter += 1
       # Insert the next line cuadruple in jumps_stack
-      $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter )
+      $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter)
     } cicloaux RPARENT {
       \$aux_jumps = Stack.new
       3.times {
-	\$aux_jumps.push( $vars_block::auxiliar.jumps_stack.look() )
-	$vars_block::auxiliar.jumps_stack.pop()
+        \$aux_jumps.push( $vars_block::auxiliar.jumps_stack.pop() )
       }
       # Start of the for condition
-      \$for_cond_ini = $vars_block::auxiliar.jumps_stack.look()
-      $vars_block::auxiliar.jumps_stack.pop()
+      \$for_cond_ini = $vars_block::auxiliar.jumps_stack.pop()
       # Create a Goto cuadruple
       \$goto_line = "Goto"
-      \$cuadruple = Cuadruple.new(\$goto_line, nil, nil, \$for_cond_ini)
-      $vars_block::auxiliar.cuadruples.push( \$cuadruple )
+      \$cuadruple = Cuadruples.new(\$goto_line, nil, nil, \$for_cond_ini)
+      $vars_block::auxiliar.cuadruples_array.push( \$cuadruple )
       $vars_block::auxiliar.lines_counter += 1
       # Transfer one line from aux_jumps to jumps_stack
-      $vars_block::auxiliar.jumps_stack.push( \$aux_jumps.look() )
-      \$aux_jumps.pop()
+      $vars_block::auxiliar.jumps_stack.push( \$aux_jumps.pop() )
       # Get the line of the Goto cuadruple in the for
-      \$for_cond_true = \$aux_jumps.look()
-      \$aux_jumps.pop()
+      \$for_cond_true = \$aux_jumps.pop()
       # Fill that cuadruple with the next cuadruple line
-      $vars_block::auxiliar.cuadruples[\$for_cond_true].destiny = $vars_block::auxiliar.lines_counter
+      $vars_block::auxiliar.cuadruples_array[\$for_cond_true].destiny = $vars_block::auxiliar.lines_counter
       # Transfer another line from aux_jumps to jumps_stack
       # Transfer one line from aux_jumps to jumps_stack
-      $vars_block::auxiliar.jumps_stack.push( \$aux_jumps.look() )
-      \$aux_jumps.pop()
+      $vars_block::auxiliar.jumps_stack.push( \$aux_jumps.pop() )
     } LBRACK est RBRACK {
-      # Get the line of the for's increment cuadruple
-      \$for_increment = $vars_block::auxiliar.jumps_stack.look()
-      $vars_block::auxiliar.jumps_stack.pop()
+      # Get the line of the for increment cuadruple
+      \$for_increment = $vars_block::auxiliar.jumps_stack.pop()
       # Create a Goto cuadruple with that destination
       \$goto_line = "Goto"
-      \$cuadruple = Cuadruple.new(\$goto_line, nil, nil, \$for_increment)
-      $vars_block::auxiliar.cuadruples.push( \$cuadruple )
+      \$cuadruple = Cuadruples.new(\$goto_line, nil, nil, \$for_increment)
+      $vars_block::auxiliar.cuadruples_array.push( \$cuadruple )
       $vars_block::auxiliar.lines_counter += 1
       # Get the line of the GotoF cuadruple in the for
-      \$for_cond_false = $vars_block::auxiliar.jumps_stack.look()
-      $vars_block::auxiliar.jumps_stack.pop()
+      \$for_cond_false = $vars_block::auxiliar.jumps_stack.pop()
       # Fill that cuadruple
-      $vars_block::auxiliar.cuadruples[\$for_cond_false].destiny = $vars_block::auxiliar.lines_counter
+      $vars_block::auxiliar.cuadruples_array[\$for_cond_false].destiny = $vars_block::auxiliar.lines_counter
     }
     ;
 
@@ -573,9 +567,20 @@ cicloaux: /* empty */
       $vars_block::auxiliar.addVariableToOperadStack( $ID.text )
       # For now, we ignore the array
     } cicloauxx ASSIGN {
-      # Change this with the value for '='
+      # Change this with the value for =
       $vars_block::auxiliar.operations_stack.push( $ASSIGN.text )
-    } exp
+    } exp {
+      \$next_operation = $vars_block::auxiliar.operations_stack.look()
+      $vars_block::auxiliar.operations_stack.pop()
+      \$oper1 = $vars_block::auxiliar.operands_stack.look()
+      $vars_block::auxiliar.operands_stack.pop()
+      \$oper2 = $vars_block::auxiliar.operands_stack.look()
+      $vars_block::auxiliar.operands_stack.pop()
+      $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper2, \$oper1)
+      \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, nil, \$oper2)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+    }
     ;
 
 cicloauxx: /* empty */
