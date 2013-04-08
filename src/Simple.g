@@ -22,49 +22,49 @@ options {
 }
 
 /* Scanner Rules */
-INT: 'int' { print("<INT> ") };
-FLOAT: 'float' { print("<FLOAT> ") };
-BOOLEAN: 'boolean' { print("<BOOLEAN> ") };
-STRING: 'string' { print("<STRING> ") };
-ARRAY: 'array' { print("<ARRAY> ") };
-MAIN: 'main' { print("<MAIN> ") };
-VOID: 'void' { print("<VOID> ") };
-FUNCTION: 'function' { print("<FUNCTION> ") };
-RETURN: 'return' { print("<RETURN> ") };
-FOR: 'for' { print("<FOR> ") };
-IF: 'if' { print("<IF> ") };
-ELSE: 'else' { print("<ELSE> ") };
-PRINT: 'print' { print("<PRINT> ") };
-INPUT: 'input' { print("<INPUT> ") };
-ASSIGN: '=' { print("<ASSIGN> ") };
-LT: '<' { print("<LT> ") };
-LE: '<=' { print("<LE> ") };
-GT: '>' { print("<GT> ") };
-GE: '>=' { print("<GE> ") };
-EQ: '==' { print("<EQ> ") };
-NE: '!=' { print("<NE> ") };
-NOT: 'not' { print("<NOT> ") };
-AND: 'and' { print("<AND> ") };
-OR: 'or' { print("<OR> ") };
-LBRACK: '{' { print("<LBRACK> ") };
-RBRACK: '}' { print("<RBRACK> ") };
-LPARENT: '(' { print("<LPARENT> ") };
-RPARENT: ')' { print("<RPARENT> ") };
-LSBRACK: '[' { print("<LSBRACK> ") }; 
-RSBRACK: ']' { print("<RSBRACK> ") };
-COMMA: ',' { print("<COMMA> ") };
-REF: '&' { print("<REF> ") };
-SEMICOLON: ';' { print("<SEMICOLON> ") };
-COLON: ':' { print("<COLON> ") };
-PLUS: '+' { print("<PLUS> ") };
-MINUS: '-' { print("<MINUS> ") };
-TIMES: '*' { print("<TIMES> ") };
-DIVIDE: '/' { print("<DIVIDE> ") };
-CTEI: DIGITS { print("<CTEI> ") };
-CTEF: DIGITS '.' DIGITS { print("<CTEF> ") };
-CTES: '"' (NormalChar)* '"' { print("<CTES> ") };
-CTEB: 'true' | 'false' { print("<CTEB> ") };
-ID: Identifier { print("<ID> ") };
+INT: 'int';
+FLOAT: 'float';
+BOOLEAN: 'boolean'; 
+STRING: 'string';
+ARRAY: 'array'; 
+MAIN: 'main';
+VOID: 'void';
+FUNCTION: 'function'; 
+RETURN: 'return';
+FOR: 'for';
+IF: 'if';
+ELSE: 'else';
+PRINT: 'print';
+INPUT: 'input';
+ASSIGN: '=';
+LT: '<';
+LE: '<=';
+GT: '>';
+GE: '>=';
+EQ: '==';
+NE: '!=';
+NOT: 'not';
+AND: 'and';
+OR: 'or';
+LBRACK: '{';
+RBRACK: '}';
+LPARENT: '(';
+RPARENT: ')';
+LSBRACK: '[';
+RSBRACK: ']';
+COMMA: ',';
+REF: '&';
+SEMICOLON: ';';
+COLON: ':';
+PLUS: '+';
+MINUS: '-';
+TIMES: '*';
+DIVIDE: '/';
+CTEI: DIGITS;
+CTEF: DIGITS '.' DIGITS;
+CTES: '"' (NormalChar)* '"';
+CTEB: 'true' | 'false';
+ID: Identifier;
 WHITESPACE: ('\t' | ' ' | '\r' | '\n')+ { $channel = HIDDEN; };
 
 fragment
@@ -91,32 +91,32 @@ DIGITS
 /* block to keep the recognized variables */
 vars_block
 scope {
-	auxiliar;
+  auxiliar;
 }
 
 @init {
-	$vars_block::auxiliar = Auxiliar.new
+  $vars_block::auxiliar = Auxiliar.new
 }
 
 /* Callback executed at the end of programa */
 @after {
   puts("\n\nFound this global variables: \n")
-	\$global = $vars_block::auxiliar.global
+  \$global = $vars_block::auxiliar.global
   \$global.keys.sort.each do | key |
     \$var_info = \$global[key]
     print("#{key} : type=#{\$var_info[:type]}, value=#{\$var_info[:value]}\n")
   end
 
   puts("\n\nFound this functions: \n")
-	\$functions = $vars_block::auxiliar.procedures
-	\$functions.keys.sort.each do | key |
+  \$functions = $vars_block::auxiliar.procedures
+  \$functions.keys.sort.each do | key |
     \$proc_info = \$functions[key]
     print("#{key} : #{\$proc_info}\n")
   end
 
   puts("\n\nCuadruples:\n")
-	\$cuadruples = $vars_block::auxiliar.cuadruples_array
-	\$cuadruples.each_with_index do | cuadruple, index |
+  \$cuadruples = $vars_block::auxiliar.cuadruples_array
+  \$cuadruples.each_with_index do | cuadruple, index |
     puts( "#{index} : #{cuadruple.to_s}")
   end
 }
@@ -135,23 +135,23 @@ var:
 variables:
     INT ID as_int=assignint SEMICOLON {
       \$var_info = { id: $ID.text, type: $INT.text, value: $as_int.value }
-			$vars_block::auxiliar.addVariable(\$var_info)
+      $vars_block::auxiliar.addVariable(\$var_info)
     }
     | FLOAT ID as_float=assignfloat SEMICOLON { 
-			\$var_info = { id: $ID.text, type: $FLOAT.text, value: $as_float.value } 
-			$vars_block::auxiliar.addVariable(\$var_info)
+      \$var_info = { id: $ID.text, type: $FLOAT.text, value: $as_float.value } 
+      $vars_block::auxiliar.addVariable(\$var_info)
     }
     | STRING ID as_string=assignstring SEMICOLON { 
-			\$var_info = { id: $ID.text, type: $STRING.text, value: $as_string.value }
-			$vars_block::auxiliar.addVariable(\$var_info)
+      \$var_info = { id: $ID.text, type: $STRING.text, value: $as_string.value }
+      $vars_block::auxiliar.addVariable(\$var_info)
     }
     | BOOLEAN ID as_boolean=assignboolean SEMICOLON { 
-			\$var_info = { id: $ID.text, type: $BOOLEAN.text, value: $as_boolean.value }
-			$vars_block::auxiliar.addVariable(\$var_info)
+      \$var_info = { id: $ID.text, type: $BOOLEAN.text, value: $as_boolean.value }
+      $vars_block::auxiliar.addVariable(\$var_info)
     }
     | ARRAY data_type=tipo ID COLON exp SEMICOLON { 
-			\$var_info = { id: $ID.text, type: "[#{$data_type.type}]" }
-			$vars_block::auxiliar.addVariable(\$var_info)
+      \$var_info = { id: $ID.text, type: "[#{$data_type.type}]" }
+      $vars_block::auxiliar.addVariable(\$var_info)
     } /* TODO: missing size of array */
     ;
 
@@ -189,26 +189,26 @@ func:
 
 funcion:
     FUNCTION ID { 
-			$vars_block::auxiliar.scope_location = $ID.text
-		} LPARENT arguments=argumentos RPARENT COLON return_type=retornofunc { 
-			$vars_block::auxiliar.addProcedure(\$arguments, \$return_type)
+      $vars_block::auxiliar.scope_location = $ID.text
+    } LPARENT arguments=argumentos RPARENT COLON return_type=retornofunc { 
+      $vars_block::auxiliar.addProcedure(\$arguments, \$return_type)
     } LBRACK var est RETURN retorno SEMICOLON RBRACK {
-			$vars_block::auxiliar.scope_location = nil
-		}
+      $vars_block::auxiliar.scope_location = nil
+    }
     ;
 
 argumentos returns[list]: /* empty */
     | data_type=tipo ref ID more_args=argumentoaux {
-        $list = [ {type: $data_type.text, id: $ID.text } ]
-        $list.concat(more_args.list) unless more_args.list.nil?
-      }
+      $list = [ {type: $data_type.text, id: $ID.text } ]
+      $list.concat(more_args.list) unless more_args.list.nil?
+    }
     ;
 
 argumentoaux returns[list]: /* empty */
     | COMMA data_type=tipo ref ID more_args=argumentoaux { 
-        $list = [ {type: $data_type.type, id: $ID.text } ]
-        $list.concat(more_args.list) unless more_args.list.nil?
-      }
+      $list = [ {type: $data_type.type, id: $ID.text } ]
+      $list.concat(more_args.list) unless more_args.list.nil?
+    }
     ;
 
 ref: /* empty */
@@ -274,34 +274,66 @@ array:
     ;
 
 expresion:
-    exp /*expresionaux*/ { print("[EXPRESION] ") }
+    exp expcomp {
+      \$next_operation = $vars_block::auxiliar.operations_stack.look()
+      if (not \$next_operation.nil?) && (['or', 'and'].include?(\$next_operation))
+	$vars_block::auxiliar.operations_stack.pop()
+	\$oper2 = $vars_block::auxiliar.operands_stack.pop()
+	\$oper1 = $vars_block::auxiliar.operands_stack.pop()
+	\$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
+	# In the future, use the nextTemporalVariable
+	\$temp = 't' + $vars_block::auxiliar.next_temp.to_s
+	$vars_block::auxiliar.next_temp += 1
+	\$destiny = { id: \$temp, type: \$resulting_type, value: nil }
+	\$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
+	$vars_block::auxiliar.lines_counter += 1
+	$vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+	$vars_block::auxiliar.operands_stack.push(\$destiny)
+      end
+    } expresionaux { print("[EXPRESION] ") }
     ;
 
-/* TODO: Correct the grammar in 'comparacion' */
 expresionaux: /* empty */
-    | comparacion expresion { print("[EXPRESIONAX] ") } 
-    | logico expresion { print("[EXPRESIONAX] ") }
+    | logico expresion
     ;
+
+expcomp: /* empty */
+  | comparacion exp { 
+    \$next_operation = $vars_block::auxiliar.operations_stack.look()
+    if (not \$next_operation.nil?) && (['<', '<=', '>', '>=', '==', '!='].include?(\$next_operation))
+      $vars_block::auxiliar.operations_stack.pop()
+      \$oper2 = $vars_block::auxiliar.operands_stack.pop()
+      \$oper1 = $vars_block::auxiliar.operands_stack.pop()
+      \$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
+      # In the future, use the nextTemporalVariable
+      \$temp = 't' + $vars_block::auxiliar.next_temp.to_s
+      $vars_block::auxiliar.next_temp += 1
+      \$destiny = { id: \$temp, type: \$resulting_type, value: nil }
+      \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+      $vars_block::auxiliar.operands_stack.push(\$destiny)
+    end
+  }
+  ;
 
 exp:
     termino {
       \$next_operation = $vars_block::auxiliar.operations_stack.look()
-			if (not \$next_operation.nil?) && (\$next_operation == '+' || \$next_operation == '-')
-				$vars_block::auxiliar.operations_stack.pop()
-				\$oper2 = $vars_block::auxiliar.operands_stack.look()
-				$vars_block::auxiliar.operands_stack.pop()
-				\$oper1 = $vars_block::auxiliar.operands_stack.look()
-				$vars_block::auxiliar.operands_stack.pop()
-				\$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
-				# In the future, use the nextTemporalVariable
-				\$temp = 't' + $vars_block::auxiliar.next_temp.to_s
-				$vars_block::auxiliar.next_temp = $vars_block::auxiliar.next_temp + 1
-				\$destiny = { id: \$temp, type: \$resulting_type, value: nil }
-				\$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
-				$vars_block::auxiliar.lines_counter = $vars_block::auxiliar.lines_counter + 1
-				$vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
-				$vars_block::auxiliar.operands_stack.push( \$destiny )
-			end
+      if (not \$next_operation.nil?) && (\$next_operation == '+' || \$next_operation == '-')
+	$vars_block::auxiliar.operations_stack.pop()
+	\$oper2 = $vars_block::auxiliar.operands_stack.pop()
+	\$oper1 = $vars_block::auxiliar.operands_stack.pop()
+	\$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
+	# In the future, use the nextTemporalVariable
+	\$temp = 't' + $vars_block::auxiliar.next_temp.to_s
+	$vars_block::auxiliar.next_temp += 1
+	\$destiny = { id: \$temp, type: \$resulting_type, value: nil }
+	\$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
+	$vars_block::auxiliar.lines_counter += 1
+	$vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+	$vars_block::auxiliar.operands_stack.push(\$destiny)
+      end
     }
     expaux
     ;
@@ -321,30 +353,33 @@ termino:
     factor { 
       \$next_operation = $vars_block::auxiliar.operations_stack.look()
       if (not \$next_operation.nil?) && (\$next_operation == '*' || \$next_operation == '/')
-				$vars_block::auxiliar.operations_stack.pop()
-				\$oper2 = $vars_block::auxiliar.operands_stack.look()
-				$vars_block::auxiliar.operands_stack.pop()
-				\$oper1 = $vars_block::auxiliar.operands_stack.look()
-				$vars_block::auxiliar.operands_stack.pop()
-				\$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
-				\$temp = 't' + $vars_block::auxiliar.next_temp.to_s
-				$vars_block::auxiliar.next_temp = $vars_block::auxiliar.next_temp + 1
-				\$destiny = { id: \$temp, type: \$resulting_type, value: nil }
-				\$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
-				$vars_block::auxiliar.lines_counter = $vars_block::auxiliar.lines_counter + 1
-				$vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
-				$vars_block::auxiliar.operands_stack.push( \$destiny )
-			end
+	$vars_block::auxiliar.operations_stack.pop()
+	\$oper2 = $vars_block::auxiliar.operands_stack.look()
+	$vars_block::auxiliar.operands_stack.pop()
+	\$oper1 = $vars_block::auxiliar.operands_stack.look()
+	$vars_block::auxiliar.operands_stack.pop()
+	\$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
+	# Change this in the future with nextTemporalVariable
+	\$temp = 't' + $vars_block::auxiliar.next_temp.to_s
+	$vars_block::auxiliar.next_temp += 1
+	\$destiny = { id: \$temp, type: \$resulting_type, value: nil }
+	\$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
+	$vars_block::auxiliar.lines_counter += 1
+	$vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+	$vars_block::auxiliar.operands_stack.push( \$destiny )
+      end
     } 
     terminoaux
     ;
 
 terminoaux: /* empty */
     | TIMES {
+      # Change this with the value for *
       $vars_block::auxiliar.operations_stack.push( $TIMES.text )
     } 
     termino 
     | DIVIDE {
+      # Change this with the value for /
       $vars_block::auxiliar.operations_stack.push( $DIVIDE.text )
     }
     termino 
@@ -352,10 +387,26 @@ terminoaux: /* empty */
 
 /* TODO: Corregir la parte del NOT para parentesis y expresiones, y del signo */
 factor:
-    NOT notfactor { print("[FACTOR] ") }
+    NOT {
+      # Change this with the value for not
+      $vars_block::auxiliar.operations_stack.push( $NOT.text )
+    } notfactor {
+      # Gets the last element added to the operands_stack
+      \$last_operand = $vars_block::auxiliar.operands_stack.pop()
+      \$next_operation = $vars_block::auxiliar.operations_stack.pop()
+      \$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1)
+      # In the future, use the nextTemporalVariable
+      \$temp = 't' + $vars_block::auxiliar.next_temp.to_s
+      $vars_block::auxiliar.next_temp += 1
+      \$destiny = { id: \$temp, type: \$resulting_type, value: nil }
+      \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, nil, \$destiny)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+      $vars_block::auxiliar.operands_stack.push(\$destiny)
+    }
     | LPARENT {
       $vars_block::auxiliar.operations_stack.push( $LPARENT.text )
-    } exp RPARENT {
+    } expresion RPARENT {
       $vars_block::auxiliar.operations_stack.pop()
     }
     /*| sign varcte */
@@ -363,34 +414,38 @@ factor:
     ;
 
 notfactor:
-    LPARENT exp RPARENT { print("[NOTFACTOR] ") }
-    | varcte { print("[NOTFACTOR] ") }
+    LPARENT {
+      $vars_block::auxiliar.operations_stack.push( $LPARENT.text )
+    } expresion RPARENT {
+      $vars_block::auxiliar.operations_stack.pop()
+    }
+    | varcte
     ;
 
 sign:
     PLUS {
-	$vars_block::auxiliar.sign_variable = $PLUS.text
+      $vars_block::auxiliar.sign_variable = $PLUS.text
     }
     | MINUS {
-	$vars_block::auxiliar.sign_variable = $MINUS.text
+      $vars_block::auxiliar.sign_variable = $MINUS.text
     }
     ;
 
 varcte:
     ID idvarcte {
       \$id = $ID.text
-			\$var = $vars_block::auxiliar.findVariable(\$id)
-			if not $vars_block::auxiliar.sign_variable.nil?
-				if \$var[:type] == 'string'
-					abort("\nERROR: Cannot apply #{$vars_block::auxiliar.sign_variable} to string #{\$var[:id]}\n")
-				elsif \$var[:type] == 'boolean'
-					abort("\nERRO: Cannot apply #{$vars_block::auxiliar.sign_variable} to boolean #{\$var[:id]}\n")
-				elsif $vars_block::auxiliar.sign_variable == '-'
-					\$var[:value] = - \$var[:value]
-					$vars_block::auxiliar.sign_variable = nil
-				end
-			end
-			$vars_block::auxiliar.operands_stack.push( \$var )
+      \$var = $vars_block::auxiliar.findVariable(\$id)
+      if not $vars_block::auxiliar.sign_variable.nil?
+	if \$var[:type] == 'string'
+	  abort("\nERROR: Cannot apply #{$vars_block::auxiliar.sign_variable} to string #{\$var[:id]}\n")
+	elsif \$var[:type] == 'boolean'
+	  abort("\nERROR: Cannot apply #{$vars_block::auxiliar.sign_variable} to boolean #{\$var[:id]}\n")
+	elsif $vars_block::auxiliar.sign_variable == '-'
+	  \$var[:value] = - \$var[:value]
+	  $vars_block::auxiliar.sign_variable = nil
+	end
+      end
+      $vars_block::auxiliar.operands_stack.push( \$var )
     }
     | CTEI {
       \$var = { id: nil, type: 'int', value: $CTEI.text.to_i }
@@ -421,21 +476,29 @@ idvarcte: /* empty */
 
 comparacion:
     LT { 
-	$vars_block::auxiliar.operations_stack.push( $LT.text )
+      # Change this with the value for <
+      $vars_block::auxiliar.operations_stack.push( $LT.text )
     }
     | LE { 
-	$vars_block::auxiliar.operations_stack.push( $LE.text )
+      # Change this with the value for <=
+      $vars_block::auxiliar.operations_stack.push( $LE.text )
     }
     | GT { 
-	$vars_block::auxiliar.operations_stack.push( $GT.text )
+      # Change this with the value for >
+      $vars_block::auxiliar.operations_stack.push( $GT.text )
     }
     | GE {
-	$vars_block::auxiliar.operations_stack.push( $GE.text )
+      # Change this with the value for >=
+      $vars_block::auxiliar.operations_stack.push( $GE.text )
     }
     | EQ {
-	$vars_block::auxiliar.operations_stack.push( $EQ.text )
+      # Change this with the value for == 
+      $vars_block::auxiliar.operations_stack.push( $EQ.text )
     }
-    | NE { print("[COMPARACION] ") }
+    | NE { 
+      # Change this with the value for !=
+      $vars_block::auxiliar.operations_stack.push( $NE.text )
+    }
     ;
 
 logico:
@@ -460,13 +523,10 @@ condicion:
       \$condition = $vars_block::auxiliar.operands_stack.pop()
       \$count = $vars_block::auxiliar.lines_counter
       $vars_block::auxiliar.jumps_stack.push(\$count)
-      # $vars_block::auxiliar.checkCuadruple(\$goto_false, \$condition, nil)
       \$cuadruple = Cuadruples.new(\$goto_false, \$condition, nil, nil)
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       $vars_block::auxiliar.lines_counter += 1
     } LBRACK est RBRACK elsecondicion { 
-      # jump = pop(jumps_stack)
-      # fill(jump, count)
       \$jump = $vars_block::auxiliar.jumps_stack.pop()
       \$count = $vars_block::auxiliar.lines_counter
       $vars_block::auxiliar.cuadruples_array[\$jump].destiny = \$count
@@ -483,7 +543,6 @@ elsecondicion: /* empty */
       \$goto_line = "Goto"
       \$jump = $vars_block::auxiliar.jumps_stack.pop()
       \$count = $vars_block::auxiliar.lines_counter
-      # $vars_block::auxiliar.checkCuadruple(\$goto_line, nil, nil)
       \$cuadruple = Cuadruples.new(\$goto_line, nil, nil, nil)
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       $vars_block::auxiliar.lines_counter += 1
@@ -593,11 +652,11 @@ lectura:
 
 main:
     MAIN { 
-			$vars_block::auxiliar.scope_location = $MAIN.text 
-			if not $vars_block::auxiliar.procedures.has_key?($vars_block::auxiliar.scope_location)
-				$vars_block::auxiliar.addProcedure(nil, 'void')
-			else
-				abort("\nERROR: The program can only have one main procedure\n")
-			end
+      $vars_block::auxiliar.scope_location = $MAIN.text 
+      if not $vars_block::auxiliar.procedures.has_key?($vars_block::auxiliar.scope_location)
+	$vars_block::auxiliar.addProcedure(nil, 'void')
+      else
+	abort("\nERROR: The program can only have one main procedure\n")
+      end
     } LPARENT RPARENT LBRACK var est RBRACK  { print("[MAIN] ") }
     ;

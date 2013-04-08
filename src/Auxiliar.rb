@@ -59,7 +59,8 @@ class Auxiliar
 	'=' => 'int', 
 	'and' => 'boolean',
 	'or' => 'boolean'
-      }
+      },
+      'not' => 'boolean'
     },
     'float' => {
       'int' => {
@@ -95,8 +96,9 @@ class Auxiliar
       'boolean' => {
 	'=' => 'float', 
 	'and' => 'boolean',
-	'or' => 'boolean',
-      }
+	'or' => 'boolean'
+      },
+      'not' => 'boolean'
     },
     'string' => {
       'string' => {
@@ -115,7 +117,8 @@ class Auxiliar
 	'=' => 'boolean',
 	'and' => 'boolean',
 	'or' => 'boolean'
-      }
+      },
+      'not' => 'boolean'
     }
   }
   end
@@ -181,15 +184,20 @@ class Auxiliar
   # +oper2+:: Operand number 2
   # Return:
   # +resulting_type+:: Resulting type of the semanthic cube
-  def checkCuadruple(next_operation, oper1, oper2)
-    # Abort if the data types are not compatibles
-    abort("\nERROR: type mismatch with #{oper1[:id]} aka '#{oper1[:type]}' and #{oper2[:id]} aka '#{oper1[:type]}'\n") if @semanthic_cube[oper1[:type]][oper2[:type]].nil?
-    resulting_type = @semanthic_cube[oper1[:type]][oper2[:type]][next_operation]
-    # Abort if the operand cannot be applyed to the data types
-    abort("\nERROR: cannot apply '#{next_operation}' to #{oper1[:id]} aka '#{oper1[:type]}' and #{oper2[:id]} aka '#{oper2[:type]}'\n") if resulting_type.nil?
-    # Emit a warning when casting is necessary
-    print("\nWARNING: '#{resulting_type}' to '#{oper1[:type]}'\n") if oper1[:type] != resulting_type
-    return resulting_type
+  def checkCuadruple(next_operation, oper1, oper2 = nil)
+    if oper2.nil?
+      # Abort if the unary operation cannot be applyed
+      abort("\nERROR: cannot apply '#{next_operation}' to #{oper1[:id]} aka '#{oper1[:type]}'\n") if @semanthic_cube[oper1[:type]][next_operation].nil?
+    else
+      # Abort if the data types are not compatibles
+      abort("\nERROR: type mismatch with #{oper1[:id]} aka '#{oper1[:type]}' and #{oper2[:id]} aka '#{oper1[:type]}'\n") if @semanthic_cube[oper1[:type]][oper2[:type]].nil?
+      resulting_type = @semanthic_cube[oper1[:type]][oper2[:type]][next_operation]
+      # Abort if the operand cannot be applyed to the data types
+      abort("\nERROR: cannot apply '#{next_operation}' to #{oper1[:id]} aka '#{oper1[:type]}' and #{oper2[:id]} aka '#{oper2[:type]}'\n") if resulting_type.nil?
+      # Emit a warning when casting is necessary
+      print("\nWARNING: '#{resulting_type}' to '#{oper1[:type]}'\n") if oper1[:type] != resulting_type
+      return resulting_type
+    end
   end
 
   # Return the address of the next temporal variable, according with the data type
