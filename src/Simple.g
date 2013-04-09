@@ -244,12 +244,9 @@ idestatutos:
     | ASSIGN {
       $vars_block::auxiliar.operations_stack.push( $ASSIGN.text )
     } expresion {
-      \$next_operation = $vars_block::auxiliar.operations_stack.look()
-      $vars_block::auxiliar.operations_stack.pop()
-      \$oper1 = $vars_block::auxiliar.operands_stack.look()
-      $vars_block::auxiliar.operands_stack.pop()
-      \$oper2 = $vars_block::auxiliar.operands_stack.look()
-      $vars_block::auxiliar.operands_stack.pop()
+      \$next_operation = $vars_block::auxiliar.operations_stack.pop()
+      \$oper1 = $vars_block::auxiliar.operands_stack.pop()
+      \$oper2 = $vars_block::auxiliar.operands_stack.pop()
       $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper2, \$oper1)
       \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, nil, \$oper2)
       $vars_block::auxiliar.lines_counter = $vars_block::auxiliar.lines_counter + 1
@@ -394,12 +391,12 @@ factor:
       # Gets the last element added to the operands_stack
       \$last_operand = $vars_block::auxiliar.operands_stack.pop()
       \$next_operation = $vars_block::auxiliar.operations_stack.pop()
-      \$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1)
+      \$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$last_operand)
       # In the future, use the nextTemporalVariable
       \$temp = 't' + $vars_block::auxiliar.next_temp.to_s
       $vars_block::auxiliar.next_temp += 1
       \$destiny = { id: \$temp, type: \$resulting_type, value: nil }
-      \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, nil, \$destiny)
+      \$cuadruple = Cuadruples.new(\$next_operation, \$last_operand, nil, \$destiny)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       $vars_block::auxiliar.operands_stack.push(\$destiny)

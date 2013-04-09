@@ -184,10 +184,11 @@ class Auxiliar
   # +oper2+:: Operand number 2
   # Return:
   # +resulting_type+:: Resulting type of the semanthic cube
-  def checkCuadruple(next_operation, oper1, oper2 = nil)
+  def checkCuadruple(next_operation, oper1, oper2=nil)
     if oper2.nil?
       # Abort if the unary operation cannot be applyed
       abort("\nERROR: cannot apply '#{next_operation}' to #{oper1[:id]} aka '#{oper1[:type]}'\n") if @semanthic_cube[oper1[:type]][next_operation].nil?
+      return @semanthic_cube[oper1[:type]][next_operation]
     else
       # Abort if the data types are not compatibles
       abort("\nERROR: type mismatch with #{oper1[:id]} aka '#{oper1[:type]}' and #{oper2[:id]} aka '#{oper1[:type]}'\n") if @semanthic_cube[oper1[:type]][oper2[:type]].nil?
