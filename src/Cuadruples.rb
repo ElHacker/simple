@@ -8,6 +8,6 @@ class Cuadruples
   end
 
   def to_s
-    return "Operation: #{@operation}, Operand one: #{@operand_one}, Operand two: #{@operand_two}, Destination: #{@destiny}"
+    return "op: #{@operation}, op1: #{@operand_one}, op2: #{@operand_two}, dest: #{@destiny}"
   end
 end

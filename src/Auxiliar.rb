@@ -9,7 +9,8 @@ class Auxiliar
 
   attr_accessor :global, :procedures, :operands_stack, :operations_stack,
     :jumps_stack, :lines_counter, :cuadruples_array, :scope_location,
-    :sign_variable, :next_temp, :semanthic_cube
+    :arguments, :sign_variable, :next_temp, :semanthic_cube,
+    :data_type, :is_ref
 
   # Constructor of the class
   def initialize
@@ -19,10 +20,13 @@ class Auxiliar
     @operations_stack = Stack.new
     @jumps_stack = Stack.new
     @lines_counter = 0
-    @cuadruples_array = []
+    @cuadruples_array = Array.new
     @scope_location = nil
     @sing_variable = nil
     @next_temp = 1
+    @arguments = Array.new
+    @data_type = nil
+    @is_ref = false
     @semanthic_cube = {
     'int' => {
       'int' => {
@@ -125,34 +129,61 @@ class Auxiliar
 
   # Adds a procedure to the global table.
   # The name of the procedure is obtained through @scope_location, for reasons of flexibility
-  # Params:
-  # +arguments+:: Information of the arguments of the function: id, type, isRef
-  # +ret_type+:: Information of the returning type 
-  def addProcedure(arguments, ret_type)
+  # The argumens of the procedure are obtained through @arguments, and
+  # the returning type is obtained through @data_type
+  def addProcedure()
     if not @procedures.has_key?(@scope_location)
-      @procedures[@scope_location] = { id: @scope_location, args: arguments, local_vars: Hash.new, return_type: ret_type }
+      @procedures[@scope_location] = { id: @scope_location, args: @arguments.dup(),
+        local_vars: Hash.new, return_type: @data_type, line: @lines_counter }
     else
-      abort("\nERROR: Procedure #{@scope_location} already defined\n")
+      abort("\nERROR: Procedure '#{@scope_location}' already defined\n")
     end
   end
 
   # Adds a variable to the corresponding table of variables (global o local)
   # Params:
   # +var_info+:: Information of the variable, a dictionary with the following
-  # information: id, type, value (address in the virtual machine)
+  # +information+:: id, type, value (address in the virtual machine)
   def addVariable(var_info)
-    if @scope_location == nil
+    if @scope_location.nil?
       if @global.has_key?(var_info[:id])
-    	abort("\nERROR: Variable #{var_info[:id]} already defined in global\n")
+        abort("\nERROR: Variable '#{var_info[:id]}' already defined in global\n")
       else
-    	@global[var_info[:id]] = var_info
+        @global[var_info[:id]] = var_info
       end
     else
-      if @procedures[@scope_location][:local_vars].has_key?(var_info[:id])
-    	abort("\nERROR: Variable #{var_info[:id]} already defined in #{@scope_location}\n")
-      else
-    	@procedures[@scope_location][:local_vars][var_info[:id]] = var_info
+      in_arguments = false
+      if not @procedures[@scope_location][:args].nil?
+        @procedures[@scope_location][:args].each { |arg|
+          if arg[:id] == var_info[:id]
+            in_arguments = true
+            break
+          end
+        }
       end
+      if in_arguments
+        abort("\nERROR: Local variable '#{var_info[:id]}' already defined in the arguments of '#{@scope_location}'\n")
+      elsif @procedures[@scope_location][:local_vars].has_key?(var_info[:id])
+        abort("\nERROR: Variable '#{var_info[:id]}' already defined in '#{@scope_location}'\n")
+      else
+        @procedures[@scope_location][:local_vars][var_info[:id]] = var_info
+      end
+    end
+  end
+
+  # Checks if an argument identifier is already in the arguments array
+  # Params:
+  # +id+:: Identifier of the argument
+  def checkParamInArguments(id)
+    in_arguments = false
+    @arguments.each { |arg|
+      if arg[:id] == id
+        in_arguments = true
+        break
+      end
+    }
+    if in_arguments
+      abort("\nERROR: Argument '#{id}' already defined in the arguments of '#{@scope_location}'\n")
     end
   end
 
@@ -162,17 +193,17 @@ class Auxiliar
   def addVariableToOperadStack(id)
     if not @scope_location.nil? and @procedures.has_key?(@scope_location)
       if @procedures[@scope_location][:local_vars].has_key?(id)
-    	@operands_stack.push(@procedures[@scope_location][:local_vars][id])
+        @operands_stack.push(@procedures[@scope_location][:local_vars][id])
       elsif @global.has_key?(id)
-	@operands_stack.push(@global[id])
+        @operands_stack.push(@global[id])
       else
-	abort("Variable not defined in the program: #{id}")
+        abort("Variable not defined in the program: #{id}")
       end
     else
       if @global.has_key?(id)
-    	@operands_stack.push(@global[id])
+        @operands_stack.push(@global[id])
       else
-	abort("Variable not defined in the program: #{id}")
+        abort("Variable not defined in the program: #{id}")
       end
     end
   end
@@ -215,11 +246,11 @@ class Auxiliar
     var = nil
     if not @scope_location.nil? && @procedures.has_key?(@scope_location)
       if @procedures[@scope_location][:local_vars].has_key?(id)
-	var = @procedures[@scope_location][:local_vars][id]
-	found = true
+        var = @procedures[@scope_location][:local_vars][id]
+        found = true
       elsif @global.has_key?(id)
-	var = @global[id]
-	found = true
+        var = @global[id]
+        found = true
       end
     elsif @global.has_key?(id)
       var = @global[id]

@@ -9,16 +9,16 @@
 grammar Simple;
 
 options {
-    language  = Ruby;
-    output    = AST;
-    backtrack = true;
+  language  = Ruby;
+  output    = AST;
+  backtrack = true;
 }
 
 @header {
-	require 'Auxiliar.rb'
-	require 'Queue.rb'
-	require 'Stack.rb'
-	require 'Cuadruples.rb'
+  require 'Auxiliar.rb'
+  require 'Queue.rb'
+  require 'Stack.rb'
+  require 'Cuadruples.rb'
 }
 
 /* Scanner Rules */
@@ -96,6 +96,12 @@ scope {
 
 @init {
   $vars_block::auxiliar = Auxiliar.new
+  # First cuadruple, go to the main procedure
+  \$goto_line = 'Goto'
+  $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter )
+  \$cuadruple = Cuadruples.new(\$goto_line, nil, nil, nil)
+  $vars_block::auxiliar.lines_counter += 1
+  $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
 }
 
 /* Callback executed at the end of programa */
@@ -111,7 +117,7 @@ scope {
   \$functions = $vars_block::auxiliar.procedures
   \$functions.keys.sort.each do | key |
     \$proc_info = \$functions[key]
-    print("#{key} : #{\$proc_info}\n")
+    print("#{key}: #{\$proc_info}\n")
   end
 
   puts("\n\nCuadruples:\n")
@@ -134,23 +140,24 @@ var:
 
 variables:
     INT ID as_int=assignint SEMICOLON {
-      \$var_info = { id: $ID.text, type: $INT.text, value: $as_int.value }
+      \$var_info = { id: $ID.text, type: $INT.text, value: \$as_int }
       $vars_block::auxiliar.addVariable(\$var_info)
     }
     | FLOAT ID as_float=assignfloat SEMICOLON { 
-      \$var_info = { id: $ID.text, type: $FLOAT.text, value: $as_float.value } 
+      \$var_info = { id: $ID.text, type: $FLOAT.text, value: \$as_float } 
       $vars_block::auxiliar.addVariable(\$var_info)
     }
     | STRING ID as_string=assignstring SEMICOLON { 
-      \$var_info = { id: $ID.text, type: $STRING.text, value: $as_string.value }
+      \$var_info = { id: $ID.text, type: $STRING.text, value: \$as_string }
       $vars_block::auxiliar.addVariable(\$var_info)
     }
     | BOOLEAN ID as_boolean=assignboolean SEMICOLON { 
-      \$var_info = { id: $ID.text, type: $BOOLEAN.text, value: $as_boolean.value }
+      \$var_info = { id: $ID.text, type: $BOOLEAN.text, value: \$as_boolean }
       $vars_block::auxiliar.addVariable(\$var_info)
     }
-    | ARRAY data_type=tipo ID COLON exp SEMICOLON { 
-      \$var_info = { id: $ID.text, type: "[#{$data_type.type}]" }
+    | ARRAY tipo ID COLON exp SEMICOLON { 
+      \$data_type = $vars_block::auxiliar.data_type
+      \$var_info = { id: $ID.text, type: "[#{\$data_type}]" }
       $vars_block::auxiliar.addVariable(\$var_info)
     } /* TODO: missing size of array */
     ;
@@ -175,66 +182,69 @@ assignboolean returns[value]:
     | ASSIGN CTEB { $value = $CTEB.text == 'true' } /* Convert string to boolean */
     ;
 
-tipo returns[type]:
-    INT { $type = 'int' }
-    | FLOAT { $type = 'float' }
-    | STRING { $type = 'string' }
-    | BOOLEAN { $type = 'boolean' }
+tipo:
+    INT { $vars_block::auxiliar.data_type = 'int' } 
+    | FLOAT { $vars_block::auxiliar.data_type = 'float' }
+    | STRING { $vars_block::auxiliar.data_type = 'string' }
+    | BOOLEAN { $vars_block::auxiliar.data_type = 'boolean' }
     ;
 
 func:
-    | /* empty */
-    | funcion func  
+    | funcion func
     ;
 
 funcion:
-    FUNCTION ID { 
+    FUNCTION ID {
       $vars_block::auxiliar.scope_location = $ID.text
-    } LPARENT arguments=argumentos RPARENT COLON return_type=retornofunc { 
-      $vars_block::auxiliar.addProcedure(\$arguments, \$return_type)
+    } LPARENT argumentos RPARENT COLON retornofunc {
+      $vars_block::auxiliar.addProcedure()
     } LBRACK var est RETURN retorno SEMICOLON RBRACK {
-      $vars_block::auxiliar.scope_location = nil
+      $vars_block::auxiliar.arguments.clear()
     }
     ;
 
-argumentos returns[list]: /* empty */
-    | data_type=tipo ref ID more_args=argumentoaux {
-      $list = [ {type: $data_type.text, id: $ID.text } ]
-      $list.concat(more_args.list) unless more_args.list.nil?
-    }
+argumentos: /* empty */
+    | tipo ref ID {
+      \$type = $vars_block::auxiliar.data_type
+      \$ref = $vars_block::auxiliar.is_ref
+      $vars_block::auxiliar.checkParamInArguments( $ID.text )
+      $vars_block::auxiliar.arguments.push( { type: \$type, ref: \$ref, id: $ID.text, value: nil } )
+    } argumentoaux
     ;
 
-argumentoaux returns[list]: /* empty */
-    | COMMA data_type=tipo ref ID more_args=argumentoaux { 
-      $list = [ {type: $data_type.type, id: $ID.text } ]
-      $list.concat(more_args.list) unless more_args.list.nil?
-    }
+argumentoaux: /* empty */
+    | COMMA tipo ref ID {
+      \$type = $vars_block::auxiliar.data_type
+      \$ref = $vars_block::auxiliar.is_ref
+      $vars_block::auxiliar.checkParamInArguments( $ID.text )
+      $vars_block::auxiliar.arguments.push( { type: \$type, ref: \$ref, id: $ID.text, value: nil } )
+    } argumentoaux
     ;
 
-ref: /* empty */
-    | REF { print("[REF] ") }
+ref: /* empty */ { $vars_block::auxiliar.is_ref = false }
+    | REF { $vars_block::auxiliar.is_ref = true }
     ;
 
-retornofunc returns[type]:
-    VOID { $type = 'void' }
-    | data_type=tipo { $type = $data_type.text }
+retornofunc:
+    VOID { $vars_block::auxiliar.data_type = 'void' }
+    | tipo
     ;
 
 est:
-    estatutos estaux { print("[EST] ") }
+    estatutos estaux
     ;
 
 estaux: /* empty */
-    | estatutos estaux { print("[ESTAUX] ") }
+    | estatutos estaux
     ;
 
 estatutos:
     ID { 
       $vars_block::auxiliar.addVariableToOperadStack( $ID.text )
-    } idestatutos SEMICOLON  
-    | condicion { print("[ESTATUTOS] ") }
+    } idestatutos SEMICOLON
+    | condicion
     | escritura { print("[ESTATUTOS] ") }
-    | ciclo { print("[ESTATUTOS] ") }
+    | ciclo
     | lectura { print("[ESTATUTOS] ") }
     ;
 
@@ -274,18 +284,18 @@ expresion:
     exp expcomp {
       \$next_operation = $vars_block::auxiliar.operations_stack.look()
       if (not \$next_operation.nil?) && (['or', 'and'].include?(\$next_operation))
-	$vars_block::auxiliar.operations_stack.pop()
-	\$oper2 = $vars_block::auxiliar.operands_stack.pop()
-	\$oper1 = $vars_block::auxiliar.operands_stack.pop()
-	\$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
-	# In the future, use the nextTemporalVariable
-	\$temp = 't' + $vars_block::auxiliar.next_temp.to_s
-	$vars_block::auxiliar.next_temp += 1
-	\$destiny = { id: \$temp, type: \$resulting_type, value: nil }
-	\$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
-	$vars_block::auxiliar.lines_counter += 1
-	$vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
-	$vars_block::auxiliar.operands_stack.push(\$destiny)
+        $vars_block::auxiliar.operations_stack.pop()
+        \$oper2 = $vars_block::auxiliar.operands_stack.pop()
+        \$oper1 = $vars_block::auxiliar.operands_stack.pop()
+        \$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
+        # In the future, use the nextTemporalVariable
+        \$temp = 't' + $vars_block::auxiliar.next_temp.to_s
+        $vars_block::auxiliar.next_temp += 1
+        \$destiny = { id: \$temp, type: \$resulting_type, value: nil }
+        \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
+        $vars_block::auxiliar.lines_counter += 1
+        $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+        $vars_block::auxiliar.operands_stack.push(\$destiny)
       end
     } expresionaux { print("[EXPRESION] ") }
     ;
@@ -318,18 +328,18 @@ exp:
     termino {
       \$next_operation = $vars_block::auxiliar.operations_stack.look()
       if (not \$next_operation.nil?) && (\$next_operation == '+' || \$next_operation == '-')
-	$vars_block::auxiliar.operations_stack.pop()
-	\$oper2 = $vars_block::auxiliar.operands_stack.pop()
-	\$oper1 = $vars_block::auxiliar.operands_stack.pop()
-	\$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
-	# In the future, use the nextTemporalVariable
-	\$temp = 't' + $vars_block::auxiliar.next_temp.to_s
-	$vars_block::auxiliar.next_temp += 1
-	\$destiny = { id: \$temp, type: \$resulting_type, value: nil }
-	\$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
-	$vars_block::auxiliar.lines_counter += 1
-	$vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
-	$vars_block::auxiliar.operands_stack.push(\$destiny)
+        $vars_block::auxiliar.operations_stack.pop()
+        \$oper2 = $vars_block::auxiliar.operands_stack.pop()
+        \$oper1 = $vars_block::auxiliar.operands_stack.pop()
+        \$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
+        # In the future, use the nextTemporalVariable
+        \$temp = 't' + $vars_block::auxiliar.next_temp.to_s
+        $vars_block::auxiliar.next_temp += 1
+        \$destiny = { id: \$temp, type: \$resulting_type, value: nil }
+        \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
+        $vars_block::auxiliar.lines_counter += 1
+        $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+        $vars_block::auxiliar.operands_stack.push(\$destiny)
       end
     }
     expaux
@@ -350,20 +360,20 @@ termino:
     factor { 
       \$next_operation = $vars_block::auxiliar.operations_stack.look()
       if (not \$next_operation.nil?) && (\$next_operation == '*' || \$next_operation == '/')
-	$vars_block::auxiliar.operations_stack.pop()
-	\$oper2 = $vars_block::auxiliar.operands_stack.look()
-	$vars_block::auxiliar.operands_stack.pop()
-	\$oper1 = $vars_block::auxiliar.operands_stack.look()
-	$vars_block::auxiliar.operands_stack.pop()
-	\$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
-	# Change this in the future with nextTemporalVariable
-	\$temp = 't' + $vars_block::auxiliar.next_temp.to_s
-	$vars_block::auxiliar.next_temp += 1
-	\$destiny = { id: \$temp, type: \$resulting_type, value: nil }
-	\$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
-	$vars_block::auxiliar.lines_counter += 1
-	$vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
-	$vars_block::auxiliar.operands_stack.push( \$destiny )
+        $vars_block::auxiliar.operations_stack.pop()
+        \$oper2 = $vars_block::auxiliar.operands_stack.look()
+        $vars_block::auxiliar.operands_stack.pop()
+        \$oper1 = $vars_block::auxiliar.operands_stack.look()
+        $vars_block::auxiliar.operands_stack.pop()
+        \$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
+        # Change this in the future with nextTemporalVariable
+        \$temp = 't' + $vars_block::auxiliar.next_temp.to_s
+        $vars_block::auxiliar.next_temp += 1
+        \$destiny = { id: \$temp, type: \$resulting_type, value: nil }
+        \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
+        $vars_block::auxiliar.lines_counter += 1
+        $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+        $vars_block::auxiliar.operands_stack.push( \$destiny )
       end
     } 
     terminoaux
@@ -433,14 +443,14 @@ varcte:
       \$id = $ID.text
       \$var = $vars_block::auxiliar.findVariable(\$id)
       if not $vars_block::auxiliar.sign_variable.nil?
-	if \$var[:type] == 'string'
-	  abort("\nERROR: Cannot apply #{$vars_block::auxiliar.sign_variable} to string #{\$var[:id]}\n")
-	elsif \$var[:type] == 'boolean'
-	  abort("\nERROR: Cannot apply #{$vars_block::auxiliar.sign_variable} to boolean #{\$var[:id]}\n")
-	elsif $vars_block::auxiliar.sign_variable == '-'
-	  \$var[:value] = - \$var[:value]
-	  $vars_block::auxiliar.sign_variable = nil
-	end
+        if \$var[:type] == 'string'
+          abort("\nERROR: Cannot apply #{$vars_block::auxiliar.sign_variable} to string #{\$var[:id]}\n")
+        elsif \$var[:type] == 'boolean'
+          abort("\nERROR: Cannot apply #{$vars_block::auxiliar.sign_variable} to boolean #{\$var[:id]}\n")
+        elsif $vars_block::auxiliar.sign_variable == '-'
+          \$var[:value] = - \$var[:value]
+          $vars_block::auxiliar.sign_variable = nil
+        end
       end
       $vars_block::auxiliar.operands_stack.push( \$var )
     }
@@ -454,13 +464,13 @@ varcte:
     }
     | CTES { 
       if not $vars_block::auxiliar.sign_variable.nil?
-	abort("\nERROR: You cannot apply '+' or '-' to the string #{$CTES.text}\n")
+        abort("\nERROR: You cannot apply '+' or '-' to the string #{$CTES.text}\n")
       end
       $vars_block::auxiliar.operands_stack.push({ id: nil, type: 'string', value: $CTES.text })
     }
     | CTEB { 
       if not $vars_block::auxiliar.sign_variable.nil?
-	abort("\nERROR: You cannot apply '+' or '-' to boolean\n")
+        abort("\nERROR: You cannot apply '+' or '-' to boolean\n")
       end
       $vars_block::auxiliar.operands_stack.push({ id: nil, type: 'boolean', value: $CTEB.text == 'true' })
     }
@@ -500,10 +510,10 @@ comparacion:
 
 logico:
     AND {
-	$vars_block::auxiliar.operations_stack.push( $AND.text )
+      $vars_block::auxiliar.operations_stack.push( $AND.text )
     }
     | OR { 
-	$vars_block::auxiliar.operations_stack.push( $OR.text )
+      $vars_block::auxiliar.operations_stack.push( $OR.text )
     }
     ;
 
@@ -648,12 +658,17 @@ lectura:
     ;
 
 main:
-    MAIN { 
+    MAIN {
+      # Resolves the first cuadruple, Goto main
+      \$main_cuadruple = $vars_block::auxiliar.jumps_stack.pop()
+      $vars_block::auxiliar.cuadruples_array[\$main_cuadruple].destiny = $vars_block::auxiliar.lines_counter
       $vars_block::auxiliar.scope_location = $MAIN.text 
       if not $vars_block::auxiliar.procedures.has_key?($vars_block::auxiliar.scope_location)
-	$vars_block::auxiliar.addProcedure(nil, 'void')
+        $vars_block::auxiliar.arguments.clear()
+        $vars_block::auxiliar.data_type = 'void'
+        $vars_block::auxiliar.addProcedure()
       else
-	abort("\nERROR: The program can only have one main procedure\n")
+        abort("\nERROR: The program can only have one main procedure\n")
       end
-    } LPARENT RPARENT LBRACK var est RBRACK  { print("[MAIN] ") }
+    } LPARENT RPARENT LBRACK var est RBRACK
     ;
