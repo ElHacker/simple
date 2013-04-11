@@ -10,7 +10,7 @@ class Auxiliar
   attr_accessor :global, :procedures, :operands_stack, :operations_stack,
     :jumps_stack, :lines_counter, :cuadruples_array, :scope_location,
     :arguments, :sign_variable, :next_temp, :semanthic_cube,
-    :data_type, :is_ref
+    :data_type, :is_ref, :has_return
 
   # Constructor of the class
   def initialize
@@ -27,6 +27,7 @@ class Auxiliar
     @arguments = Array.new
     @data_type = nil
     @is_ref = false
+    @has_return = false
     @semanthic_cube = {
     'int' => {
       'int' => {
@@ -241,6 +242,8 @@ class Auxiliar
 
   # Finds and return the information for a variable identifier
   # If the variable is not found, then abort the program
+  # Params:
+  # +id+:: Identifier of the variable
   def findVariable(id)
     found = false
     var = nil

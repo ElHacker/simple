@@ -196,10 +196,17 @@ func:
 funcion:
     FUNCTION ID {
       $vars_block::auxiliar.scope_location = $ID.text
+      $vars_block::auxiliar.has_return = false
     } LPARENT argumentos RPARENT COLON retornofunc {
       $vars_block::auxiliar.addProcedure()
-    } LBRACK var est RETURN retorno SEMICOLON RBRACK {
+    } LBRACK var est RBRACK {
       $vars_block::auxiliar.arguments.clear()
+      # Checks if the procudure has a correct return
+      \$scope_location = $vars_block::auxiliar.scope_location
+      \$returning_type = $vars_block::auxiliar.procedures[\$scope_location][:return_type]
+      if \$returning_type != 'void' && $vars_block::auxiliar.has_return == false
+        abort("\nERROR: The procedure '#{\$scope_location}' must have a return statement\n")
+      end
     }
     ;
 
@@ -246,6 +253,7 @@ estatutos:
     | escritura { print("[ESTATUTOS] ") }
     | ciclo
     | lectura { print("[ESTATUTOS] ") }
+    | retorno { print("[ESTATUTOS] ") }
     ;
 
 idestatutos:
@@ -375,7 +383,7 @@ termino:
         $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
         $vars_block::auxiliar.operands_stack.push( \$destiny )
       end
-    } 
+    }
     terminoaux
     ;
 
@@ -499,7 +507,7 @@ comparacion:
       $vars_block::auxiliar.operations_stack.push( $GE.text )
     }
     | EQ {
-      # Change this with the value for == 
+      # Change this with the value for ==
       $vars_block::auxiliar.operations_stack.push( $EQ.text )
     }
     | NE { 
@@ -517,8 +525,51 @@ logico:
     }
     ;
 
-retorno: /* empty */
-    | exp { print("[RETORNO] ") }
+retorno:
+    RETURN retornoaux SEMICOLON {
+      # Create the End cuadruple
+      \$action = 'End'
+      \$cuadruple = Cuadruples.new(\$action, nil, nil, nil)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+      # Indicates that this procedure has at least one return
+      $vars_block::auxiliar.has_return = true
+    }
+    ;
+
+retornoaux:
+    /* empty */ {
+      # Get the returning type of the actual procedure
+      if $vars_block::auxiliar.scope_location.nil?
+        abort("\nERROR: Cannot use 'return' outside of a procedure\n")
+      end
+      \$scope_location = $vars_block::auxiliar.scope_location
+      \$return_type = $vars_block::auxiliar.procedures[\$scope_location][:return_type]
+      if \$return_type != 'void'
+        abort("\nERROR: The procedure '#{\$scope_location}' cannot return void\n")
+      end
+    }
+    | exp {
+      # Get the returning type of the actual procedure
+      if $vars_block::auxiliar.scope_location.nil?
+        abort("\nERROR: Cannot use 'return' outside of a procedure\n")
+      end
+      \$scope_location = $vars_block::auxiliar.scope_location
+      \$return_type = $vars_block::auxiliar.procedures[\$scope_location][:return_type]
+      # Gets the actual returning value
+      \$returning = $vars_block::auxiliar.operands_stack.pop()
+      if \$return_type == 'void'
+        abort("\nERROR: The procedure '#{\$scope_location}' only can return void\n")
+      elsif \$return_type != \$returning[:type]
+        abort("\nERROR: The procedure '#{\$scope_location}' must return '#{\$return_type}'." \
+          "\n\tActual returning type: '#{\$returning[:id]}' aka '#{\$returning[:type]}'\n")
+      end
+      # Generates the cuadruple
+      \$action = 'Ret'
+      \$cuadruple = Cuadruples.new(\$action, \$returning, nil, nil)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+    }
     ;
 
 condicion:
