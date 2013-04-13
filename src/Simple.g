@@ -1,4 +1,4 @@
-/* 
+/*
  * Simple
  * A simple programming language
  * Author:
@@ -215,7 +215,7 @@ argumentos: /* empty */
       \$type = $vars_block::auxiliar.data_type
       \$ref = $vars_block::auxiliar.is_ref
       $vars_block::auxiliar.checkParamInArguments( $ID.text )
-      $vars_block::auxiliar.arguments.push( { type: \$type, ref: \$ref, id: $ID.text, value: nil } )
+      $vars_block::auxiliar.arguments.push( { type: \$type, ref: \$ref, id: $ID.text } )
     } argumentoaux
     ;
 
@@ -224,7 +224,7 @@ argumentoaux: /* empty */
       \$type = $vars_block::auxiliar.data_type
       \$ref = $vars_block::auxiliar.is_ref
       $vars_block::auxiliar.checkParamInArguments( $ID.text )
-      $vars_block::auxiliar.arguments.push( { type: \$type, ref: \$ref, id: $ID.text, value: nil } )
+      $vars_block::auxiliar.arguments.push( { type: \$type, ref: \$ref, id: $ID.text } )
     } argumentoaux
     ;
 
@@ -246,9 +246,11 @@ estaux: /* empty */
     ;
 
 estatutos:
-    ID { 
-      $vars_block::auxiliar.addVariableToOperadStack( $ID.text )
-    } idestatutos SEMICOLON
+    ID {
+      $vars_block::auxiliar.operands_stack.push($ID.text)
+    } idestatutos SEMICOLON {
+      $vars_block::auxiliar.exp_call = false
+    }
     | condicion
     | escritura { print("[ESTATUTOS] ") }
     | ciclo
@@ -257,9 +259,12 @@ estatutos:
     ;
 
 idestatutos:
-    llamada { print("[IDESTATUTOS] ") }
+    llamada
     | array ASSIGN expresion { print("[IDESTATUTOS] ") }
     | ASSIGN {
+      \$id = $vars_block::auxiliar.operands_stack.pop()
+      \$var = $vars_block::auxiliar.findVariable(\$id)
+      $vars_block::auxiliar.operands_stack.push(\$var)
       $vars_block::auxiliar.operations_stack.push( $ASSIGN.text )
     } expresion {
       \$next_operation = $vars_block::auxiliar.operations_stack.pop()
@@ -267,21 +272,135 @@ idestatutos:
       \$oper2 = $vars_block::auxiliar.operands_stack.pop()
       $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper2, \$oper1)
       \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, nil, \$oper2)
-      $vars_block::auxiliar.lines_counter = $vars_block::auxiliar.lines_counter + 1
+      $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
     }
     ;
 
 llamada:
-    LPARENT llamadaargs RPARENT { print("[LLAMADA] ") }
+    LPARENT {
+      \$procedure = $vars_block::auxiliar.operands_stack.look()
+      if not $vars_block::auxiliar.procedures.has_key?(\$procedure)
+        abort("\nERROR: Procedure '#{\$procedure}' not defined\n")
+      end
+      $vars_block::auxiliar.arg_stack.push(0)
+      $vars_block::auxiliar.call_stack.push(\$procedure)
+      \$action = 'Era'
+      \$cuadruple = Cuadruples.new(\$action, \$procedure, nil, nil)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+    } llamadaargs RPARENT {
+      # TODO terminar la comprobacion de la funcion y el tipo de retorno
+      \$procedure = $vars_block::auxiliar.operands_stack.pop()
+      \$return_type = $vars_block::auxiliar.procedures[\$procedure][:return_type]
+      \$call_in_exp = $vars_block::auxiliar.exp_call
+      \$arg_number = $vars_block::auxiliar.arg_stack.pop()
+      # Check if the numbers of passed arguments is equal to the size of
+      # argument array in the procedure directory
+      if \$arg_number != $vars_block::auxiliar.procedures[\$procedure][:args].length
+        msg = "\nERROR: Passing different number of arguments for '#{\$procedure}'\n" +
+          $vars_block::auxiliar.getSignature(\$procedure)
+        abort(msg)
+      end
+      # Now, check the returning type and if the function is called in a expression
+      if \$return_type == 'void' && \$call_in_exp
+        abort("\nERROR: In a expression, procedure '#{\$procedure}' cannot return 'void'\n")
+      end
+      if \$return_type != 'void' && \$call_in_exp == false
+        abort("\nERROR: The return value of '#{\$procedure}' must be assigned to something\n")
+      end
+      # Now, call the function
+      \$action = 'Gosub'
+      \$direction = $vars_block::auxiliar.procedures[\$procedure][:line]
+      \$cuadruple = Cuadruples.new(\$action, \$procedure, nil, \$direction)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+      # If the returning type is different of void, then transfer to a
+      # temporary variable
+      if \$return_type != 'void'
+        \$action = '='
+        # In the future, get a new temporal variable
+        \$temp = 't' + $vars_block::auxiliar.next_temp.to_s
+        $vars_block::auxiliar.next_temp += 1
+        \$destiny = { id: \$temp, type: \$return_type, value: nil }
+        \$name = \$procedure + '_ret_swap'
+        \$origin = $vars_block::auxiliar.global[\$name]
+        \$cuadruple = Cuadruples.new(\$action, \$origin, nil, \$destiny)
+        $vars_block::auxiliar.lines_counter += 1
+        $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+        $vars_block::auxiliar.operands_stack.push(\$destiny)
+      end
+    }
     ;
 
 llamadaargs: /* empty */
-    | exp llamadaargsaux { print("[LLAMADAARGS] ") }
+    | exp {
+      # Gets the result of exp
+      \$result = $vars_block::auxiliar.operands_stack.pop()
+      # Gets the information about the argument
+      \$procedure = $vars_block::auxiliar.call_stack.look()
+      \$arg_number = $vars_block::auxiliar.arg_stack.pop()
+      \$argument = $vars_block::auxiliar.procedures[\$procedure][:args][\$arg_number]
+      # Abort if the number of passed arguments is mayor than the number of
+      # defined arguments in the procedure directory
+      if \$argument.nil?
+        msg = "\nERROR: Passing more arguments for '#{\$procedure}'\n" +
+          $vars_block::auxiliar.getSignature(\$procedure)
+        abort(msg)
+      end
+      # TODO
+      # Change this to see if the address of the variables is a temporal
+      # \$result[:value] => address of temporal variable
+      if \$argument[:is_ref] && \$result[:id][0] == 't'
+        abort("\nERROR: Cannot apply 'ref' to an expression\n")
+      end
+      \$flag_ref = 0
+      if \$argument[:is_ref]
+        \$flag_ref = 1
+      end
+      \$action = 'Param'
+      \$cuadruple = Cuadruples.new(\$action, \$flag_ref, nil, \$result)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+      # Increments the argument counter
+      \$arg_number += 1
+      # And adds it to the stack of arguments
+      $vars_block::auxiliar.arg_stack.push(\$arg_number)
+    } llamadaargsaux
     ;
 
 llamadaargsaux: /* emtpy */
-    | COMMA exp llamadaargsaux { print("[LLAMADAARGSAUX] ") }
+    | COMMA exp {
+      # Gets the result of exp
+      \$result = $vars_block::auxiliar.operands_stack.pop()
+      # Gets the information about the argument
+      \$procedure = $vars_block::auxiliar.call_stack.look()
+      \$arg_number = $vars_block::auxiliar.arg_stack.pop()
+      \$argument = $vars_block::auxiliar.procedures[\$procedure][:args][\$arg_number]
+      # Abort if the number of passed arguments is mayor than the number of
+      # defined arguments in the procedure directory
+      if \$argument.nil?
+        abort("\nERROR: Passing more arguments for '#{\$procedure}'\n")
+      end
+      # TODO
+      # Change this to see if the address of the variables is a temporal
+      # \$result[:value] => address of temporal variable
+      if \$argument[:is_ref] && \$result[:id][0] == 't'
+        abort("\nERROR: Cannot apply 'ref' to an expression\n")
+      end
+      \$flag_ref = 0
+      if \$argument[:is_ref]
+        \$flag_ref = 1
+      end
+      \$action = 'Param'
+      \$cuadruple = Cuadruples.new(\$action, \$flag_ref, nil, \$result)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+      # Increments the argument counter
+      \$arg_number += 1
+      # And adds it to the stack of arguments
+      $vars_block::auxiliar.arg_stack.push(\$arg_number)
+    } llamadaargsaux
     ;
 
 array:
@@ -365,7 +484,7 @@ expaux: /* empty */
     ;
 
 termino:
-    factor { 
+    factor {
       \$next_operation = $vars_block::auxiliar.operations_stack.look()
       if (not \$next_operation.nil?) && (\$next_operation == '*' || \$next_operation == '/')
         $vars_block::auxiliar.operations_stack.pop()
@@ -447,20 +566,19 @@ sign:
     ;
 
 varcte:
-    ID idvarcte {
-      \$id = $ID.text
-      \$var = $vars_block::auxiliar.findVariable(\$id)
-      if not $vars_block::auxiliar.sign_variable.nil?
-        if \$var[:type] == 'string'
-          abort("\nERROR: Cannot apply #{$vars_block::auxiliar.sign_variable} to string #{\$var[:id]}\n")
-        elsif \$var[:type] == 'boolean'
-          abort("\nERROR: Cannot apply #{$vars_block::auxiliar.sign_variable} to boolean #{\$var[:id]}\n")
-        elsif $vars_block::auxiliar.sign_variable == '-'
-          \$var[:value] = - \$var[:value]
-          $vars_block::auxiliar.sign_variable = nil
-        end
-      end
-      $vars_block::auxiliar.operands_stack.push( \$var )
+    ID {
+      $vars_block::auxiliar.operands_stack.push($ID.text)
+    } idvarcte {
+      #if not $vars_block::auxiliar.sign_variable.nil?
+      #  if \$var[:type] == 'string'
+      #    abort("\nERROR: Cannot apply #{$vars_block::auxiliar.sign_variable} to string #{\$var[:id]}\n")
+      #  elsif \$var[:type] == 'boolean'
+      #    abort("\nERROR: Cannot apply #{$vars_block::auxiliar.sign_variable} to boolean #{\$var[:id]}\n")
+      #  elsif $vars_block::auxiliar.sign_variable == '-'
+      #    \$var[:value] = - \$var[:value]
+      #    $vars_block::auxiliar.sign_variable = nil
+      #  end
+      #end
     }
     | CTEI {
       \$var = { id: nil, type: 'int', value: $CTEI.text.to_i }
@@ -484,21 +602,28 @@ varcte:
     }
     ;
 
-idvarcte: /* empty */
-    | llamada { print("[IDVARCTE] ") }
+idvarcte:
+    /* empty */ {
+      \$id = $vars_block::auxiliar.operands_stack.pop()
+      \$var = $vars_block::auxiliar.findVariable(\$id)
+      $vars_block::auxiliar.operands_stack.push(\$var)
+    }
+    | {
+      $vars_block::auxiliar.exp_call = true
+    } llamada 
     | array { print("[IDVARCTE] ") }
     ;
 
 comparacion:
-    LT { 
+    LT {
       # Change this with the value for <
       $vars_block::auxiliar.operations_stack.push( $LT.text )
     }
-    | LE { 
+    | LE {
       # Change this with the value for <=
       $vars_block::auxiliar.operations_stack.push( $LE.text )
     }
-    | GT { 
+    | GT {
       # Change this with the value for >
       $vars_block::auxiliar.operations_stack.push( $GT.text )
     }
@@ -510,7 +635,7 @@ comparacion:
       # Change this with the value for ==
       $vars_block::auxiliar.operations_stack.push( $EQ.text )
     }
-    | NE { 
+    | NE {
       # Change this with the value for !=
       $vars_block::auxiliar.operations_stack.push( $NE.text )
     }
@@ -520,7 +645,7 @@ logico:
     AND {
       $vars_block::auxiliar.operations_stack.push( $AND.text )
     }
-    | OR { 
+    | OR {
       $vars_block::auxiliar.operations_stack.push( $OR.text )
     }
     ;
@@ -565,8 +690,9 @@ retornoaux:
           "\n\tActual returning type: '#{\$returning[:id]}' aka '#{\$returning[:type]}'\n")
       end
       # Generates the cuadruple
+      \$name = \$scope_location + '_ret_swap'
       \$action = 'Ret'
-      \$cuadruple = Cuadruples.new(\$action, \$returning, nil, nil)
+      \$cuadruple = Cuadruples.new(\$action, \$returning, nil,  \$name)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
     }
@@ -681,7 +807,9 @@ ciclo:
 
 cicloaux: /* empty */
     | ID {
-      $vars_block::auxiliar.addVariableToOperadStack( $ID.text )
+      \$id = $ID.text
+      \$var = $vars_block::auxiliar.findVariable(\$id)
+      $vars_block::auxiliar.operands_stack.push(\$var)
       # For now, we ignore the array
     } cicloauxx ASSIGN {
       # Change this with the value for =

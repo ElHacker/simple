@@ -9,8 +9,8 @@ class Auxiliar
 
   attr_accessor :global, :procedures, :operands_stack, :operations_stack,
     :jumps_stack, :lines_counter, :cuadruples_array, :scope_location,
-    :arguments, :sign_variable, :next_temp, :semanthic_cube,
-    :data_type, :is_ref, :has_return
+    :arguments, :sign_variable, :next_temp, :semanthic_cube, :data_type,
+    :is_ref, :has_return, :arg_stack, :call_stack, :exp_call
 
   # Constructor of the class
   def initialize
@@ -28,6 +28,9 @@ class Auxiliar
     @data_type = nil
     @is_ref = false
     @has_return = false
+    @exp_call = false
+    @arg_stack = Stack.new
+    @call_stack = Stack.new
     @semanthic_cube = {
     'int' => {
       'int' => {
@@ -134,8 +137,25 @@ class Auxiliar
   # the returning type is obtained through @data_type
   def addProcedure()
     if not @procedures.has_key?(@scope_location)
-      @procedures[@scope_location] = { id: @scope_location, args: @arguments.dup(),
-        local_vars: Hash.new, return_type: @data_type, line: @lines_counter }
+      # Copy the arguments to a temporal Hash. If the argument is
+      # a reference, then DO NOT create space for it in memory
+      temp_vars = Hash.new
+      @arguments.each { |arg|
+        if not arg[:ref]
+          # Increment the counter of variables according with the data type
+        end
+        temp_vars[arg[:id]] = arg.clone()
+        temp_vars[arg[:id]].delete(:ref)
+      }
+      @procedures[@scope_location] = { id: @scope_location, args: @arguments.clone(),
+        local_vars: temp_vars, return_type: @data_type, line: @lines_counter }
+      # Also adds a global variable for the return data in case that the returning type is
+      # diferent of void
+      if @data_type != 'void'
+        name = @scope_location + '_ret_swap'
+        var_info = { id: name, type: @data_type, value: nil}
+        @global[name] = var_info
+      end
     else
       abort("\nERROR: Procedure '#{@scope_location}' already defined\n")
     end
@@ -188,27 +208,6 @@ class Auxiliar
     end
   end
 
-  # Adds a variable to the stack of operands, by checking it's scope
-  # Params:
-  # +id+:: Identifier of the variable
-  def addVariableToOperadStack(id)
-    if not @scope_location.nil? and @procedures.has_key?(@scope_location)
-      if @procedures[@scope_location][:local_vars].has_key?(id)
-        @operands_stack.push(@procedures[@scope_location][:local_vars][id])
-      elsif @global.has_key?(id)
-        @operands_stack.push(@global[id])
-      else
-        abort("Variable not defined in the program: #{id}")
-      end
-    else
-      if @global.has_key?(id)
-        @operands_stack.push(@global[id])
-      else
-        abort("Variable not defined in the program: #{id}")
-      end
-    end
-  end
-
   # Checks if the next cuadruple is valid and return the resulting type
   # Params:
   # +next_operation+:: Operation to be applied
@@ -244,6 +243,8 @@ class Auxiliar
   # If the variable is not found, then abort the program
   # Params:
   # +id+:: Identifier of the variable
+  # Returns:
+  # +var+:: Information of the variable
   def findVariable(id)
     found = false
     var = nil
@@ -262,7 +263,31 @@ class Auxiliar
     if found
       return var
     else
-      abort("\nERROR: Variable #{id} is not defined\n")
+      abort("\nERROR: Variable '#{id}' is not defined\n")
+    end
+  end
+
+  # Get the signature for a procedure given its identifier
+  # Params:
+  # +id+:: Identifier of the procedure
+  # Returns:
+  # +str+:: Description of the signature of the procedure
+  def getSignature(id)
+    if not @procedures.has_key?(id)
+      return "#{id} doesn't exist"
+    else
+      info = @procedures[id]
+      msg = "The signature is: #{info[:return_type]} #{info[:id]}("
+      temp = []
+      info[:args].each { |arg|
+        str = "#{arg[:type]}"
+        if arg[:ref]
+          str = str + " &"
+        end
+        temp.push(str)
+      }
+      msg = msg + temp.join(",") + ")"
+      return msg
     end
   end
 
