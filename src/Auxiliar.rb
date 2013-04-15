@@ -4,13 +4,17 @@
 require 'Queue.rb'
 require 'Stack.rb'
 require 'Cuadruples.rb'
+require 'Memory.rb'
+require 'LocalMemory.rb'
+require 'ConstantMemory.rb'
 
 class Auxiliar
 
   attr_accessor :global, :procedures, :operands_stack, :operations_stack,
     :jumps_stack, :lines_counter, :cuadruples_array, :scope_location,
     :arguments, :sign_variable, :next_temp, :semanthic_cube, :data_type,
-    :is_ref, :has_return, :arg_stack, :call_stack, :exp_call
+    :is_ref, :has_return, :arg_stack, :call_stack, :exp_call, :global_memory,
+    :local_memory, :temporal_memory, :const_memory
 
   # Constructor of the class
   def initialize
@@ -31,6 +35,20 @@ class Auxiliar
     @exp_call = false
     @arg_stack = Stack.new
     @call_stack = Stack.new
+    # Memory scheme:
+    # Global address -> direction 1000, with 1000 directions for every data type
+    #   -> Total width: 4000
+    # Local address -> direction 5000, with 1000 directions for every data type
+    # in the normal and temporal addresses
+    #   -> Total width: 8000
+    # Temporal address -> direction 13000, with 1000 directions for every data type
+    #   -> Total width: 4000
+    # Constant address -> direction 17000, with 1500 directions for every data type
+    #   -> Total width: 6000
+    @global_memory = Memory.new(1000, 4000)
+    @local_memory = LocalMemory.new(5000, 8000)
+    @temporal_memory = Memory.new(13000, 4000)
+    @const_memory = Memory.new(17000, 6000)
     @semanthic_cube = {
     'int' => {
       'int' => {

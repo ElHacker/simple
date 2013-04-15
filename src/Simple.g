@@ -351,15 +351,16 @@ llamadaargs: /* empty */
       # TODO
       # Change this to see if the address of the variables is a temporal
       # \$result[:value] => address of temporal variable
-      if \$argument[:is_ref] && \$result[:id][0] == 't'
+      if \$argument[:ref] && \$result[:id][0] == 't'
         abort("\nERROR: Cannot apply 'ref' to an expression\n")
       end
       \$flag_ref = 0
-      if \$argument[:is_ref]
+      if \$argument[:ref]
         \$flag_ref = 1
       end
       \$action = 'Param'
-      \$cuadruple = Cuadruples.new(\$action, \$flag_ref, nil, \$result)
+      \$destiny = 'param' + \$arg_number.to_s
+      \$cuadruple = Cuadruples.new(\$action, \$result, \$flag_ref, \$destiny)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       # Increments the argument counter
@@ -393,7 +394,8 @@ llamadaargsaux: /* emtpy */
         \$flag_ref = 1
       end
       \$action = 'Param'
-      \$cuadruple = Cuadruples.new(\$action, \$flag_ref, nil, \$result)
+      \$destiny = 'param' + \$arg_number.to_s
+      \$cuadruple = Cuadruples.new(\$action, \$result, \$flag_ref, \$destiny)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       # Increments the argument counter
@@ -731,20 +733,29 @@ elsecondicion: /* empty */
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.jumps_stack.push(\$count)
-      $vars_block::auxiliar.cuadruples_array[\$jump].destiny = $vars_block::auxiliar.lines_counter 
+      $vars_block::auxiliar.cuadruples_array[\$jump].destiny = $vars_block::auxiliar.lines_counter
     } LBRACK est RBRACK
     ;
 
 escritura:
-    PRINT LPARENT argsescritura RPARENT SEMICOLON { print("[ESCRITURA] ") }
+    PRINT LPARENT argsescritura RPARENT SEMICOLON
     ;
 
 argsescritura:
-    exp argsescrituraaux { print("[ARGSESCRITURA] ") }
+    exp {
+      \$action = 'Print'
+      \$var = $vars_block::auxiliar.operands_stack.pop()
+      \$type = \$var[:type]
+      # Format:
+      # Action, Data type, , Address
+      \$cuadruple = Cuadruples.new(\$action, \$type, nil, \$var)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+    } argsescrituraaux
     ;
 
 argsescrituraaux: /* empty */
-    | COMMA argsescritura { print("[ARGSESCRITURAAUX] ") }
+    | COMMA argsescritura
     ;
 
 ciclo:
@@ -815,12 +826,9 @@ cicloaux: /* empty */
       # Change this with the value for =
       $vars_block::auxiliar.operations_stack.push( $ASSIGN.text )
     } exp {
-      \$next_operation = $vars_block::auxiliar.operations_stack.look()
-      $vars_block::auxiliar.operations_stack.pop()
-      \$oper1 = $vars_block::auxiliar.operands_stack.look()
-      $vars_block::auxiliar.operands_stack.pop()
-      \$oper2 = $vars_block::auxiliar.operands_stack.look()
-      $vars_block::auxiliar.operands_stack.pop()
+      \$next_operation = $vars_block::auxiliar.operations_stack.pop()
+      \$oper1 = $vars_block::auxiliar.operands_stack.pop()
+      \$oper2 = $vars_block::auxiliar.operands_stack.pop()
       $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper2, \$oper1)
       \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, nil, \$oper2)
       $vars_block::auxiliar.lines_counter += 1
@@ -833,7 +841,15 @@ cicloauxx: /* empty */
     ;
 
 lectura:
-    INPUT LPARENT tipo COMMA ID RPARENT SEMICOLON { print("[LECTURA] ") }
+    INPUT LPARENT tipo COMMA ID RPARENT {
+      \$action = 'Input'
+      \$type = $vars_block::auxiliar.data_type
+      \$id = $ID.text
+      \$var = $vars_block::auxiliar.findVariable(\$id)
+      \$cuadruple = Cuadruples.new(\$action, \$type, nil, \$var)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+    } SEMICOLON
     ;
 
 main:
@@ -841,7 +857,7 @@ main:
       # Resolves the first cuadruple, Goto main
       \$main_cuadruple = $vars_block::auxiliar.jumps_stack.pop()
       $vars_block::auxiliar.cuadruples_array[\$main_cuadruple].destiny = $vars_block::auxiliar.lines_counter
-      $vars_block::auxiliar.scope_location = $MAIN.text 
+      $vars_block::auxiliar.scope_location = $MAIN.text
       if not $vars_block::auxiliar.procedures.has_key?($vars_block::auxiliar.scope_location)
         $vars_block::auxiliar.arguments.clear()
         $vars_block::auxiliar.data_type = 'void'
