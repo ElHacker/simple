@@ -15,6 +15,7 @@ options {
 }
 
 @header {
+  require 'Codes'
   require 'Auxiliar.rb'
   require 'Queue.rb'
   require 'Stack.rb'
@@ -24,12 +25,12 @@ options {
 /* Scanner Rules */
 INT: 'int';
 FLOAT: 'float';
-BOOLEAN: 'boolean'; 
+BOOLEAN: 'boolean';
 STRING: 'string';
-ARRAY: 'array'; 
+ARRAY: 'array';
 MAIN: 'main';
 VOID: 'void';
-FUNCTION: 'function'; 
+FUNCTION: 'function';
 RETURN: 'return';
 FOR: 'for';
 IF: 'if';
@@ -96,16 +97,32 @@ scope {
 
 @init {
   $vars_block::auxiliar = Auxiliar.new
-  # First cuadruple, go to the main procedure
-  \$goto_line = 'Goto'
-  $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter )
-  \$cuadruple = Cuadruples.new(\$goto_line, nil, nil, nil)
-  $vars_block::auxiliar.lines_counter += 1
-  $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
 }
 
 /* Callback executed at the end of programa */
 @after {
+  puts("\nFound this constants: \n")
+  puts("\n\tIntegers:\n")
+  \$integers = $vars_block::auxiliar.const_memory.integers
+  \$integers.keys.each do | key |
+    print("#{key} : #{\$integers[key]}\n")
+  end
+  puts("\n\tFloats:\n")
+  \$floats = $vars_block::auxiliar.const_memory.floats
+  \$floats.keys.each do | key |
+    print("#{key} : #{\$floats[key]}\n")
+  end
+  puts("\n\tBooleans:\n")
+  \$booleans = $vars_block::auxiliar.const_memory.booleans
+  \$booleans.keys.each do | key |
+    print("#{key} : #{\$booleans[key]}\n")
+  end
+  puts("\n\tStrings:\n")
+  \$strings = $vars_block::auxiliar.const_memory.strings
+  \$strings.keys.each do | key |
+    print("#{key} : #{\$strings[key]}\n")
+  end
+
   puts("\n\nFound this global variables: \n")
   \$global = $vars_block::auxiliar.global
   \$global.keys.sort.each do | key |
@@ -121,17 +138,34 @@ scope {
   end
 
   puts("\n\nCuadruples:\n")
+  \$cont = 0
   \$cuadruples = $vars_block::auxiliar.cuadruples_array
-  \$cuadruples.each_with_index do | cuadruple, index |
-    puts( "#{index} : #{cuadruple.to_s}")
+  if $vars_block::auxiliar.debug
+    \$cuadruples.each { | cuadruple|
+      puts( "#{\$cont}: #{cuadruple.to_s}")
+      \$cont += 1
+    }
+  else
+    \$cuadruples.each { | cuadruple|
+      puts( "#{\$cont}: #{cuadruple.to_values}")
+      \$cont += 1
+    }
   end
 }
-  : programa 
+  : programa
   ;
 
 
 programa:
-    var func main { print("[PROGRAMA] -> Entrada aceptada\n") }
+    var {
+      # First cuadruple, go to the main procedure
+      \$goto_line = Hash[ id: 'Goto', value: CODES::Codes[:GOTO] ]
+      $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter )
+      \$empty = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$goto_line, \$empty, \$empty, \$empty)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+    } func main { print("[PROGRAMA] -> Entrada aceptada\n") }
     ;
 
 var:
@@ -139,51 +173,124 @@ var:
     ;
 
 variables:
-    INT ID as_int=assignint SEMICOLON {
-      \$var_info = { id: $ID.text, type: $INT.text, value: \$as_int }
+    INT ID assignint SEMICOLON {
+      if $vars_block::auxiliar.scope_location.nil?
+        \$address = $vars_block::auxiliar.global_memory.getAddress('int')
+      else
+        \$address = $vars_block::auxiliar.local_memory.getAddress('int', 'normal')
+      end
+      \$var_info = Hash[ id: $ID.text, type: $INT.text, value: \$address ]
       $vars_block::auxiliar.addVariable(\$var_info)
+      if (! $vars_block::auxiliar.addr_const_val.nil?)
+        \$action = Hash[ id: '=', value: CODES::Codes[:ASSIGN] ]
+        \$empty = Hash[ value: -1 ]
+        \$int_val = $vars_block::auxiliar.addr_const_val
+        \$cuadruple = Cuadruples.new(\$action, \$int_val, \$empty, \$var_info)
+        $vars_block::auxiliar.lines_counter += 1
+        $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+      end
     }
-    | FLOAT ID as_float=assignfloat SEMICOLON { 
-      \$var_info = { id: $ID.text, type: $FLOAT.text, value: \$as_float } 
+    | FLOAT ID assignfloat SEMICOLON {
+      if $vars_block::auxiliar.scope_location.nil?
+        \$address = $vars_block::auxiliar.global_memory.getAddress('float')
+      else
+        \$address = $vars_block::auxiliar.local_memory.getAddress('float', 'normal')
+      end
+      \$var_info = Hash[ id: $ID.text, type: $FLOAT.text, value: \$address ]
       $vars_block::auxiliar.addVariable(\$var_info)
+      if (! $vars_block::auxiliar.addr_const_val.nil?)
+        \$action = Hash[ id: '=', value: CODES::Codes[:ASSIGN] ]
+        \$emtpy = Hash[ value: -1 ]
+        \$float_val = $vars_block::auxiliar.addr_const_val
+        \$cuadruple = Cuadruples.new(\$action, \$float_val, \$empty, \$var_info)
+        $vars_block::auxiliar.lines_counter += 1
+        $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+      end
     }
-    | STRING ID as_string=assignstring SEMICOLON { 
-      \$var_info = { id: $ID.text, type: $STRING.text, value: \$as_string }
+    | STRING ID assignstring SEMICOLON {
+      if $vars_block::auxiliar.scope_location.nil?
+        \$address = $vars_block::auxiliar.global_memory.getAddress('string')
+      else
+        \$address = $vars_block::auxiliar.local_memory.getAddress('string', 'normal')
+      end
+      \$var_info = Hash[ id: $ID.text, type: $STRING.text, value: \$address ]
       $vars_block::auxiliar.addVariable(\$var_info)
+      if (! $vars_block::auxiliar.addr_const_val.nil?)
+        \$action = Hash[ id: '=', value: CODES::Codes[:ASSIGN] ]
+        \$emtpy = Hash[ value: -1 ]
+        \$string_val = $vars_block::auxiliar.addr_const_val
+        \$cuadruple = Cuadruples.new(\$action, \$string_val, \$empty, \$var_info)
+        $vars_block::auxiliar.lines_counter += 1
+        $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+      end
     }
-    | BOOLEAN ID as_boolean=assignboolean SEMICOLON { 
-      \$var_info = { id: $ID.text, type: $BOOLEAN.text, value: \$as_boolean }
+    | BOOLEAN ID assignboolean SEMICOLON {
+      if $vars_block::auxiliar.scope_location.nil?
+        \$address = $vars_block::auxiliar.global_memory.getAddress('boolean')
+      else
+        \$address = $vars_block::auxiliar.local_memory.getAddress('boolean', 'normal')
+      end
+      \$var_info = Hash[ id: $ID.text, type: $BOOLEAN.text, value: \$address ]
       $vars_block::auxiliar.addVariable(\$var_info)
+      if (! $vars_block::auxiliar.addr_const_val.nil?)
+        \$action = Hash[ id: '=', value: CODES::Codes[:ASSIGN] ]
+        \$emtpy = Hash[ value: -1 ]
+        \$boolean_val = $vars_block::auxiliar.addr_const_val
+        \$cuadruple = Cuadruples.new(\$action, \$boolean_val, \$empty, \$var_info)
+        $vars_block::auxiliar.lines_counter += 1
+        $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+      end
     }
-    | ARRAY tipo ID COLON exp SEMICOLON { 
+    | ARRAY tipo ID COLON exp SEMICOLON {
+      # TODO Cuando se vean arrays
       \$data_type = $vars_block::auxiliar.data_type
       \$var_info = { id: $ID.text, type: "[#{\$data_type}]" }
       $vars_block::auxiliar.addVariable(\$var_info)
     } /* TODO: missing size of array */
     ;
 
-assignint returns[value]:
-    | /* empty */
-    | ASSIGN CTEI { $value = $CTEI.text.to_i }
+assignint:
+    /* empty */ {
+      $vars_block::auxiliar.addr_const_val = nil
+    }
+    | ASSIGN CTEI {
+      \$val = $CTEI.text.to_i
+      $vars_block::auxiliar.addr_const_val = Hash[ id: \$val, value: $vars_block::auxiliar.const_memory.getAddress(\$val, 'int') ]
+    }
     ;
 
-assignfloat returns[value]:
-    | /* empty */
-    | ASSIGN CTEF { $value = $CTEF.text.to_f}
+assignfloat:
+    /* empty */ {
+      $vars_block::auxiliar.addr_const_val = nil
+    }
+    | ASSIGN CTEF {
+      \$val = $CTEF.text.to_f
+      $vars_block::auxiliar.addr_const_val = Hash[ id: \$val, value: $vars_block::auxiliar.const_memory.getAddress(\$val, 'float') ]
+    }
     ;
 
-assignstring returns[value]:
-    |  /* empty */
-    | ASSIGN CTES { $value = $CTES.text }
+assignstring:
+     /* empty */ {
+      $vars_block::auxiliar.addr_const_val = nil
+    }
+    | ASSIGN CTES {
+      \$val = $CTES.text
+      $vars_block::auxiliar.addr_const_val = Hash[ id: \$val, value: $vars_block::auxiliar.const_memory.getAddress(\$val, 'string') ]
+    }
     ;
 
-assignboolean returns[value]:
-    | /* empty */
-    | ASSIGN CTEB { $value = $CTEB.text == 'true' } /* Convert string to boolean */
+assignboolean:
+    /* empty */ {
+      $vars_block::auxiliar.addr_const_val = nil
+    }
+    | ASSIGN CTEB {
+      \$val = $CTEB.text == 'true'
+      $vars_block::auxiliar.addr_const_val = Hash[ id: \$val, value: $vars_block::auxiliar.const_memory.getAddress(\$val, 'boolean') ]
+    } /* Convert string to boolean */
     ;
 
 tipo:
-    INT { $vars_block::auxiliar.data_type = 'int' } 
+    INT { $vars_block::auxiliar.data_type = 'int' }
     | FLOAT { $vars_block::auxiliar.data_type = 'float' }
     | STRING { $vars_block::auxiliar.data_type = 'string' }
     | BOOLEAN { $vars_block::auxiliar.data_type = 'boolean' }
@@ -197,6 +304,7 @@ funcion:
     FUNCTION ID {
       $vars_block::auxiliar.scope_location = $ID.text
       $vars_block::auxiliar.has_return = false
+      $vars_block::auxiliar.local_memory.resetCounters()
     } LPARENT argumentos RPARENT COLON retornofunc {
       $vars_block::auxiliar.addProcedure()
     } LBRACK var est RBRACK {
@@ -215,7 +323,7 @@ argumentos: /* empty */
       \$type = $vars_block::auxiliar.data_type
       \$ref = $vars_block::auxiliar.is_ref
       $vars_block::auxiliar.checkParamInArguments( $ID.text )
-      $vars_block::auxiliar.arguments.push( { type: \$type, ref: \$ref, id: $ID.text } )
+      $vars_block::auxiliar.arguments.push( Hash[ type: \$type, ref: \$ref, id: $ID.text ] )
     } argumentoaux
     ;
 
@@ -224,7 +332,7 @@ argumentoaux: /* empty */
       \$type = $vars_block::auxiliar.data_type
       \$ref = $vars_block::auxiliar.is_ref
       $vars_block::auxiliar.checkParamInArguments( $ID.text )
-      $vars_block::auxiliar.arguments.push( { type: \$type, ref: \$ref, id: $ID.text } )
+      $vars_block::auxiliar.arguments.push( Hash[ type: \$type, ref: \$ref, id: $ID.text ] )
     } argumentoaux
     ;
 
@@ -252,10 +360,10 @@ estatutos:
       $vars_block::auxiliar.exp_call = false
     }
     | condicion
-    | escritura { print("[ESTATUTOS] ") }
+    | escritura
     | ciclo
-    | lectura { print("[ESTATUTOS] ") }
-    | retorno { print("[ESTATUTOS] ") }
+    | lectura
+    | retorno
     ;
 
 idestatutos:
@@ -268,10 +376,12 @@ idestatutos:
       $vars_block::auxiliar.operations_stack.push( $ASSIGN.text )
     } expresion {
       \$next_operation = $vars_block::auxiliar.operations_stack.pop()
+      \$operation_value = Hash[ id: \$next_operation, value: CODES.tokenValue(\$next_operation) ]
       \$oper1 = $vars_block::auxiliar.operands_stack.pop()
       \$oper2 = $vars_block::auxiliar.operands_stack.pop()
       $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper2, \$oper1)
-      \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, nil, \$oper2)
+      \$emtpy = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$operation_value, \$oper1, \$emtpy, \$oper2)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
     }
@@ -280,17 +390,19 @@ idestatutos:
 llamada:
     LPARENT {
       \$procedure = $vars_block::auxiliar.operands_stack.look()
-      if not $vars_block::auxiliar.procedures.has_key?(\$procedure)
+      if (! $vars_block::auxiliar.procedures.has_key?(\$procedure))
         abort("\nERROR: Procedure '#{\$procedure}' not defined\n")
       end
       $vars_block::auxiliar.arg_stack.push(0)
       $vars_block::auxiliar.call_stack.push(\$procedure)
-      \$action = 'Era'
-      \$cuadruple = Cuadruples.new(\$action, \$procedure, nil, nil)
+      # Era
+      \$action = Hash[ id: 'Era', value: CODES::Codes[:ERA] ]
+      \$emtpy = Hash[ value: -1 ]
+      \$procedure_value = Hash[ value: \$procedure ]
+      \$cuadruple = Cuadruples.new(\$action, \$procedure_value, \$emtpy, \$emtpy)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
     } llamadaargs RPARENT {
-      # TODO terminar la comprobacion de la funcion y el tipo de retorno
       \$procedure = $vars_block::auxiliar.operands_stack.pop()
       \$return_type = $vars_block::auxiliar.procedures[\$procedure][:return_type]
       \$call_in_exp = $vars_block::auxiliar.exp_call
@@ -310,22 +422,23 @@ llamada:
         abort("\nERROR: The return value of '#{\$procedure}' must be assigned to something\n")
       end
       # Now, call the function
-      \$action = 'Gosub'
-      \$direction = $vars_block::auxiliar.procedures[\$procedure][:line]
-      \$cuadruple = Cuadruples.new(\$action, \$procedure, nil, \$direction)
+      # Gosub
+      \$action = Hash[ id: 'Gosub', value: CODES::Codes[:GOSUB] ]
+      \$direction = Hash[ value: $vars_block::auxiliar.procedures[\$procedure][:line] ]
+      \$empty = Hash[ value: -1 ]
+      \$proc_value = Hash[ value: \$procedure ]
+      \$cuadruple = Cuadruples.new(\$action, \$proc_value, \$empty, \$direction)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       # If the returning type is different of void, then transfer to a
       # temporary variable
       if \$return_type != 'void'
-        \$action = '='
-        # In the future, get a new temporal variable
-        \$temp = 't' + $vars_block::auxiliar.next_temp.to_s
-        $vars_block::auxiliar.next_temp += 1
-        \$destiny = { id: \$temp, type: \$return_type, value: nil }
+        \$action = Hash[ id: '=', value: CODES::Codes[:ASSIGN] ]
+        \$address = $vars_block::auxiliar.local_memory.getAddress(\$return_type, 'temporal')
+        \$destiny = Hash[ type: \$return_type, value: \$address ]
         \$name = \$procedure + '_ret_swap'
         \$origin = $vars_block::auxiliar.global[\$name]
-        \$cuadruple = Cuadruples.new(\$action, \$origin, nil, \$destiny)
+        \$cuadruple = Cuadruples.new(\$action, \$origin, \$emtpy, \$destiny)
         $vars_block::auxiliar.lines_counter += 1
         $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
         $vars_block::auxiliar.operands_stack.push(\$destiny)
@@ -340,26 +453,29 @@ llamadaargs: /* empty */
       # Gets the information about the argument
       \$procedure = $vars_block::auxiliar.call_stack.look()
       \$arg_number = $vars_block::auxiliar.arg_stack.pop()
-      \$argument = $vars_block::auxiliar.procedures[\$procedure][:args][\$arg_number]
       # Abort if the number of passed arguments is mayor than the number of
       # defined arguments in the procedure directory
-      if \$argument.nil?
-        msg = "\nERROR: Passing more arguments for '#{\$procedure}'\n" +
+      if \$arg_number >= $vars_block::auxiliar.procedures[\$procedure][:args].size
+        \$msg = "\nERROR: Passing more arguments for '#{\$procedure}'\n" +
           $vars_block::auxiliar.getSignature(\$procedure)
-        abort(msg)
+        abort(\$msg)
       end
-      # TODO
-      # Change this to see if the address of the variables is a temporal
-      # \$result[:value] => address of temporal variable
-      if \$argument[:ref] && \$result[:id][0] == 't'
+      \$argument = $vars_block::auxiliar.procedures[\$procedure][:args][\$arg_number]
+      # Abort if the data types are different
+      # TODO CASTING!!!
+      if \$argument[:type] != \$result[:type]
+        abort("\nERROR: Different data types for the arguments of '#{\$procedure}'\n")
+      end
+      if \$argument[:ref] && $vars_block::auxiliar.local_memory.temporal.checkAddress(\$result[:value])
         abort("\nERROR: Cannot apply 'ref' to an expression\n")
       end
-      \$flag_ref = 0
+      \$flag_ref = Hash[ value: 0 ]
       if \$argument[:ref]
-        \$flag_ref = 1
+        \$flag_ref[:value] = 1
       end
-      \$action = 'Param'
-      \$destiny = 'param' + \$arg_number.to_s
+      # Param
+      \$action = Hash[ id: 'Param', value: CODES::Codes[:PARAM] ]
+      \$destiny = Hash[ value: ('param' + \$arg_number.to_s) ]
       \$cuadruple = Cuadruples.new(\$action, \$result, \$flag_ref, \$destiny)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
@@ -377,24 +493,29 @@ llamadaargsaux: /* emtpy */
       # Gets the information about the argument
       \$procedure = $vars_block::auxiliar.call_stack.look()
       \$arg_number = $vars_block::auxiliar.arg_stack.pop()
-      \$argument = $vars_block::auxiliar.procedures[\$procedure][:args][\$arg_number]
       # Abort if the number of passed arguments is mayor than the number of
       # defined arguments in the procedure directory
-      if \$argument.nil?
-        abort("\nERROR: Passing more arguments for '#{\$procedure}'\n")
+      if \$arg_number >= $vars_block::auxiliar.procedures[\$procedure][:args].size
+        \$msg = "\nERROR: Passing more arguments for '#{\$procedure}'\n" +
+          $vars_block::auxiliar.getSignature(\$procedure)
+        abort(\$msg)
       end
-      # TODO
-      # Change this to see if the address of the variables is a temporal
-      # \$result[:value] => address of temporal variable
-      if \$argument[:is_ref] && \$result[:id][0] == 't'
+      \$argument = $vars_block::auxiliar.procedures[\$procedure][:args][\$arg_number]
+      # Abort if the data types are different
+      # TODO CASTING!!!
+      if \$argument[:type] != \$result[:type]
+        abort("\nERROR: Different data types for the arguments of '#{\$procedure}'\n")
+      end
+      if \$argument[:ref] && $vars_block::auxiliar.local_memory.temporal.checkAddress(\$result[:value])
         abort("\nERROR: Cannot apply 'ref' to an expression\n")
       end
-      \$flag_ref = 0
+      \$flag_ref = Hash[ value: 0 ]
       if \$argument[:is_ref]
-        \$flag_ref = 1
+        \$flag_ref[:value] = 1
       end
-      \$action = 'Param'
-      \$destiny = 'param' + \$arg_number.to_s
+      # Param
+      \$action = Hash[ id: 'Param', value: CODES::Codes[:PARAM] ]
+      \$destiny = Hash[ value: ('param' + \$arg_number.to_s) ]
       \$cuadruple = Cuadruples.new(\$action, \$result, \$flag_ref, \$destiny)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
@@ -412,21 +533,20 @@ array:
 expresion:
     exp expcomp {
       \$next_operation = $vars_block::auxiliar.operations_stack.look()
-      if (not \$next_operation.nil?) && (['or', 'and'].include?(\$next_operation))
+      if (! \$next_operation.nil?) && ['or', 'and'].include?(\$next_operation)
         $vars_block::auxiliar.operations_stack.pop()
         \$oper2 = $vars_block::auxiliar.operands_stack.pop()
         \$oper1 = $vars_block::auxiliar.operands_stack.pop()
         \$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
-        # In the future, use the nextTemporalVariable
-        \$temp = 't' + $vars_block::auxiliar.next_temp.to_s
-        $vars_block::auxiliar.next_temp += 1
-        \$destiny = { id: \$temp, type: \$resulting_type, value: nil }
-        \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
+        \$address = $vars_block::auxiliar.local_memory.getAddress(\$resulting_type, 'temporal')
+        \$destiny = Hash[ type: \$resulting_type, value: \$address ]
+        \$operation_value = Hash[ id: \$next_operation, value: CODES.tokenValue(\$next_operation) ]
+        \$cuadruple = Cuadruples.new(\$operation_value, \$oper1, \$oper2, \$destiny)
         $vars_block::auxiliar.lines_counter += 1
         $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
         $vars_block::auxiliar.operands_stack.push(\$destiny)
       end
-    } expresionaux { print("[EXPRESION] ") }
+    } expresionaux
     ;
 
 expresionaux: /* empty */
@@ -434,18 +554,17 @@ expresionaux: /* empty */
     ;
 
 expcomp: /* empty */
-  | comparacion exp { 
+  | comparacion exp {
     \$next_operation = $vars_block::auxiliar.operations_stack.look()
-    if (not \$next_operation.nil?) && (['<', '<=', '>', '>=', '==', '!='].include?(\$next_operation))
+    if (! \$next_operation.nil?) && ['<', '<=', '>', '>=', '==', '!='].include?(\$next_operation)
       $vars_block::auxiliar.operations_stack.pop()
       \$oper2 = $vars_block::auxiliar.operands_stack.pop()
       \$oper1 = $vars_block::auxiliar.operands_stack.pop()
       \$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
-      # In the future, use the nextTemporalVariable
-      \$temp = 't' + $vars_block::auxiliar.next_temp.to_s
-      $vars_block::auxiliar.next_temp += 1
-      \$destiny = { id: \$temp, type: \$resulting_type, value: nil }
-      \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
+      \$address = $vars_block::auxiliar.local_memory.getAddress(\$resulting_type, 'temporal')
+      \$destiny = Hash[ type: \$resulting_type, value: \$address ]
+      \$operation_value = Hash[ id: \$next_operation, value: CODES.tokenValue(\$next_operation) ]
+      \$cuadruple = Cuadruples.new(\$operation_value, \$oper1, \$oper2, \$destiny)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       $vars_block::auxiliar.operands_stack.push(\$destiny)
@@ -456,16 +575,15 @@ expcomp: /* empty */
 exp:
     termino {
       \$next_operation = $vars_block::auxiliar.operations_stack.look()
-      if (not \$next_operation.nil?) && (\$next_operation == '+' || \$next_operation == '-')
+      if (! \$next_operation.nil?) && (\$next_operation == '+' || \$next_operation == '-')
         $vars_block::auxiliar.operations_stack.pop()
         \$oper2 = $vars_block::auxiliar.operands_stack.pop()
         \$oper1 = $vars_block::auxiliar.operands_stack.pop()
         \$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
-        # In the future, use the nextTemporalVariable
-        \$temp = 't' + $vars_block::auxiliar.next_temp.to_s
-        $vars_block::auxiliar.next_temp += 1
-        \$destiny = { id: \$temp, type: \$resulting_type, value: nil }
-        \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
+        \$address = $vars_block::auxiliar.local_memory.getAddress(\$resulting_type, 'temporal')
+        \$destiny = Hash[ type: \$resulting_type, value: \$address ]
+        \$operation_value = Hash[ id: \$next_operation, value: CODES.tokenValue(\$next_operation) ]
+        \$cuadruple = Cuadruples.new(\$operation_value, \$oper1, \$oper2, \$destiny)
         $vars_block::auxiliar.lines_counter += 1
         $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
         $vars_block::auxiliar.operands_stack.push(\$destiny)
@@ -478,7 +596,7 @@ expaux: /* empty */
     | PLUS {
       $vars_block::auxiliar.operations_stack.push( $PLUS.text )
     }
-    exp 
+    exp
     | MINUS {
       $vars_block::auxiliar.operations_stack.push( $MINUS.text )
     }
@@ -488,18 +606,17 @@ expaux: /* empty */
 termino:
     factor {
       \$next_operation = $vars_block::auxiliar.operations_stack.look()
-      if (not \$next_operation.nil?) && (\$next_operation == '*' || \$next_operation == '/')
+      if (! \$next_operation.nil?) && (\$next_operation == '*' || \$next_operation == '/')
         $vars_block::auxiliar.operations_stack.pop()
         \$oper2 = $vars_block::auxiliar.operands_stack.look()
         $vars_block::auxiliar.operands_stack.pop()
         \$oper1 = $vars_block::auxiliar.operands_stack.look()
         $vars_block::auxiliar.operands_stack.pop()
         \$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper1, \$oper2)
-        # Change this in the future with nextTemporalVariable
-        \$temp = 't' + $vars_block::auxiliar.next_temp.to_s
-        $vars_block::auxiliar.next_temp += 1
-        \$destiny = { id: \$temp, type: \$resulting_type, value: nil }
-        \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, \$oper2, \$destiny)
+        \$address = $vars_block::auxiliar.local_memory.getAddress(\$resulting_type, 'temporal')
+        \$destiny = Hash[ type: \$resulting_type, value: \$address ]
+        \$operation_value = Hash[ id: \$next_operation, value: CODES.tokenValue(\$next_operation) ]
+        \$cuadruple = Cuadruples.new(\$operation_value, \$oper1, \$oper2, \$destiny)
         $vars_block::auxiliar.lines_counter += 1
         $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
         $vars_block::auxiliar.operands_stack.push( \$destiny )
@@ -510,32 +627,28 @@ termino:
 
 terminoaux: /* empty */
     | TIMES {
-      # Change this with the value for *
       $vars_block::auxiliar.operations_stack.push( $TIMES.text )
-    } 
-    termino 
+    }
+    termino
     | DIVIDE {
-      # Change this with the value for /
       $vars_block::auxiliar.operations_stack.push( $DIVIDE.text )
     }
-    termino 
+    termino
     ;
 
-/* TODO: Corregir la parte del NOT para parentesis y expresiones, y del signo */
 factor:
     NOT {
-      # Change this with the value for not
       $vars_block::auxiliar.operations_stack.push( $NOT.text )
     } notfactor {
       # Gets the last element added to the operands_stack
       \$last_operand = $vars_block::auxiliar.operands_stack.pop()
       \$next_operation = $vars_block::auxiliar.operations_stack.pop()
       \$resulting_type = $vars_block::auxiliar.checkCuadruple(\$next_operation, \$last_operand)
-      # In the future, use the nextTemporalVariable
-      \$temp = 't' + $vars_block::auxiliar.next_temp.to_s
-      $vars_block::auxiliar.next_temp += 1
-      \$destiny = { id: \$temp, type: \$resulting_type, value: nil }
-      \$cuadruple = Cuadruples.new(\$next_operation, \$last_operand, nil, \$destiny)
+      \$address = $vars_block::auxiliar.local_memory.getAddress(\$resulting_type, 'temporal')
+      \$destiny = Hash[ type: \$resulting_type, value: \$address ]
+      \$operation_value = Hash[ id: \$next_operation, value: CODES.tokenValue(\$next_operation) ]
+      \$empty = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$operation_value, \$last_operand, \$empty, \$destiny)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       $vars_block::auxiliar.operands_stack.push(\$destiny)
@@ -583,24 +696,30 @@ varcte:
       #end
     }
     | CTEI {
-      \$var = { id: nil, type: 'int', value: $CTEI.text.to_i }
-      $vars_block::auxiliar.operands_stack.push( \$var )
+      \$var = $CTEI.text.to_i
+      \$const_info = Hash[ id: \$var, type: 'int', value: $vars_block::auxiliar.const_memory.getAddress(\$val, 'int') ]
+      $vars_block::auxiliar.operands_stack.push( \$const_info )
     }
     | CTEF {
-      \$var = { id: nil, type: 'float', value: $CTEF.text.to_f }
-      $vars_block::auxiliar.operands_stack.push( \$var )
+      \$var = $CTEF.text.to_f
+      \$const_info = Hash[ id: \$var, type: 'float', value: $vars_block::auxiliar.const_memory.getAddress(\$val, 'float') ]
+      $vars_block::auxiliar.operands_stack.push( \$const_info )
     }
-    | CTES { 
-      if not $vars_block::auxiliar.sign_variable.nil?
+    | CTES {
+      if (! $vars_block::auxiliar.sign_variable.nil?)
         abort("\nERROR: You cannot apply '+' or '-' to the string #{$CTES.text}\n")
       end
-      $vars_block::auxiliar.operands_stack.push({ id: nil, type: 'string', value: $CTES.text })
+      \$var = $CTES.text
+      \$const_info = Hash[ id: \$var, type: 'string', value: $vars_block::auxiliar.const_memory.getAddress(\$var, 'string') ]
+      $vars_block::auxiliar.operands_stack.push( \$const_info )
     }
-    | CTEB { 
+    | CTEB {
       if not $vars_block::auxiliar.sign_variable.nil?
         abort("\nERROR: You cannot apply '+' or '-' to boolean\n")
       end
-      $vars_block::auxiliar.operands_stack.push({ id: nil, type: 'boolean', value: $CTEB.text == 'true' })
+      \$var = $CTEB.text == 'true'
+      \$const_info = Hash[ id: \$var, type: 'boolean', value: $vars_block::auxiliar.const_memory.getAddress(\$var, 'boolean') ]
+      $vars_block::auxiliar.operands_stack.push( \$const_info )
     }
     ;
 
@@ -612,33 +731,27 @@ idvarcte:
     }
     | {
       $vars_block::auxiliar.exp_call = true
-    } llamada 
+    } llamada
     | array { print("[IDVARCTE] ") }
     ;
 
 comparacion:
     LT {
-      # Change this with the value for <
       $vars_block::auxiliar.operations_stack.push( $LT.text )
     }
     | LE {
-      # Change this with the value for <=
       $vars_block::auxiliar.operations_stack.push( $LE.text )
     }
     | GT {
-      # Change this with the value for >
       $vars_block::auxiliar.operations_stack.push( $GT.text )
     }
     | GE {
-      # Change this with the value for >=
       $vars_block::auxiliar.operations_stack.push( $GE.text )
     }
     | EQ {
-      # Change this with the value for ==
       $vars_block::auxiliar.operations_stack.push( $EQ.text )
     }
     | NE {
-      # Change this with the value for !=
       $vars_block::auxiliar.operations_stack.push( $NE.text )
     }
     ;
@@ -654,9 +767,10 @@ logico:
 
 retorno:
     RETURN retornoaux SEMICOLON {
-      # Create the End cuadruple
-      \$action = 'End'
-      \$cuadruple = Cuadruples.new(\$action, nil, nil, nil)
+      # Create the Goend cuadruple
+      \$action = Hash[ id: 'Goend', value: CODES::Codes[:GOEND] ]
+      \$empty = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$action, \$empty, \$empty, \$empty)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       # Indicates that this procedure has at least one return
@@ -693,8 +807,10 @@ retornoaux:
       end
       # Generates the cuadruple
       \$name = \$scope_location + '_ret_swap'
-      \$action = 'Ret'
-      \$cuadruple = Cuadruples.new(\$action, \$returning, nil,  \$name)
+      \$action = Hash[ id: 'Ret', value: CODES::Codes[:RET] ]
+      \$empty = Hash[ value: -1 ]
+      \$destiny = $vars_block::auxiliar.global[\$name]
+      \$cuadruple = Cuadruples.new(\$action, \$returning, \$emtpy, \$destiny)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
     }
@@ -705,17 +821,18 @@ condicion:
       # Generate
       # GotoF, condition,nil,__
       # Push count-1 to jumps stack
-      \$goto_false = "GotoF"
+      \$goto_false = Hash[ id: 'GotoF', value: CODES::Codes[:GOTOF] ]
       \$condition = $vars_block::auxiliar.operands_stack.pop()
       \$count = $vars_block::auxiliar.lines_counter
       $vars_block::auxiliar.jumps_stack.push(\$count)
-      \$cuadruple = Cuadruples.new(\$goto_false, \$condition, nil, nil)
+      \$empty = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$goto_false, \$condition, \$empty, \$empty)
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       $vars_block::auxiliar.lines_counter += 1
-    } LBRACK est RBRACK elsecondicion { 
+    } LBRACK est RBRACK elsecondicion {
       \$jump = $vars_block::auxiliar.jumps_stack.pop()
       \$count = $vars_block::auxiliar.lines_counter
-      $vars_block::auxiliar.cuadruples_array[\$jump].destiny = \$count
+      $vars_block::auxiliar.cuadruples_array[\$jump].destiny = Hash[ value: \$count ]
     }
     ;
 
@@ -726,14 +843,15 @@ elsecondicion: /* empty */
       #   Goto, nil, nil, __
       #   Push count-1 to jumps stack
       #   Fill(false, count)
-      \$goto_line = "Goto"
+      \$goto_line = Hash[ id: 'Goto', value: CODES::Codes[:GOTO] ]
       \$jump = $vars_block::auxiliar.jumps_stack.pop()
       \$count = $vars_block::auxiliar.lines_counter
-      \$cuadruple = Cuadruples.new(\$goto_line, nil, nil, nil)
+      \$empty = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$goto_line, \$empty, \$empty, \$empty)
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.jumps_stack.push(\$count)
-      $vars_block::auxiliar.cuadruples_array[\$jump].destiny = $vars_block::auxiliar.lines_counter
+      $vars_block::auxiliar.cuadruples_array[\$jump].destiny = Hash[ value: $vars_block::auxiliar.lines_counter ]
     } LBRACK est RBRACK
     ;
 
@@ -743,12 +861,13 @@ escritura:
 
 argsescritura:
     exp {
-      \$action = 'Print'
+      \$action = Hash[ id: 'Print', value: CODES::Codes[:PRINT] ]
       \$var = $vars_block::auxiliar.operands_stack.pop()
-      \$type = \$var[:type]
+      \$type = Hash[ value: \$var[:type] ]
       # Format:
       # Action, Data type, , Address
-      \$cuadruple = Cuadruples.new(\$action, \$type, nil, \$var)
+      \$empty = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$action, \$type, \$empty, \$var)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
     } argsescrituraaux
@@ -767,29 +886,31 @@ ciclo:
       # Insert the next line cuadruple in jumps_stack
       $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter)
       # Create the GotoF cuadruple
-      \$goto_line = "GotoF"
-      \$cuadruple = Cuadruples.new(\$goto_line, \$condition, nil, nil)
+      \$goto_line = Hash[ id: 'GotoF', value: CODES::Codes[:GOTOF] ]
+      \$empty = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$goto_line, \$condition, \$empty, \$empty)
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       $vars_block::auxiliar.lines_counter += 1
       # Insert the next line cuadruple in jumps_stack
       $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter)
       # Create the Goto cuadruple
-      \$goto_line = "Goto"
-      \$cuadruple = Cuadruples.new(\$goto_line, nil, nil, nil)
+      \$goto_line = Hash[ id: 'Goto', value: CODES::Codes[:GOTO] ]
+      \$cuadruple = Cuadruples.new(\$goto_line, \$empty, \$empty, \$empty)
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       $vars_block::auxiliar.lines_counter += 1
       # Insert the next line cuadruple in jumps_stack
-      $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter)
+      $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter )
     } cicloaux RPARENT {
       \$aux_jumps = Stack.new
       3.times {
         \$aux_jumps.push( $vars_block::auxiliar.jumps_stack.pop() )
       }
       # Start of the for condition
-      \$for_cond_ini = $vars_block::auxiliar.jumps_stack.pop()
+      \$for_cond_ini = Hash[ value: $vars_block::auxiliar.jumps_stack.pop() ]
       # Create a Goto cuadruple
-      \$goto_line = "Goto"
-      \$cuadruple = Cuadruples.new(\$goto_line, nil, nil, \$for_cond_ini)
+      \$goto_line = Hash[ id: 'Goto', value: CODES::Codes[:GOTO] ]
+      \$emtpy = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$goto_line, \$empty, \$empty, \$for_cond_ini)
       $vars_block::auxiliar.cuadruples_array.push( \$cuadruple )
       $vars_block::auxiliar.lines_counter += 1
       # Transfer one line from aux_jumps to jumps_stack
@@ -797,22 +918,23 @@ ciclo:
       # Get the line of the Goto cuadruple in the for
       \$for_cond_true = \$aux_jumps.pop()
       # Fill that cuadruple with the next cuadruple line
-      $vars_block::auxiliar.cuadruples_array[\$for_cond_true].destiny = $vars_block::auxiliar.lines_counter
+      $vars_block::auxiliar.cuadruples_array[\$for_cond_true].destiny = Hash[ value: $vars_block::auxiliar.lines_counter ]
       # Transfer another line from aux_jumps to jumps_stack
       # Transfer one line from aux_jumps to jumps_stack
       $vars_block::auxiliar.jumps_stack.push( \$aux_jumps.pop() )
     } LBRACK est RBRACK {
       # Get the line of the for increment cuadruple
-      \$for_increment = $vars_block::auxiliar.jumps_stack.pop()
+      \$for_increment = Hash[ value: $vars_block::auxiliar.jumps_stack.pop() ]
       # Create a Goto cuadruple with that destination
-      \$goto_line = "Goto"
-      \$cuadruple = Cuadruples.new(\$goto_line, nil, nil, \$for_increment)
+      \$goto_line = Hash[ id: 'Goto', value: CODES::Codes[:GOTO] ]
+      \$empty = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$goto_line, \$empty, \$empty, \$for_increment)
       $vars_block::auxiliar.cuadruples_array.push( \$cuadruple )
       $vars_block::auxiliar.lines_counter += 1
       # Get the line of the GotoF cuadruple in the for
       \$for_cond_false = $vars_block::auxiliar.jumps_stack.pop()
       # Fill that cuadruple
-      $vars_block::auxiliar.cuadruples_array[\$for_cond_false].destiny = $vars_block::auxiliar.lines_counter
+      $vars_block::auxiliar.cuadruples_array[\$for_cond_false].destiny = Hash[ value: $vars_block::auxiliar.lines_counter ]
     }
     ;
 
@@ -823,14 +945,15 @@ cicloaux: /* empty */
       $vars_block::auxiliar.operands_stack.push(\$var)
       # For now, we ignore the array
     } cicloauxx ASSIGN {
-      # Change this with the value for =
       $vars_block::auxiliar.operations_stack.push( $ASSIGN.text )
     } exp {
       \$next_operation = $vars_block::auxiliar.operations_stack.pop()
       \$oper1 = $vars_block::auxiliar.operands_stack.pop()
       \$oper2 = $vars_block::auxiliar.operands_stack.pop()
       $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper2, \$oper1)
-      \$cuadruple = Cuadruples.new(\$next_operation, \$oper1, nil, \$oper2)
+      \$operation_value = Hash[ id: \$next_operation, value: CODES.tokenValue(\$next_operation) ]
+      \$empty = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$operation_value, \$oper1, \$empty, \$oper2)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
     }
@@ -842,11 +965,12 @@ cicloauxx: /* empty */
 
 lectura:
     INPUT LPARENT tipo COMMA ID RPARENT {
-      \$action = 'Input'
-      \$type = $vars_block::auxiliar.data_type
+      \$action = Hash[ id: 'Input', value: CODES::Codes[:INPUT] ]
+      \$type = Hash[ value: $vars_block::auxiliar.data_type ]
       \$id = $ID.text
       \$var = $vars_block::auxiliar.findVariable(\$id)
-      \$cuadruple = Cuadruples.new(\$action, \$type, nil, \$var)
+      \$empty = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$action, \$type, \$empty, \$var)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
     } SEMICOLON
@@ -856,9 +980,9 @@ main:
     MAIN {
       # Resolves the first cuadruple, Goto main
       \$main_cuadruple = $vars_block::auxiliar.jumps_stack.pop()
-      $vars_block::auxiliar.cuadruples_array[\$main_cuadruple].destiny = $vars_block::auxiliar.lines_counter
+      $vars_block::auxiliar.cuadruples_array[\$main_cuadruple].destiny = Hash[ value: $vars_block::auxiliar.lines_counter ]
       $vars_block::auxiliar.scope_location = $MAIN.text
-      if not $vars_block::auxiliar.procedures.has_key?($vars_block::auxiliar.scope_location)
+      if (! $vars_block::auxiliar.procedures.has_key?($vars_block::auxiliar.scope_location))
         $vars_block::auxiliar.arguments.clear()
         $vars_block::auxiliar.data_type = 'void'
         $vars_block::auxiliar.addProcedure()

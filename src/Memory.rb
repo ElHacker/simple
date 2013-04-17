@@ -24,20 +24,24 @@ class Memory
     if distribution.length != 4
       abort("\nERROR: The distribution of the memory must have 4 spaces\n")
     end
-    sum = 0
+    sum = 0.0
     distribution.each { |d|
       if d > 1 || d < 0
         abort("\nERROR: The distribution must be a value between 0.0 and 1.0\n")
-        sum += d
       end
+      sum += d
     }
-    if sum != 1.0
-      abort("\nERROR: The sum of the distribution must be 1.0\n")
+    diff = sum - 1.0
+    if diff.abs >= 0.0001
+      abort("\nERROR: The sum of the distribution must be 1.0 and now it's #{diff}\n")
     end
+    rang1 = distribution[0]
+    rang2 = rang1 + distribution[1]
+    rang3 = rang2 + distribution[2]
     @int_init_addr = init_address
-    @float_init_addr = init_address + wide * distribution[0]
-    @boolean_init_addr = init_address + wide * distribution[1]
-    @string_init_addr = init_address + wide * distribution[2]
+    @float_init_addr = init_address + wide * rang1
+    @boolean_init_addr = init_address + wide * rang2
+    @string_init_addr = init_address + wide * rang3
     @wide = init_address + wide
     @int_count = 0
     @float_count = 0
@@ -60,8 +64,8 @@ class Memory
     case type
     when 'int'
       address = @int_init_addr + @int_count
-      @int_cont += cant
-      if (@int_init_addr + @int_cont) >= @float_init_addr
+      @int_count += cant
+      if (@int_init_addr + @int_count) >= @float_init_addr
         abort("\nERROR: The directions for 'int' are finished\n")
       end
     when 'float'
@@ -88,8 +92,29 @@ class Memory
     address
   end
 
+  # Check if a given address is in this block
+  # Params:
+  # +address+:: The address to inspect
+  # Returns:
+  # true if it is in this block or false otherwise
+  def checkAddress(address)
+    if @int_init_addr <= address && address <= (@int_init_addr + @int_count)
+      return true
+    end
+    if @float_init_addr <= address && address <= (@float_init_addr + @float_count)
+      return true
+    end
+    if @boolean_init_addr <= address && address <= (@boolean_init_addr + @boolean_count)
+      return true
+    end
+    if @string_init_addr <= address && address <= (@string_init_addr + @string_count)
+      return true
+    end
+    false
+  end
+
   # Reset the counter of this block memory
-  def resetCounters
+  def resetCounters()
     @int_count = 0
     @float_count = 0
     @boolean_count = 0

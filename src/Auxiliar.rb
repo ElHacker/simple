@@ -12,9 +12,9 @@ class Auxiliar
 
   attr_accessor :global, :procedures, :operands_stack, :operations_stack,
     :jumps_stack, :lines_counter, :cuadruples_array, :scope_location,
-    :arguments, :sign_variable, :next_temp, :semanthic_cube, :data_type,
+    :arguments, :sign_variable, :addr_const_val, :semanthic_cube, :data_type,
     :is_ref, :has_return, :arg_stack, :call_stack, :exp_call, :global_memory,
-    :local_memory, :temporal_memory, :const_memory
+    :local_memory, :const_memory, :debug
 
   # Constructor of the class
   def initialize
@@ -27,7 +27,6 @@ class Auxiliar
     @cuadruples_array = Array.new
     @scope_location = nil
     @sing_variable = nil
-    @next_temp = 1
     @arguments = Array.new
     @data_type = nil
     @is_ref = false
@@ -35,20 +34,21 @@ class Auxiliar
     @exp_call = false
     @arg_stack = Stack.new
     @call_stack = Stack.new
+    @addr_const_val = nil
+    # Change to 'true' to see verbose in cuadruples
+    @debug = false
     # Memory scheme:
     # Global address -> direction 1000, with 1000 directions for every data type
     #   -> Total width: 4000
     # Local address -> direction 5000, with 1000 directions for every data type
     # in the normal and temporal addresses
     #   -> Total width: 8000
-    # Temporal address -> direction 13000, with 1000 directions for every data type
-    #   -> Total width: 4000
-    # Constant address -> direction 17000, with 1500 directions for every data type
+    # Constant address -> direction 13000, with 1500 directions for integers and
+    # floats, but 2 directions for boolean and the rest for strings
     #   -> Total width: 6000
     @global_memory = Memory.new(1000, 4000)
     @local_memory = LocalMemory.new(5000, 8000)
-    @temporal_memory = Memory.new(13000, 4000)
-    @const_memory = Memory.new(17000, 6000)
+    @const_memory = ConstantMemory.new(13000, 6000, [0.25, 0.25, 0.0005, 0.4995])
     @semanthic_cube = {
     'int' => {
       'int' => {
@@ -67,7 +67,7 @@ class Auxiliar
 	'!=' => 'boolean'
       },
       'float' => {
-	'=' => 'int', 
+	'=' => 'int',
 	'+' => 'float',
 	'-' => 'float',
 	'*' => 'float',
@@ -82,7 +82,7 @@ class Auxiliar
 	'!=' => 'boolean'
       },
       'boolean' => {
-	'=' => 'int', 
+	'=' => 'int',
 	'and' => 'boolean',
 	'or' => 'boolean'
       },
@@ -120,7 +120,7 @@ class Auxiliar
 	'!=' => 'boolean'
       },
       'boolean' => {
-	'=' => 'float', 
+	'=' => 'float',
 	'and' => 'boolean',
 	'or' => 'boolean'
       },
@@ -134,10 +134,10 @@ class Auxiliar
     },
     'boolean' => {
       'int' => {
-	'=' => 'boolean', 
+	'=' => 'boolean',
       },
       'float' => {
-	'=' => 'boolean', 
+	'=' => 'boolean',
       },
       'boolean' => {
 	'=' => 'boolean',
@@ -159,10 +159,15 @@ class Auxiliar
       # a reference, then DO NOT create space for it in memory
       temp_vars = Hash.new
       @arguments.each { |arg|
-        if not arg[:ref]
-          # Increment the counter of variables according with the data type
-        end
         temp_vars[arg[:id]] = arg.clone()
+        # If it's a reference, then its address is nil
+        # Otherwise, it has a real address
+        if arg[:ref]
+          temp_vars[arg[:id]][:value] = nil
+        else
+          # Increment the counter of variables according with the data type
+          temp_vars[arg[:id]][:value] = @local_memory.getAddress(arg[:type], 'normal')
+        end
         temp_vars[arg[:id]].delete(:ref)
       }
       @procedures[@scope_location] = { id: @scope_location, args: @arguments.clone(),
@@ -171,7 +176,8 @@ class Auxiliar
       # diferent of void
       if @data_type != 'void'
         name = @scope_location + '_ret_swap'
-        var_info = { id: name, type: @data_type, value: nil}
+        address = @global_memory.getAddress(@data_type)
+        var_info = { id: name, type: @data_type, value: address }
         @global[name] = var_info
       end
     else
@@ -250,19 +256,13 @@ class Auxiliar
     end
   end
 
-  # Return the address of the next temporal variable, according with the data type
-  # Params:
-  # +type+:: Expeceted type of the temporal variable
-  def nextTemporalVariable(type)
-    # TODO: Implement according with the virtual machine
-  end
-
   # Finds and return the information for a variable identifier
   # If the variable is not found, then abort the program
   # Params:
   # +id+:: Identifier of the variable
   # Returns:
-  # +var+:: Information of the variable
+  # +var+:: Information of the variable in the followin format:
+  # {type: data_type, value: address}
   def findVariable(id)
     found = false
     var = nil

@@ -28,14 +28,9 @@ class ConstantMemory
   # Params:
   # +value+:: The value of the constant
   # +type+:: A string indicating the data type of the next variable
-  # +cant+:: Number of spaces needed. This argument is optional, its
-  # default value is 1
   # Returns:
   # +address+:: The address of the next variable
-  def getAddress(value, type, cant = 1)
-    if cant <= 0
-      abort("\nERROR: The amount of addresses cannot be 0 or negative\n")
-    end
+  def getAddress(value, type)
     case type
     when 'int'
       if not @integers.has_key?(value)

@@ -46,4 +46,10 @@ class LocalMemory
     address
   end
 
+  # Reset the counters for every block of memory
+  def resetCounters()
+    @normal.resetCounters
+    @temporal.resetCounters
+  end
+
 end
