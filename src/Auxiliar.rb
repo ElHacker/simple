@@ -7,6 +7,7 @@ require 'Cuadruples.rb'
 require 'Memory.rb'
 require 'LocalMemory.rb'
 require 'ConstantMemory.rb'
+require 'json'
 
 class Auxiliar
 
@@ -15,6 +16,7 @@ class Auxiliar
     :arguments, :sign_variable, :addr_const_val, :semanthic_cube, :data_type,
     :is_ref, :has_return, :arg_stack, :call_stack, :exp_call, :global_memory,
     :local_memory, :const_memory, :debug
+  attr_reader :filename
 
   # Constructor of the class
   def initialize
@@ -35,6 +37,7 @@ class Auxiliar
     @arg_stack = Stack.new
     @call_stack = Stack.new
     @addr_const_val = nil
+    @filename = "output.txt"
     # Change to 'true' to see verbose in cuadruples
     @debug = false
     # Memory scheme:
@@ -154,20 +157,16 @@ class Auxiliar
   # The argumens of the procedure are obtained through @arguments, and
   # the returning type is obtained through @data_type
   def addProcedure()
-    if not @procedures.has_key?(@scope_location)
-      # Copy the arguments to a temporal Hash. If the argument is
-      # a reference, then DO NOT create space for it in memory
+    if (! @procedures.has_key?(@scope_location))
+      # Copy the arguments to a temporal Hash.
       temp_vars = Hash.new
       @arguments.each { |arg|
         temp_vars[arg[:id]] = arg.clone()
-        # If it's a reference, then its address is nil
-        # Otherwise, it has a real address
-        if arg[:ref]
-          temp_vars[arg[:id]][:value] = nil
-        else
-          # Increment the counter of variables according with the data type
-          temp_vars[arg[:id]][:value] = @local_memory.getAddress(arg[:type], 'normal')
-        end
+        # Copy the arguments from the signature to the local variables
+        # even if they are references
+
+        # Increment the counter of variables according with the data type
+        temp_vars[arg[:id]][:value] = @local_memory.getAddress(arg[:type], 'normal')
         temp_vars[arg[:id]].delete(:ref)
       }
       @procedures[@scope_location] = { id: @scope_location, args: @arguments.clone(),

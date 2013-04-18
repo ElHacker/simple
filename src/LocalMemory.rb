@@ -2,6 +2,7 @@
 # Map of a local memory, which consists of a
 # regular and a temporal memory
 
+require 'json'
 require 'Memory.rb'
 
 class LocalMemory

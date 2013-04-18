@@ -2,6 +2,7 @@
 # Map of a constant memory. This class includes hash for every type
 # of data, wich helps to control the corresponding address directions
 
+require 'json'
 require 'Memory.rb'
 
 class ConstantMemory
@@ -72,6 +73,16 @@ class ConstantMemory
 
   def string_count
     @strings.size
+  end
+
+  # Returns a json representation of the object
+  def to_json()
+    return @memory.to_json
+  end
+
+  # Returns a json representation of the constants
+  def values_to_json()
+    return (Hash[ int: @integers, float: @floats, boolean: @booleans, string: @strings]).to_json
   end
 
 end

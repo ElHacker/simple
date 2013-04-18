@@ -20,6 +20,7 @@ options {
   require 'Queue.rb'
   require 'Stack.rb'
   require 'Cuadruples.rb'
+  require 'json'
 }
 
 /* Scanner Rules */
@@ -101,54 +102,81 @@ scope {
 
 /* Callback executed at the end of programa */
 @after {
-  puts("\nFound this constants: \n")
-  puts("\n\tIntegers:\n")
-  \$integers = $vars_block::auxiliar.const_memory.integers
-  \$integers.keys.each do | key |
-    print("#{key} : #{\$integers[key]}\n")
-  end
-  puts("\n\tFloats:\n")
-  \$floats = $vars_block::auxiliar.const_memory.floats
-  \$floats.keys.each do | key |
-    print("#{key} : #{\$floats[key]}\n")
-  end
-  puts("\n\tBooleans:\n")
-  \$booleans = $vars_block::auxiliar.const_memory.booleans
-  \$booleans.keys.each do | key |
-    print("#{key} : #{\$booleans[key]}\n")
-  end
-  puts("\n\tStrings:\n")
-  \$strings = $vars_block::auxiliar.const_memory.strings
-  \$strings.keys.each do | key |
-    print("#{key} : #{\$strings[key]}\n")
-  end
-
-  puts("\n\nFound this global variables: \n")
-  \$global = $vars_block::auxiliar.global
-  \$global.keys.sort.each do | key |
-    \$var_info = \$global[key]
-    print("#{key} : type=#{\$var_info[:type]}, value=#{\$var_info[:value]}\n")
-  end
-
-  puts("\n\nFound this functions: \n")
-  \$functions = $vars_block::auxiliar.procedures
-  \$functions.keys.sort.each do | key |
-    \$proc_info = \$functions[key]
-    print("#{key}: #{\$proc_info}\n")
+  if $vars_block::auxiliar.debug
+    puts("\nFound this constants: \n")
+    puts("\n\tIntegers:\n")
+    \$integers = $vars_block::auxiliar.const_memory.integers
+    \$integers.keys.each do | key |
+      print("#{key} : #{\$integers[key]}\n")
+    end
+    puts("\n\tFloats:\n")
+    \$floats = $vars_block::auxiliar.const_memory.floats
+    \$floats.keys.each do | key |
+      print("#{key} : #{\$floats[key]}\n")
+    end
+    puts("\n\tBooleans:\n")
+    \$booleans = $vars_block::auxiliar.const_memory.booleans
+    \$booleans.keys.each do | key |
+      print("#{key} : #{\$booleans[key]}\n")
+    end
+    puts("\n\tStrings:\n")
+    \$strings = $vars_block::auxiliar.const_memory.strings
+    \$strings.keys.each do | key |
+      print("#{key} : #{\$strings[key]}\n")
+    end
+    puts("Map of constant memory:\n")
+    print("#{$vars_block::auxiliar.const_memory.to_json}\n")
+    print("#{$vars_block::auxiliar.const_memory.values_to_json}\n")
+  else
+    File.open($vars_block::auxiliar.filename, 'w') { | file |
+      file.write("#{$vars_block::auxiliar.const_memory.to_json}\n")
+      file.write("#{$vars_block::auxiliar.const_memory.values_to_json}\n")
+    }
   end
 
-  puts("\n\nCuadruples:\n")
+  if $vars_block::auxiliar.debug
+    puts("\n\nFound this global variables: \n")
+    \$global = $vars_block::auxiliar.global
+    \$global.keys.sort.each do | key |
+      \$var_info = \$global[key]
+      print("#{key} : type=#{\$var_info[:type]}, value=#{\$var_info[:value]}\n")
+    end
+    puts("Map of global memory:\n")
+    print($vars_block::auxiliar.global.to_json)
+  else
+    File.open($vars_block::auxiliar.filename, 'a') { | file |
+      file.write("#{$vars_block::auxiliar.global_memory.to_json}\n")
+      file.write("#{$vars_block::auxiliar.global.to_json}\n")
+    }
+  end
+
+  if $vars_block::auxiliar.debug
+    puts("\n\nFound this functions: \n")
+    \$functions = $vars_block::auxiliar.procedures
+    \$functions.keys.sort.each do | key |
+      \$proc_info = \$functions[key]
+      print("#{key}: #{\$proc_info}\n")
+    end
+  else
+    File.open($vars_block::auxiliar.filename, 'a') { | file |
+      file.write("#{$vars_block::auxiliar.procedures.to_json}\n")
+    }
+  end
+
   \$cont = 0
   \$cuadruples = $vars_block::auxiliar.cuadruples_array
   if $vars_block::auxiliar.debug
-    \$cuadruples.each { | cuadruple|
+    puts("\n\nCuadruples:\n")
+    \$cuadruples.each { | cuadruple |
       puts( "#{\$cont}: #{cuadruple.to_s}")
       \$cont += 1
     }
   else
-    \$cuadruples.each { | cuadruple|
-      puts( "#{\$cont}: #{cuadruple.to_values}")
-      \$cont += 1
+    File.open($vars_block::auxiliar.filename, 'a') { | file |
+      \$cuadruples.each { | cuadruple |
+        file.write( "#{\$cont}: #{cuadruple.to_values}")
+        \$cont += 1
+      }
     }
   end
 }
@@ -158,14 +186,16 @@ scope {
 
 programa:
     var {
-      # First cuadruple, go to the main procedure
+      # Cuadruple, go to the main procedure
       \$goto_line = Hash[ id: 'Goto', value: CODES::Codes[:GOTO] ]
       $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter )
       \$empty = Hash[ value: -1 ]
       \$cuadruple = Cuadruples.new(\$goto_line, \$empty, \$empty, \$empty)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
-    } func main { print("[PROGRAMA] -> Entrada aceptada\n") }
+    } func main {
+      print("[PROGRAMA] -> Entrada aceptada\n")
+    }
     ;
 
 var:
@@ -217,7 +247,7 @@ variables:
       $vars_block::auxiliar.addVariable(\$var_info)
       if (! $vars_block::auxiliar.addr_const_val.nil?)
         \$action = Hash[ id: '=', value: CODES::Codes[:ASSIGN] ]
-        \$emtpy = Hash[ value: -1 ]
+        \$empty = Hash[ value: -1 ]
         \$string_val = $vars_block::auxiliar.addr_const_val
         \$cuadruple = Cuadruples.new(\$action, \$string_val, \$empty, \$var_info)
         $vars_block::auxiliar.lines_counter += 1
@@ -315,6 +345,18 @@ funcion:
       if \$returning_type != 'void' && $vars_block::auxiliar.has_return == false
         abort("\nERROR: The procedure '#{\$scope_location}' must have a return statement\n")
       end
+      # Insert the corresponding memory space in the procedure directory
+      \$normal_int = $vars_block::auxiliar.local_memory.normal.int_count
+      \$normal_float = $vars_block::auxiliar.local_memory.normal.float_count
+      \$normal_boolean = $vars_block::auxiliar.local_memory.normal.boolean_count
+      \$normal_string = $vars_block::auxiliar.local_memory.normal.string_count
+      \$temporal_int = $vars_block::auxiliar.local_memory.temporal.int_count
+      \$temporal_float = $vars_block::auxiliar.local_memory.temporal.float_count
+      \$temporal_boolean = $vars_block::auxiliar.local_memory.temporal.boolean_count
+      \$temporal_string = $vars_block::auxiliar.local_memory.temporal.string_count
+      \$memory = Hash[ normal: Hash[ int: \$normal_int, float: \$normal_float, boolean: \$normal_boolean, string: \$normal_string ],
+        temporal: Hash[ int: \$temporal_int, float: \$temporal_float, boolean: \$temporal_boolean, string: \$temporal_string ] ]
+      $vars_block::auxiliar.procedures[\$scope_location][:memory] = \$memory
     }
     ;
 
@@ -986,8 +1028,24 @@ main:
         $vars_block::auxiliar.arguments.clear()
         $vars_block::auxiliar.data_type = 'void'
         $vars_block::auxiliar.addProcedure()
+        $vars_block::auxiliar.has_return = false
+        $vars_block::auxiliar.local_memory.resetCounters()
       else
         abort("\nERROR: The program can only have one main procedure\n")
       end
-    } LPARENT RPARENT LBRACK var est RBRACK
+    } LPARENT RPARENT LBRACK var est RBRACK {
+      \$scope_location = $vars_block::auxiliar.scope_location
+      # Insert the corresponding memory space in the procedure directory
+      \$normal_int = $vars_block::auxiliar.local_memory.normal.int_count
+      \$normal_float = $vars_block::auxiliar.local_memory.normal.float_count
+      \$normal_boolean = $vars_block::auxiliar.local_memory.normal.boolean_count
+      \$normal_string = $vars_block::auxiliar.local_memory.normal.string_count
+      \$temporal_int = $vars_block::auxiliar.local_memory.temporal.int_count
+      \$temporal_float = $vars_block::auxiliar.local_memory.temporal.float_count
+      \$temporal_boolean = $vars_block::auxiliar.local_memory.temporal.boolean_count
+      \$temporal_string = $vars_block::auxiliar.local_memory.temporal.string_count
+      \$memory = Hash[ normal: Hash[ int: \$normal_int, float: \$normal_float, boolean: \$normal_boolean, string: \$normal_string ],
+        temporal: Hash[ int: \$temporal_int, float: \$temporal_float, boolean: \$temporal_boolean, string: \$temporal_string ] ]
+      $vars_block::auxiliar.procedures[\$scope_location][:memory] = \$memory
+    }
     ;

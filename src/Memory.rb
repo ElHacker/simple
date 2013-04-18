@@ -1,6 +1,8 @@
 # Author: Teodoro Vargas Cortes A00808903
 # Map of a memory
 
+require 'json'
+
 # This class assumes that the map of the memory is the following order:
 # integers
 # floats
@@ -120,5 +122,13 @@ class Memory
     @boolean_count = 0
     @string_count = 0
   end
+
+  # Returns a json representation of the object
+  def to_json()
+    return (Hash[ int_init_addr: @int_init_addr, float_init_addr: @float_init_addr,
+      boolean_init_addr: @boolean_init_addr, string_init_addr: @string_init_addr,
+      int_count: @int_count, float_count: @float_count, boolean_count: @boolean_count,
+      string_count: @string_count]).to_json
+    end
 
 end
