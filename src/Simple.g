@@ -346,16 +346,9 @@ funcion:
         abort("\nERROR: The procedure '#{\$scope_location}' must have a return statement\n")
       end
       # Insert the corresponding memory space in the procedure directory
-      \$normal_int = $vars_block::auxiliar.local_memory.normal.int_count
-      \$normal_float = $vars_block::auxiliar.local_memory.normal.float_count
-      \$normal_boolean = $vars_block::auxiliar.local_memory.normal.boolean_count
-      \$normal_string = $vars_block::auxiliar.local_memory.normal.string_count
-      \$temporal_int = $vars_block::auxiliar.local_memory.temporal.int_count
-      \$temporal_float = $vars_block::auxiliar.local_memory.temporal.float_count
-      \$temporal_boolean = $vars_block::auxiliar.local_memory.temporal.boolean_count
-      \$temporal_string = $vars_block::auxiliar.local_memory.temporal.string_count
-      \$memory = Hash[ normal: Hash[ int: \$normal_int, float: \$normal_float, boolean: \$normal_boolean, string: \$normal_string ],
-        temporal: Hash[ int: \$temporal_int, float: \$temporal_float, boolean: \$temporal_boolean, string: \$temporal_string ] ]
+      \$normal = $vars_block::auxiliar.local_memory.normal.to_hash
+      \$temporal = $vars_block::auxiliar.local_memory.temporal.to_hash
+      \$memory = Hash[ normal: \$normal, temporal: \$temporal ]
       $vars_block::auxiliar.procedures[\$scope_location][:memory] = \$memory
     }
     ;
@@ -1036,16 +1029,10 @@ main:
     } LPARENT RPARENT LBRACK var est RBRACK {
       \$scope_location = $vars_block::auxiliar.scope_location
       # Insert the corresponding memory space in the procedure directory
-      \$normal_int = $vars_block::auxiliar.local_memory.normal.int_count
-      \$normal_float = $vars_block::auxiliar.local_memory.normal.float_count
-      \$normal_boolean = $vars_block::auxiliar.local_memory.normal.boolean_count
-      \$normal_string = $vars_block::auxiliar.local_memory.normal.string_count
-      \$temporal_int = $vars_block::auxiliar.local_memory.temporal.int_count
-      \$temporal_float = $vars_block::auxiliar.local_memory.temporal.float_count
-      \$temporal_boolean = $vars_block::auxiliar.local_memory.temporal.boolean_count
-      \$temporal_string = $vars_block::auxiliar.local_memory.temporal.string_count
-      \$memory = Hash[ normal: Hash[ int: \$normal_int, float: \$normal_float, boolean: \$normal_boolean, string: \$normal_string ],
-        temporal: Hash[ int: \$temporal_int, float: \$temporal_float, boolean: \$temporal_boolean, string: \$temporal_string ] ]
+      \$normal = $vars_block::auxiliar.local_memory.normal.to_hash
+      \$temporal = $vars_block::auxiliar.local_memory.temporal.to_hash
+      \$memory = Hash[ normal: \$normal, temporal: \$temporal ]
+      $vars_block::auxiliar.procedures[\$scope_location][:memory] = \$memory
       $vars_block::auxiliar.procedures[\$scope_location][:memory] = \$memory
     }
     ;

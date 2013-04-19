@@ -123,6 +123,14 @@ class Memory
     @string_count = 0
   end
 
+  # Returns a hash representation of the object
+  def to_hash()
+    return (Hash[ int_init_addr: @int_init_addr, float_init_addr: @float_init_addr,
+      boolean_init_addr: @boolean_init_addr, string_init_addr: @string_init_addr,
+      int_count: @int_count, float_count: @float_count, boolean_count: @boolean_count,
+      string_count: @string_count])
+  end
+
   # Returns a json representation of the object
   def to_json()
     return (Hash[ int_init_addr: @int_init_addr, float_init_addr: @float_init_addr,
