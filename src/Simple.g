@@ -174,7 +174,7 @@ scope {
   else
     File.open($vars_block::auxiliar.filename, 'a') { | file |
       \$cuadruples.each { | cuadruple |
-        file.write( "#{\$cont}: #{cuadruple.to_values}")
+        file.write( "#{cuadruple.to_values}")
         \$cont += 1
       }
     }
@@ -186,10 +186,16 @@ scope {
 
 programa:
     var {
+      # Cuadruple Init for the main procedure
+      \$action = Hash[ id: 'Init', value: CODES::Codes[:INIT] ]
+      \$empty = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$action, \$empty, \$empty, \$empty)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+
       # Cuadruple, go to the main procedure
       \$goto_line = Hash[ id: 'Goto', value: CODES::Codes[:GOTO] ]
       $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter )
-      \$empty = Hash[ value: -1 ]
       \$cuadruple = Cuadruples.new(\$goto_line, \$empty, \$empty, \$empty)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
@@ -305,6 +311,7 @@ assignstring:
     }
     | ASSIGN CTES {
       \$val = $CTES.text
+      \$val.gsub!('"', '')
       $vars_block::auxiliar.addr_const_val = Hash[ id: \$val, value: $vars_block::auxiliar.const_memory.getAddress(\$val, 'string') ]
     }
     ;
@@ -510,7 +517,7 @@ llamadaargs: /* empty */
       end
       # Param
       \$action = Hash[ id: 'Param', value: CODES::Codes[:PARAM] ]
-      \$destiny = Hash[ value: ('param' + \$arg_number.to_s) ]
+      \$destiny = Hash[ value: \$arg_number ]
       \$cuadruple = Cuadruples.new(\$action, \$result, \$flag_ref, \$destiny)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
@@ -745,6 +752,7 @@ varcte:
         abort("\nERROR: You cannot apply '+' or '-' to the string #{$CTES.text}\n")
       end
       \$var = $CTES.text
+      \$var.gsub!('"', '')
       \$const_info = Hash[ id: \$var, type: 'string', value: $vars_block::auxiliar.const_memory.getAddress(\$var, 'string') ]
       $vars_block::auxiliar.operands_stack.push( \$const_info )
     }

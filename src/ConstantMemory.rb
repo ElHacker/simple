@@ -82,6 +82,8 @@ class ConstantMemory
 
   # Returns a json representation of the constants
   def values_to_json()
+    #@strings.symbolize_keys!
+    #print("#{@strings}\n")
     return (Hash[ int: @integers, float: @floats, boolean: @booleans, string: @strings]).to_json
   end
 
