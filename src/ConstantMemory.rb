@@ -34,22 +34,22 @@ class ConstantMemory
   def getAddress(value, type)
     case type
     when 'int'
-      if not @integers.has_key?(value)
+      if (! @integers.has_key?(value))
         @integers[value] = @memory.getAddress(type)
       end
       address = @integers[value]
     when 'float'
-      if not @floats.has_key?(value)
+      if (! @floats.has_key?(value))
         @floats[value] = @memory.getAddress(type)
       end
       address = @floats[value]
     when 'boolean'
-      if not @booleans.has_key?(value)
+      if (! @booleans.has_key?(value))
         @booleans[value] = @memory.getAddress(type)
       end
       address = @booleans[value]
     when 'string'
-      if not @strings.has_key?(value)
+      if (! @strings.has_key?(value))
         @strings[value] = @memory.getAddress(type)
       end
       address = @strings[value]

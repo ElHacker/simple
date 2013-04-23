@@ -129,8 +129,8 @@ scope {
     print("#{$vars_block::auxiliar.const_memory.values_to_json}\n")
   else
     File.open($vars_block::auxiliar.filename, 'w') { | file |
-      file.write("#{$vars_block::auxiliar.const_memory.to_json}\n")
-      file.write("#{$vars_block::auxiliar.const_memory.values_to_json}\n")
+      file.write("{ \"const_memory_map\": #{$vars_block::auxiliar.const_memory.to_json},\n")
+      file.write(" \"const_memory_values\": #{$vars_block::auxiliar.const_memory.values_to_json},\n")
     }
   end
 
@@ -145,8 +145,8 @@ scope {
     print($vars_block::auxiliar.global.to_json)
   else
     File.open($vars_block::auxiliar.filename, 'a') { | file |
-      file.write("#{$vars_block::auxiliar.global_memory.to_json}\n")
-      file.write("#{$vars_block::auxiliar.global.to_json}\n")
+      file.write(" \"global_memory_map\": #{$vars_block::auxiliar.global_memory.to_json},\n")
+      file.write(" \"global_memory_values\": #{$vars_block::auxiliar.global.to_json},\n")
     }
   end
 
@@ -159,7 +159,7 @@ scope {
     end
   else
     File.open($vars_block::auxiliar.filename, 'a') { | file |
-      file.write("#{$vars_block::auxiliar.procedures.to_json}\n")
+      file.write(" \"functions\": #{$vars_block::auxiliar.procedures.to_json},\n")
     }
   end
 
@@ -173,10 +173,17 @@ scope {
     }
   else
     File.open($vars_block::auxiliar.filename, 'a') { | file |
-      \$cuadruples.each { | cuadruple |
-        file.write( "#{cuadruple.to_values}")
+      file.write(" \"quadruples\": [\n")
+      \$cont = 0
+      while \$cont < \$cuadruples.length do
+        if \$cont == (\$cuadruples.length - 1)
+          file.write(" \"#{\$cuadruples[\$cont].to_values}\"\n")
+        else
+          file.write(" \"#{\$cuadruples[\$cont].to_values}\",\n")
+        end
         \$cont += 1
-      }
+      end
+      file.write("]}")
     }
   end
 }
@@ -186,16 +193,10 @@ scope {
 
 programa:
     var {
-      # Cuadruple Init for the main procedure
-      \$action = Hash[ id: 'Init', value: CODES::Codes[:INIT] ]
-      \$empty = Hash[ value: -1 ]
-      \$cuadruple = Cuadruples.new(\$action, \$empty, \$empty, \$empty)
-      $vars_block::auxiliar.lines_counter += 1
-      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
-
       # Cuadruple, go to the main procedure
       \$goto_line = Hash[ id: 'Goto', value: CODES::Codes[:GOTO] ]
       $vars_block::auxiliar.jumps_stack.push( $vars_block::auxiliar.lines_counter )
+      \$empty = Hash[ value: -1 ]
       \$cuadruple = Cuadruples.new(\$goto_line, \$empty, \$empty, \$empty)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
@@ -357,6 +358,18 @@ funcion:
       \$temporal = $vars_block::auxiliar.local_memory.temporal.to_hash
       \$memory = Hash[ normal: \$normal, temporal: \$temporal ]
       $vars_block::auxiliar.procedures[\$scope_location][:memory] = \$memory
+
+      # This cuadruple is inserted in the case that the procedure does not have a
+      # explicit return and the end of the procedure is reached
+
+      if (! $vars_block::auxiliar.has_return)
+        # Create the Goend cuadruple
+        \$action = Hash[ id: 'Goend', value: CODES::Codes[:GOEND] ]
+        \$empty = Hash[ value: -1 ]
+        \$cuadruple = Cuadruples.new(\$action, \$empty, \$empty, \$empty)
+        $vars_block::auxiliar.lines_counter += 1
+        $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+      end
     }
     ;
 
@@ -398,9 +411,8 @@ estaux: /* empty */
 estatutos:
     ID {
       $vars_block::auxiliar.operands_stack.push($ID.text)
-    } idestatutos SEMICOLON {
       $vars_block::auxiliar.exp_call = false
-    }
+    } idestatutos SEMICOLON
     | condicion
     | escritura
     | ciclo
@@ -557,7 +569,7 @@ llamadaargsaux: /* emtpy */
       end
       # Param
       \$action = Hash[ id: 'Param', value: CODES::Codes[:PARAM] ]
-      \$destiny = Hash[ value: ('param' + \$arg_number.to_s) ]
+      \$destiny = Hash[ value: \$arg_number ]
       \$cuadruple = Cuadruples.new(\$action, \$result, \$flag_ref, \$destiny)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
@@ -642,7 +654,7 @@ expaux: /* empty */
     | MINUS {
       $vars_block::auxiliar.operations_stack.push( $MINUS.text )
     }
-    exp 
+    exp
     ;
 
 termino:
@@ -739,18 +751,18 @@ varcte:
     }
     | CTEI {
       \$var = $CTEI.text.to_i
-      \$const_info = Hash[ id: \$var, type: 'int', value: $vars_block::auxiliar.const_memory.getAddress(\$val, 'int') ]
+      \$const_info = Hash[ id: \$var, type: 'int', value: $vars_block::auxiliar.const_memory.getAddress(\$var, 'int') ]
       $vars_block::auxiliar.operands_stack.push( \$const_info )
     }
     | CTEF {
       \$var = $CTEF.text.to_f
-      \$const_info = Hash[ id: \$var, type: 'float', value: $vars_block::auxiliar.const_memory.getAddress(\$val, 'float') ]
+      \$const_info = Hash[ id: \$var, type: 'float', value: $vars_block::auxiliar.const_memory.getAddress(\$var, 'float') ]
       $vars_block::auxiliar.operands_stack.push( \$const_info )
     }
     | CTES {
-      if (! $vars_block::auxiliar.sign_variable.nil?)
-        abort("\nERROR: You cannot apply '+' or '-' to the string #{$CTES.text}\n")
-      end
+      #if (! $vars_block::auxiliar.sign_variable.nil?)
+      #  abort("\nERROR: You cannot apply '+' or '-' to the string #{$CTES.text}\n")
+      #end
       \$var = $CTES.text
       \$var.gsub!('"', '')
       \$const_info = Hash[ id: \$var, type: 'string', value: $vars_block::auxiliar.const_memory.getAddress(\$var, 'string') ]

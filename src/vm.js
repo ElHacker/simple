@@ -8,17 +8,17 @@ var allText;
 // memory = {int_init_addr, float_init_addr, boolean_init_addr, string_init_addr,
 // int_count, float_count, boolean_count, string_count}
 function Memory(memory) {
-    this.integers = new Array(Math.floor(memory["int_count"]));
     this.int_count = Math.floor(memory["int_count"]);
+    this.integers = new Array(this.int_count);
     this.int_init_addr = Math.floor(memory["int_init_addr"]);
-    this.floats = new Array(Math.floor(memory["float_count"]));
     this.float_count = Math.floor(memory["float_count"]);
+    this.floats = new Array(this.float_count);
     this.float_init_addr = Math.floor(memory["float_init_addr"]);
-    this.booleans = new Array(Math.floor(memory["boolean_count"]));
     this.boolean_count = Math.floor(memory["boolean_count"]);
+    this.booleans = new Array(this.boolean_count);
     this.boolean_init_addr = Math.floor(memory["boolean_init_addr"]);
-    this.strings = new Array(Math.floor(memory["string_count"]));
     this.string_count = Math.floor(memory["string_count"]);
+    this.strings = new Array(this.string_count);
     this.string_init_addr = Math.floor(memory["string_init_addr"]);
 
     // Searches if an address belongs to this memory
@@ -110,18 +110,18 @@ function LocalMemory(normal, temporal) {
 
 // Access the memory according with the address of the variable
 function getValueForAddress(address) {
-    if (address < local_memory.initial_address()) {
-        return global_memory.getAddress(address);
+    if (address < local_memory.normal.initial_address()) {
+        return global_memory.getValue(address);
     } else if (address < const_memory.initial_address()) {
-        return local_memory.getAddress(address);
+        return local_memory.getValue(address);
     } else {
-        return const_memory.getAddress(address);
+        return const_memory.getValue(address);
     }
 }
 
 // Set the value for a memory address
 function setValueForAddress(address, value) {
-    if (address < local_memory.initial_address()) {
+    if (address < local_memory.normal.initial_address()) {
         global_memory.setValue(address, value);
     } else {
         local_memory.setValue(address, value);
@@ -397,8 +397,8 @@ function runProgram() {
                 value = getValueForAddress(op1);
 
                 // Save the value in the new reserved memory according with the number of the parameter
-                id = procedures[proc]["args"][dest]["id"];
-                address = procedures[proc]["local_vars"][id]["value"];
+                id = procedures[proc_name]["args"][dest]["id"];
+                address = procedures[proc_name]["local_vars"][id]["value"];
                 era.setValue(address, value);
 
                 // If it is a reference, then save the address in the reference stack to copy data later
@@ -426,11 +426,11 @@ function runProgram() {
                 // GOEND
 
                 // Save the values of the actual variables that are references in the stack_values
-                args = procedures[proc]["args"];
+                args = procedures[proc_name]["args"];
                 for (var i = 0; i < args.length; i++) {
                     if (args[i]["ref"]) {
                         id = args[i]["id"];
-                        address = procedures[proc]["local_vars"][id]["value"];
+                        address = procedures[proc_name]["local_vars"][id]["value"];
                         value = getValueForAddress(address);
                         stack_values.push(value);
                     }
@@ -440,7 +440,7 @@ function runProgram() {
                 local_memory = stack_memory.pop();
                 // Now, with the values and directions in the stacks, transfer the information
                 // until the 'false' bottom is founded
-                while (stack_ref.look() != '|' && stack_ref.look() != undefined) {
+                while (stack_ref.look() != '|') {
                     address = stack_ref.pop();
                     value = stack_values.pop();
                     setValueForAddress(address, value);
@@ -472,6 +472,12 @@ function runProgram() {
                 value = getValueForAddress(dest);
                 // TODO Change this with the corresponding area to print
                 console.log(value);
+                /*
+                text = document.getElementById("salida").innerHTML;
+                text += value;
+                document.getElementById("salida").innerHTML = text;
+                */
+
                 line_number++;
                 break;
             case 31:
@@ -491,12 +497,6 @@ function runProgram() {
                 setValueForAddress(dest, value);
                 line_number++;
                 break;
-            case 32:
-                // INIT
-                normal = procedures["main"]["memory"]["normal"];
-                temporal = procedures["main"]["memory"]["temporal"];
-                local_memory = new LocalMemory(normal, temporal);
-                break;
         }
     }
 }
@@ -506,7 +506,7 @@ function setConstValues(dictionary) {
     integers = dictionary["int"];
     floats = dictionary["float"];
     booleans = dictionary["boolean"];
-    strings = dictionary["strings"];
+    strings = dictionary["string"];
 
     //------------------------------------------------------------
     // Itereates every key-value and map it in the const_memory
@@ -520,13 +520,13 @@ function setConstValues(dictionary) {
 
     // Floats
     for (var f in floats) {
-        value = parseFloat(i);
+        value = parseFloat(f);
         const_memory.setValue(floats[f], value);
     }
 
     // Booleans
     for (var b in booleans) {
-        const_memory.setValue(booleans[b], value);
+        const_memory.setValue(booleans[b], b);
     }
 
     // Strings
@@ -546,48 +546,91 @@ function getRequestObject() {
     }
 }
 
-function sendRequest() {
-    request = getRequestObject();
-    request.onreadystatechange == handleResponse;
-    request.open("GET", "output.txt", true);
-    request.sent(null);
-}
-
 function handleResponse() {
-    if (request.readyState == 4) {  // Makes sure the document is ready to parse
-        if (request.status == 200) {  // Makes sure it's found the file
-            // Program code
-            allText = request.responseText;
-            quadruples = allText.split("\n");  // Will separate each line into an array
-            // Input text
-            // TODO Change this with the corresponding id for the input's text area
-            allText = document.getElementById("").innerHTML;
-            input_array = allText.match(/[^\s]+/g);  // Will separate each line by a space or new line
+    // Makes sure the document is ready to parse and that it's founded
+    if (request.readyState == 4 && request.status == 200) {
+        // Program code
+        allText = JSON.parse(request.responseText);
+        //quadruples = allText.split("\n");  // Will separate each line into an array
+        // TODO Delete this after the debug proccess
+        // Show the program, only for test
+        document.getElementById("programa").innerHTML = allText;
 
-            // Constant memory
-            const_memory = new Memory(JSON.parse(quadruples[0]);
-            quadruples.shift();
-            // Values
-            dictionary = JSON.parse(quadruples[0]);
-            quadruples.shift();
-            setConstValues(dictionary);
-            // Global memory
-            global_memory = new Memory(JSON.parse(quadruples[0]);
-            quadruples.shift();
-            // Values
-            global_vars = JSON.parse(quadruples[0]);
-            setGlobalValues(dictionary);
-            // Procedures
-            procedures = JSON.parse(quadruples[0]);
-            quadruples.shift();
+        // Input text
+        // TODO Change this with the corresponding id for the input's text area
+        /*
+        allText = document.getElementById("").innerHTML;
+        input_array = allText.match(/[^\s]+/g);  // Will separate each line by a space or new line
 
-            // Load the main procedure in the local_memory
-            normal = procedures["main"]["memory"]["normal"];
-            temporal = procedures["main"]["memory"]["temporal"];
-            local_memory = new LocalMemory(normal, temporal);
+        // Constant memory
+        const_memory = new Memory(JSON.parse(quadruples[0]));
+        quadruples.shift();
+        // Values
+        dictionary = JSON.parse(quadruples[0]);
+        quadruples.shift();
+        setConstValues(dictionary);
+        // Global memory
+        global_memory = new Memory(JSON.parse(quadruples[0]));
+        quadruples.shift();
+        // Values
+        global_vars = JSON.parse(quadruples[0]);
+        // Procedures
+        procedures = JSON.parse(quadruples[0]);
+        quadruples.shift();
 
-            // Everything is ready, run the program!!!
-            runProgram();
-        }
+        // Load the main procedure in the local_memory
+        normal = procedures["main"]["memory"]["normal"];
+        temporal = procedures["main"]["memory"]["temporal"];
+        local_memory = new LocalMemory(normal, temporal);
+
+        // Everything is ready, run the program!!!
+        runProgram();
+        */
     }
 }
+
+function sendRequest() {
+    request = getRequestObject();
+    request.onreadystatechange = handleResponse;
+    request.open("GET", "output.txt", true);
+    request.send(null);
+}
+
+function node() {
+    // Program code
+    var fs = require('fs');
+    var path = require('path');
+    var util = require('util');
+
+    var filePath = path.join(__dirname, 'output.txt');
+    fs.readFile('output.txt', function(error, data) {
+        if (error) {
+            throw new Error(error);
+        }
+        allText = JSON.parse(data);
+        //document.getElementById("programa").innerHTML = allText;
+
+        // Constant memory
+        const_memory = new Memory(allText.const_memory_map);
+        // Values
+        setConstValues(allText.const_memory_values);
+        // Global memory
+        global_memory = new Memory(allText.global_memory_map);
+        // Values
+        global_vars = allText.global_memory_values;
+        // Procedures
+        procedures = allText.functions;
+        // Quadruples
+        quadruples = allText.quadruples;
+
+        // Load the main procedure in the local_memory
+        normal = procedures["main"]["memory"]["normal"];
+        temporal = procedures["main"]["memory"]["temporal"];
+        local_memory = new LocalMemory(normal, temporal);
+
+        // Everything is ready, run the program!!!
+        runProgram();
+    });
+}
+
+node();

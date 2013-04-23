@@ -12,7 +12,7 @@ class Cuadruples
   end
 
   def to_values
-    return "#{@operation[:value]} #{@operand_one[:value]} #{@operand_two[:value]} #{@destiny[:value]}\n"
+    return "#{@operation[:value]} #{@operand_one[:value]} #{@operand_two[:value]} #{@destiny[:value]}"
   end
 
 end

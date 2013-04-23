@@ -37,8 +37,7 @@ module CODES
     LPARENT: 28,
     RPARENT: 29,
     PRINT: 30,
-    INPUT: 31,
-    INIT: 32  # Load the main procedure in the local memory
+    INPUT: 31
   }
 
   # Returns the corresponding value for the string token
@@ -135,8 +134,6 @@ module CODES
       value = Codes[:PRINT]
     when 'input'
       value = Codes[:INPUT]
-    when 'init'
-      value = Codes[:INIT]
     end
     value
   end
