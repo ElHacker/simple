@@ -362,14 +362,12 @@ funcion:
       # This cuadruple is inserted in the case that the procedure does not have a
       # explicit return and the end of the procedure is reached
 
-      if (! $vars_block::auxiliar.has_return)
-        # Create the Goend cuadruple
-        \$action = Hash[ id: 'Goend', value: CODES::Codes[:GOEND] ]
-        \$empty = Hash[ value: -1 ]
-        \$cuadruple = Cuadruples.new(\$action, \$empty, \$empty, \$empty)
-        $vars_block::auxiliar.lines_counter += 1
-        $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
-      end
+      # Create the Goend cuadruple
+      \$action = Hash[ id: 'Goend', value: CODES::Codes[:GOEND] ]
+      \$empty = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$action, \$empty, \$empty, \$empty)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
     }
     ;
 
@@ -443,7 +441,7 @@ idestatutos:
 
 llamada:
     LPARENT {
-      \$procedure = $vars_block::auxiliar.operands_stack.look()
+      \$procedure = $vars_block::auxiliar.operands_stack.pop()
       if (! $vars_block::auxiliar.procedures.has_key?(\$procedure))
         abort("\nERROR: Procedure '#{\$procedure}' not defined\n")
       end
@@ -456,8 +454,14 @@ llamada:
       \$cuadruple = Cuadruples.new(\$action, \$procedure_value, \$emtpy, \$emtpy)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+
+      # Puts and false bottom in the operations stack
+      $vars_block::auxiliar.operations_stack.push( '|' )
     } llamadaargs RPARENT {
-      \$procedure = $vars_block::auxiliar.operands_stack.pop()
+      # Extracts the false bottom of the operations stack
+      $vars_block::auxiliar.operations_stack.pop()
+
+      \$procedure = $vars_block::auxiliar.call_stack.pop()
       \$return_type = $vars_block::auxiliar.procedures[\$procedure][:return_type]
       \$call_in_exp = $vars_block::auxiliar.exp_call
       \$arg_number = $vars_block::auxiliar.arg_stack.pop()
@@ -564,7 +568,7 @@ llamadaargsaux: /* emtpy */
         abort("\nERROR: Cannot apply 'ref' to an expression\n")
       end
       \$flag_ref = Hash[ value: 0 ]
-      if \$argument[:is_ref]
+      if \$argument[:ref]
         \$flag_ref[:value] = 1
       end
       # Param
@@ -587,7 +591,7 @@ array:
 expresion:
     exp expcomp {
       \$next_operation = $vars_block::auxiliar.operations_stack.look()
-      if (! \$next_operation.nil?) && ['or', 'and'].include?(\$next_operation)
+      if (! \$next_operation.nil?) && (\$next_operation == 'or' || \$next_operation == 'and')
         $vars_block::auxiliar.operations_stack.pop()
         \$oper2 = $vars_block::auxiliar.operands_stack.pop()
         \$oper1 = $vars_block::auxiliar.operands_stack.pop()
@@ -712,7 +716,6 @@ factor:
     } expresion RPARENT {
       $vars_block::auxiliar.operations_stack.pop()
     }
-    /*| sign varcte */
     | varcte
     ;
 
@@ -737,18 +740,7 @@ sign:
 varcte:
     ID {
       $vars_block::auxiliar.operands_stack.push($ID.text)
-    } idvarcte {
-      #if not $vars_block::auxiliar.sign_variable.nil?
-      #  if \$var[:type] == 'string'
-      #    abort("\nERROR: Cannot apply #{$vars_block::auxiliar.sign_variable} to string #{\$var[:id]}\n")
-      #  elsif \$var[:type] == 'boolean'
-      #    abort("\nERROR: Cannot apply #{$vars_block::auxiliar.sign_variable} to boolean #{\$var[:id]}\n")
-      #  elsif $vars_block::auxiliar.sign_variable == '-'
-      #    \$var[:value] = - \$var[:value]
-      #    $vars_block::auxiliar.sign_variable = nil
-      #  end
-      #end
-    }
+    } idvarcte
     | CTEI {
       \$var = $CTEI.text.to_i
       \$const_info = Hash[ id: \$var, type: 'int', value: $vars_block::auxiliar.const_memory.getAddress(\$var, 'int') ]
@@ -760,9 +752,6 @@ varcte:
       $vars_block::auxiliar.operands_stack.push( \$const_info )
     }
     | CTES {
-      #if (! $vars_block::auxiliar.sign_variable.nil?)
-      #  abort("\nERROR: You cannot apply '+' or '-' to the string #{$CTES.text}\n")
-      #end
       \$var = $CTES.text
       \$var.gsub!('"', '')
       \$const_info = Hash[ id: \$var, type: 'string', value: $vars_block::auxiliar.const_memory.getAddress(\$var, 'string') ]
@@ -865,7 +854,7 @@ retornoaux:
       \$action = Hash[ id: 'Ret', value: CODES::Codes[:RET] ]
       \$empty = Hash[ value: -1 ]
       \$destiny = $vars_block::auxiliar.global[\$name]
-      \$cuadruple = Cuadruples.new(\$action, \$returning, \$emtpy, \$destiny)
+      \$cuadruple = Cuadruples.new(\$action, \$returning, \$empty, \$destiny)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
     }

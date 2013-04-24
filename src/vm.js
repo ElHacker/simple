@@ -382,6 +382,9 @@ function runProgram() {
                 stack_ref.push("|");
                 // Reserve the necessary memory for the new procedure call
                 op1 = line[1];
+            if (proc_name != undefined) {
+                stack_proc_names.push(proc_name);
+            }
                 proc_name = op1;
                 normal = procedures[op1]["memory"]["normal"];
                 temporal = procedures[op1]["memory"]["normal"];
@@ -447,6 +450,7 @@ function runProgram() {
                 }
                 // Extracts the 'false' bottom
                 stack_ref.pop();
+// TODO
                 // Change the procedure name
                 proc_name = stack_proc_names.pop();
                 // Change the line number

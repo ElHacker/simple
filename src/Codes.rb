@@ -46,7 +46,7 @@ module CODES
   # Returns:
   # +value+:: Value according with the code defined above
   def CODES.tokenValue(token)
-    token.upcase!
+    token.downcase!
     case token
     when 'int'
       value = Codes[:INT]
