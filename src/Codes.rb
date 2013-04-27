@@ -37,7 +37,9 @@ module CODES
     LPARENT: 28,
     RPARENT: 29,
     PRINT: 30,
-    INPUT: 31
+    INPUT: 31,
+    VER: 32,
+    OFFSET: 33
   }
 
   # Returns the corresponding value for the string token
@@ -134,6 +136,10 @@ module CODES
       value = Codes[:PRINT]
     when 'input'
       value = Codes[:INPUT]
+    when 'ver'
+      value = Codes[:VER]
+    when 'offset'
+      value = Codes[:OFFSET]
     end
     value
   end

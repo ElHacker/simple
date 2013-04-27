@@ -216,7 +216,7 @@ variables:
       else
         \$address = $vars_block::auxiliar.local_memory.getAddress('int', 'normal')
       end
-      \$var_info = Hash[ id: $ID.text, type: $INT.text, value: \$address ]
+      \$var_info = Hash[ id: $ID.text, type: $INT.text, value: \$address, array: false ]
       $vars_block::auxiliar.addVariable(\$var_info)
       if (! $vars_block::auxiliar.addr_const_val.nil?)
         \$action = Hash[ id: '=', value: CODES::Codes[:ASSIGN] ]
@@ -233,7 +233,7 @@ variables:
       else
         \$address = $vars_block::auxiliar.local_memory.getAddress('float', 'normal')
       end
-      \$var_info = Hash[ id: $ID.text, type: $FLOAT.text, value: \$address ]
+      \$var_info = Hash[ id: $ID.text, type: $FLOAT.text, value: \$address, array: false ]
       $vars_block::auxiliar.addVariable(\$var_info)
       if (! $vars_block::auxiliar.addr_const_val.nil?)
         \$action = Hash[ id: '=', value: CODES::Codes[:ASSIGN] ]
@@ -250,7 +250,7 @@ variables:
       else
         \$address = $vars_block::auxiliar.local_memory.getAddress('string', 'normal')
       end
-      \$var_info = Hash[ id: $ID.text, type: $STRING.text, value: \$address ]
+      \$var_info = Hash[ id: $ID.text, type: $STRING.text, value: \$address, array: false ]
       $vars_block::auxiliar.addVariable(\$var_info)
       if (! $vars_block::auxiliar.addr_const_val.nil?)
         \$action = Hash[ id: '=', value: CODES::Codes[:ASSIGN] ]
@@ -267,7 +267,7 @@ variables:
       else
         \$address = $vars_block::auxiliar.local_memory.getAddress('boolean', 'normal')
       end
-      \$var_info = Hash[ id: $ID.text, type: $BOOLEAN.text, value: \$address ]
+      \$var_info = Hash[ id: $ID.text, type: $BOOLEAN.text, value: \$address, array: false ]
       $vars_block::auxiliar.addVariable(\$var_info)
       if (! $vars_block::auxiliar.addr_const_val.nil?)
         \$action = Hash[ id: '=', value: CODES::Codes[:ASSIGN] ]
@@ -278,12 +278,20 @@ variables:
         $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
       end
     }
-    | ARRAY tipo ID COLON exp SEMICOLON {
-      # TODO Cuando se vean arrays
-      \$data_type = $vars_block::auxiliar.data_type
-      \$var_info = { id: $ID.text, type: "[#{\$data_type}]" }
+    | ARRAY tipo ID COLON CTEI SEMICOLON {
+      \$size = CTEI.text.to_i
+      \$type = $vars_block::auxiliar.data_type
+      if \$size <= 0
+        abort("ERROR: The size of the array must be greather than cero!\n")
+      end
+      if $vars_block::auxiliar.scope_location.nil?
+        \$address = $vars_block::auxiliar.global_memory.getAddress(\$type, \$size)
+      else
+        \$address = $vars_block::auxiliar.local_memory.getAddress(\$type, 'normal', \$size)
+      end
+      \$var_info = Hash[ id: $ID.text, type: \$type, value: \$address, array: true, size: \$size ]
       $vars_block::auxiliar.addVariable(\$var_info)
-    } /* TODO: missing size of array */
+    }
     ;
 
 assignint:

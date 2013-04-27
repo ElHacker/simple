@@ -15,7 +15,7 @@ class Auxiliar
     :jumps_stack, :lines_counter, :cuadruples_array, :scope_location,
     :arguments, :sign_variable, :addr_const_val, :semanthic_cube, :data_type,
     :is_ref, :has_return, :arg_stack, :call_stack, :exp_call, :global_memory,
-    :local_memory, :const_memory, :debug
+    :local_memory, :const_memory, :pointer_memory, :debug
   attr_reader :filename
 
   # Constructor of the class
@@ -49,9 +49,13 @@ class Auxiliar
     # Constant address -> direction 13000, with 1500 directions for integers and
     # floats, but 2 directions for boolean and the rest for strings
     #   -> Total width: 6000
+    # Pointers addresses -> direction 19000, with 1000 directions for every data type
+    #   -> Total width: 4000
     @global_memory = Memory.new(1000, 4000)
     @local_memory = LocalMemory.new(5000, 8000)
     @const_memory = ConstantMemory.new(13000, 6000, [0.25, 0.25, 0.0005, 0.4995])
+    @pointer_memory = Memory.new(19000, 4000)
+
     @semanthic_cube = {
     'int' => {
       'int' => {
@@ -158,7 +162,7 @@ class Auxiliar
   # the returning type is obtained through @data_type
   def addProcedure()
     if (! @procedures.has_key?(@scope_location))
-      # Copy the arguments to a temporal Hash.
+      # Copy the arguments to a temporal Hash
       temp_vars = Hash.new
       @arguments.each { |arg|
         temp_vars[arg[:id]] = arg.clone()
@@ -166,7 +170,12 @@ class Auxiliar
         # even if they are references
 
         # Increment the counter of variables according with the data type
-        temp_vars[arg[:id]][:value] = @local_memory.getAddress(arg[:type], 'normal')
+        if temp_vars[arg[:id]][:array]
+          size = temp_vars[arg[:id]][:size]
+        else
+          size = 1
+        end
+        temp_vars[arg[:id]][:value] = @local_memory.getAddress(arg[:type], 'normal', size)
         temp_vars[arg[:id]].delete(:ref)
       }
       @procedures[@scope_location] = { id: @scope_location, args: @arguments.clone(),
@@ -197,7 +206,7 @@ class Auxiliar
       end
     else
       in_arguments = false
-      if not @procedures[@scope_location][:args].nil?
+      if (! @procedures[@scope_location][:args].nil?)
         @procedures[@scope_location][:args].each { |arg|
           if arg[:id] == var_info[:id]
             in_arguments = true
@@ -265,7 +274,7 @@ class Auxiliar
   def findVariable(id)
     found = false
     var = nil
-    if not @scope_location.nil? && @procedures.has_key?(@scope_location)
+    if (! @scope_location.nil?) && @procedures.has_key?(@scope_location)
       if @procedures[@scope_location][:local_vars].has_key?(id)
         var = @procedures[@scope_location][:local_vars][id]
         found = true
@@ -299,7 +308,11 @@ class Auxiliar
       info[:args].each { |arg|
         str = "#{arg[:type]}"
         if arg[:ref]
-          str = str + " &"
+          if arg[:array]
+            str = str + " [" + arg[:size] + "]"
+          else
+            str = str + " &"
+          end
         end
         temp.push(str)
       }
