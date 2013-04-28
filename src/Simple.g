@@ -237,7 +237,7 @@ variables:
       $vars_block::auxiliar.addVariable(\$var_info)
       if (! $vars_block::auxiliar.addr_const_val.nil?)
         \$action = Hash[ id: '=', value: CODES::Codes[:ASSIGN] ]
-        \$emtpy = Hash[ value: -1 ]
+        \$empty = Hash[ value: -1 ]
         \$float_val = $vars_block::auxiliar.addr_const_val
         \$cuadruple = Cuadruples.new(\$action, \$float_val, \$empty, \$var_info)
         $vars_block::auxiliar.lines_counter += 1
@@ -271,7 +271,7 @@ variables:
       $vars_block::auxiliar.addVariable(\$var_info)
       if (! $vars_block::auxiliar.addr_const_val.nil?)
         \$action = Hash[ id: '=', value: CODES::Codes[:ASSIGN] ]
-        \$emtpy = Hash[ value: -1 ]
+        \$empty = Hash[ value: -1 ]
         \$boolean_val = $vars_block::auxiliar.addr_const_val
         \$cuadruple = Cuadruples.new(\$action, \$boolean_val, \$empty, \$var_info)
         $vars_block::auxiliar.lines_counter += 1
@@ -279,10 +279,10 @@ variables:
       end
     }
     | ARRAY tipo ID COLON CTEI SEMICOLON {
-      \$size = CTEI.text.to_i
+      \$size = $CTEI.text.to_i
       \$type = $vars_block::auxiliar.data_type
       if \$size <= 0
-        abort("ERROR: The size of the array must be greather than cero!\n")
+        abort("\nERROR: The size of the array must be greather than cero\n")
       end
       if $vars_block::auxiliar.scope_location.nil?
         \$address = $vars_block::auxiliar.global_memory.getAddress(\$type, \$size)
@@ -355,6 +355,7 @@ funcion:
       $vars_block::auxiliar.addProcedure()
     } LBRACK var est RBRACK {
       $vars_block::auxiliar.arguments.clear()
+      $vars_block::auxiliar.pointer_memory.resetCounters()
       # Checks if the procudure has a correct return
       \$scope_location = $vars_block::auxiliar.scope_location
       \$returning_type = $vars_block::auxiliar.procedures[\$scope_location][:return_type]
@@ -364,7 +365,8 @@ funcion:
       # Insert the corresponding memory space in the procedure directory
       \$normal = $vars_block::auxiliar.local_memory.normal.to_hash
       \$temporal = $vars_block::auxiliar.local_memory.temporal.to_hash
-      \$memory = Hash[ normal: \$normal, temporal: \$temporal ]
+      \$pointers = $vars_block::auxiliar.pointer_memory.to_hash
+      \$memory = Hash[ normal: \$normal, temporal: \$temporal, pointers: \$pointers ]
       $vars_block::auxiliar.procedures[\$scope_location][:memory] = \$memory
 
       # This cuadruple is inserted in the case that the procedure does not have a
@@ -379,6 +381,7 @@ funcion:
     }
     ;
 
+/* TODO Cambiar lo de los argumentos */
 argumentos: /* empty */
     | tipo ref ID {
       \$type = $vars_block::auxiliar.data_type
@@ -428,7 +431,19 @@ estatutos:
 
 idestatutos:
     llamada
-    | array ASSIGN expresion { print("[IDESTATUTOS] ") }
+    | array ASSIGN {
+      $vars_block::auxiliar.operations_stack.push( $ASSIGN.text )
+    } expresion {
+      \$next_operation = $vars_block::auxiliar.operations_stack.pop()
+      \$operation_value = Hash[ id: \$next_operation, value: CODES.tokenValue(\$next_operation) ]
+      \$oper1 = $vars_block::auxiliar.operands_stack.pop()
+      \$oper2 = $vars_block::auxiliar.operands_stack.pop()
+      $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper2, \$oper1)
+      \$empty = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$operation_value, \$oper1, \$empty, \$oper2)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+    }
     | ASSIGN {
       \$id = $vars_block::auxiliar.operands_stack.pop()
       \$var = $vars_block::auxiliar.findVariable(\$id)
@@ -440,8 +455,8 @@ idestatutos:
       \$oper1 = $vars_block::auxiliar.operands_stack.pop()
       \$oper2 = $vars_block::auxiliar.operands_stack.pop()
       $vars_block::auxiliar.checkCuadruple(\$next_operation, \$oper2, \$oper1)
-      \$emtpy = Hash[ value: -1 ]
-      \$cuadruple = Cuadruples.new(\$operation_value, \$oper1, \$emtpy, \$oper2)
+      \$empty = Hash[ value: -1 ]
+      \$cuadruple = Cuadruples.new(\$operation_value, \$oper1, \$empty, \$oper2)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
     }
@@ -457,9 +472,9 @@ llamada:
       $vars_block::auxiliar.call_stack.push(\$procedure)
       # Era
       \$action = Hash[ id: 'Era', value: CODES::Codes[:ERA] ]
-      \$emtpy = Hash[ value: -1 ]
+      \$empty = Hash[ value: -1 ]
       \$procedure_value = Hash[ value: \$procedure ]
-      \$cuadruple = Cuadruples.new(\$action, \$procedure_value, \$emtpy, \$emtpy)
+      \$cuadruple = Cuadruples.new(\$action, \$procedure_value, \$empty, \$empty)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
 
@@ -504,7 +519,7 @@ llamada:
         \$destiny = Hash[ type: \$return_type, value: \$address ]
         \$name = \$procedure + '_ret_swap'
         \$origin = $vars_block::auxiliar.global[\$name]
-        \$cuadruple = Cuadruples.new(\$action, \$origin, \$emtpy, \$destiny)
+        \$cuadruple = Cuadruples.new(\$action, \$origin, \$empty, \$destiny)
         $vars_block::auxiliar.lines_counter += 1
         $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
         $vars_block::auxiliar.operands_stack.push(\$destiny)
@@ -552,7 +567,7 @@ llamadaargs: /* empty */
     } llamadaargsaux
     ;
 
-llamadaargsaux: /* emtpy */
+llamadaargsaux: /* empty */
     | COMMA exp {
       # Gets the result of exp
       \$result = $vars_block::auxiliar.operands_stack.pop()
@@ -593,7 +608,42 @@ llamadaargsaux: /* emtpy */
     ;
 
 array:
-    LSBRACK exp RSBRACK { print("[ARRAY] ") }
+    LSBRACK {
+      # Push a false bottom in the operations stack
+      $vars_block::auxiliar.operations_stack.push(' | ')
+    } exp {
+      # Extracts the resulting value of the expression
+      \$oper1 = $vars_block::auxiliar.operands_stack.pop()
+      \$id = $vars_block::auxiliar.operands_stack.pop()
+      # Check if the id is an array
+      \$var = $vars_block::auxiliar.findVariable(\$id)
+      if (! \$var[:array])
+        abort("\nERROR: The identifier '#{\$id}' is not an array\n")
+      end
+      # Check if the value is not an integer
+      if \$oper1[:type] != 'int'
+        abort("\nERROR: The index for '#{\$id}' must be an integer\n")
+      end
+      # Ver
+      \$action = Hash[ id: 'Ver', value: CODES.tokenValue('Ver') ]
+      \$lim_inf = Hash[ value: 0 ]
+      \$lim_sup = Hash[ value: \$var[:size] ]
+      \$cuadruple = Cuadruples.new(\$action, \$oper1, \$lim_inf, \$lim_sup)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+      # Offset
+      \$action = Hash[ id: 'Offset', value: CODES.tokenValue('Offset') ]
+      \$pointer = Hash[ type: \$var[:type], value: $vars_block::auxiliar.pointer_memory.getAddress(\$var[:type]) ]
+      \$base = Hash[ value: \$var[:value] ]
+      \$cuadruple = Cuadruples.new(\$action, \$oper1, \$base, \$pointer)
+      $vars_block::auxiliar.lines_counter += 1
+      $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
+      # Inserts the pointer for later use
+      $vars_block::auxiliar.operands_stack.push(\$pointer)
+    } RSBRACK {
+      # Extracts the false bottom in the operations stack
+      $vars_block::auxiliar.operations_stack.pop()
+    }
     ;
 
 expresion:
@@ -784,7 +834,7 @@ idvarcte:
     | {
       $vars_block::auxiliar.exp_call = true
     } llamada
-    | array { print("[IDVARCTE] ") }
+    | array
     ;
 
 comparacion:
@@ -961,7 +1011,7 @@ ciclo:
       \$for_cond_ini = Hash[ value: $vars_block::auxiliar.jumps_stack.pop() ]
       # Create a Goto cuadruple
       \$goto_line = Hash[ id: 'Goto', value: CODES::Codes[:GOTO] ]
-      \$emtpy = Hash[ value: -1 ]
+      \$empty = Hash[ value: -1 ]
       \$cuadruple = Cuadruples.new(\$goto_line, \$empty, \$empty, \$for_cond_ini)
       $vars_block::auxiliar.cuadruples_array.push( \$cuadruple )
       $vars_block::auxiliar.lines_counter += 1
@@ -993,9 +1043,7 @@ ciclo:
 cicloaux: /* empty */
     | ID {
       \$id = $ID.text
-      \$var = $vars_block::auxiliar.findVariable(\$id)
-      $vars_block::auxiliar.operands_stack.push(\$var)
-      # For now, we ignore the array
+      $vars_block::auxiliar.operands_stack.push(\$id)
     } cicloauxx ASSIGN {
       $vars_block::auxiliar.operations_stack.push( $ASSIGN.text )
     } exp {
@@ -1011,8 +1059,13 @@ cicloaux: /* empty */
     }
     ;
 
-cicloauxx: /* empty */
-    | array { print("[CICLOAUXX] ") }
+cicloauxx: 
+    /* empty */ {
+      \$id = $vars_block::auxiliar.operands_stack.pop()
+      \$var = $vars_block::auxiliar.findVariable(\$id)
+      $vars_block::auxiliar.operands_stack.push(\$var)
+    }
+    | array
     ;
 
 lectura:
@@ -1048,8 +1101,8 @@ main:
       # Insert the corresponding memory space in the procedure directory
       \$normal = $vars_block::auxiliar.local_memory.normal.to_hash
       \$temporal = $vars_block::auxiliar.local_memory.temporal.to_hash
-      \$memory = Hash[ normal: \$normal, temporal: \$temporal ]
-      $vars_block::auxiliar.procedures[\$scope_location][:memory] = \$memory
+      \$pointers = $vars_block::auxiliar.pointer_memory.to_hash
+      \$memory = Hash[ normal: \$normal, temporal: \$temporal, pointers: \$pointers ]
       $vars_block::auxiliar.procedures[\$scope_location][:memory] = \$memory
     }
     ;

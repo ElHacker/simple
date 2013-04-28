@@ -1,4 +1,4 @@
-var line_number, line, procedures, quadruples, const_memory, global_memory, local_memory, op, op1, op2, dest, proc_name, stack_proc_names, stack_ref, stack_memory, stack_values, era, stack_era, stack_line, global_vars, input_array, input_index;
+var line_number, line, procedures, quadruples, const_memory, global_memory, local_memory, pointers_memory, op, op1, op2, dest, proc_name, stack_proc_names, stack_ref, stack_memory, stack_values, stack_pointers, era, stack_era, stack_line, global_vars, input_array, input_index;
 var request;
 var allText;
 
@@ -114,8 +114,11 @@ function getValueForAddress(address) {
         return global_memory.getValue(address);
     } else if (address < const_memory.initial_address()) {
         return local_memory.getValue(address);
-    } else {
+    } else if (address < pointers_memory.initial_address()) {
         return const_memory.getValue(address);
+    } else {
+        new_address = pointers_memory.getValue(address);
+        return getValueForAddress(new_address);
     }
 }
 
@@ -123,8 +126,11 @@ function getValueForAddress(address) {
 function setValueForAddress(address, value) {
     if (address < local_memory.normal.initial_address()) {
         global_memory.setValue(address, value);
-    } else {
+    } else if (address < const_memory.initial_address()) {
         local_memory.setValue(address, value);
+    } else if (address >= pointers_memory.initial_address()) {
+        new_address = pointers_memory.getValue(address);
+        setValueForAddress(new_address, value);
     }
 }
 
@@ -157,6 +163,7 @@ stack_line = new Stack();
 stack_era = new Stack();
 stack_proc_names = new Stack();
 stack_values = new Stack();
+stack_pointers = new Stack();
 era = undefined;
 
 function runProgram() {
@@ -169,7 +176,6 @@ function runProgram() {
         // The line_number pointer is incremented in every operation
         // Except in the GOTO, GOTOV, GOTOF and GOSUB
         // ------------------------------------------------------------
-
         switch (op) {
             case 0:
                 // INT
@@ -382,13 +388,14 @@ function runProgram() {
                 stack_ref.push("|");
                 // Reserve the necessary memory for the new procedure call
                 op1 = line[1];
-            if (proc_name != undefined) {
-                stack_proc_names.push(proc_name);
-            }
+                if (proc_name != undefined) {
+                    stack_proc_names.push(proc_name);
+                }
                 proc_name = op1;
                 normal = procedures[op1]["memory"]["normal"];
-                temporal = procedures[op1]["memory"]["normal"];
-                era = new LocalMemory(normal, temporal);
+                temporal = procedures[op1]["memory"]["temporal"];
+                pointers_dic = procedures[op1]["memory"]["pointers"];
+                era = [new LocalMemory(normal, temporal), new Memory(pointers_dic)];
 
                 line_number++;
                 break;
@@ -402,7 +409,7 @@ function runProgram() {
                 // Save the value in the new reserved memory according with the number of the parameter
                 id = procedures[proc_name]["args"][dest]["id"];
                 address = procedures[proc_name]["local_vars"][id]["value"];
-                era.setValue(address, value);
+                era[0].setValue(address, value);
 
                 // If it is a reference, then save the address in the reference stack to copy data later
                 if (op2) {
@@ -417,8 +424,11 @@ function runProgram() {
                 stack_line.push(line_number + 1);
                 // Save the actual local memory
                 stack_memory.push(local_memory);
-                // Change the local memory with the Era pointer
-                local_memory = era;
+                // Save the actual pointers memory
+                stack_pointers.push(pointers_memory);
+                // Change the local memory and pointer memory with the Era pointer
+                local_memory = era[0];
+                pointers_memory = era[1];
                 // Set era with the pending reserved memory in the stack_era
                 // so the magic in ERA to works ;)
                 era = stack_era.pop();
@@ -439,8 +449,10 @@ function runProgram() {
                     }
                 }
 
-                // Change the local_memory for the one in the stack_memory
+                // Change the local_memory with the one in the stack_memory
                 local_memory = stack_memory.pop();
+                // Change the pointers_memory with the one in the stack_pointers
+                pointers_memory = stack_pointers.pop();
                 // Now, with the values and directions in the stacks, transfer the information
                 // until the 'false' bottom is founded
                 while (stack_ref.look() != '|') {
@@ -499,6 +511,27 @@ function runProgram() {
                 }
                 input_index++;
                 setValueForAddress(dest, value);
+                line_number++;
+                break;
+            case 32:
+                // VER
+                op1 = parseInt(line[1]);
+                op2 = parseInt(line[2]);
+                dest = parseInt(line[3]);
+                value = getValueForAddress(op1);
+                if (value < op2 || value >= dest) {
+                    throw new Error("Out of bounds!");
+                }
+                line_number++;
+                break;
+            case 33:
+                // OFFSET
+                op1 = parseInt(line[1]);
+                op2 = parseInt(line[2]);
+                dest = parseInt(line[3]);
+                value = getValueForAddress(op1);
+                result = op2 + value;
+                pointers_memory.setValue(dest, result);
                 line_number++;
                 break;
         }
@@ -630,7 +663,9 @@ function node() {
         // Load the main procedure in the local_memory
         normal = procedures["main"]["memory"]["normal"];
         temporal = procedures["main"]["memory"]["temporal"];
+        pointers_dic = procedures["main"]["memory"]["pointers"];
         local_memory = new LocalMemory(normal, temporal);
+        pointers_memory = new Memory(pointers_dic);
 
         // Everything is ready, run the program!!!
         runProgram();
