@@ -381,13 +381,21 @@ funcion:
     }
     ;
 
-/* TODO Cambiar lo de los argumentos */
 argumentos: /* empty */
     | tipo ref ID {
       \$type = $vars_block::auxiliar.data_type
       \$ref = $vars_block::auxiliar.is_ref
       $vars_block::auxiliar.checkParamInArguments( $ID.text )
-      $vars_block::auxiliar.arguments.push( Hash[ type: \$type, ref: \$ref, id: $ID.text ] )
+      $vars_block::auxiliar.arguments.push( Hash[ type: \$type, ref: \$ref, id: $ID.text, array: false ] )
+    } argumentoaux
+    | ARRAY tipo ID COLON CTEI {
+      \$size = $CTEI.text.to_i
+      \$type = $vars_block::auxiliar.data_type
+      if \$size <= 0
+        abort("\nERROR: The size of the array in '#{$vars_block::auxiliar.scope_location}' must be greather than cero\n")
+      end
+      $vars_block::auxiliar.checkParamInArguments( $ID.text )
+      $vars_block::auxiliar.arguments.push( Hash[ type: \$type, ref: true, id: $ID.text, array: true, size: \$size ] )
     } argumentoaux
     ;
 
@@ -396,7 +404,16 @@ argumentoaux: /* empty */
       \$type = $vars_block::auxiliar.data_type
       \$ref = $vars_block::auxiliar.is_ref
       $vars_block::auxiliar.checkParamInArguments( $ID.text )
-      $vars_block::auxiliar.arguments.push( Hash[ type: \$type, ref: \$ref, id: $ID.text ] )
+      $vars_block::auxiliar.arguments.push( Hash[ type: \$type, ref: \$ref, id: $ID.text, array: false ] )
+    } argumentoaux
+    | ARRAY tipo ID COLON CTEI {
+      \$size = $CTEI.text.to_i
+      \$type = $vars_block::auxiliar.data_type
+      if \$size <= 0
+        abort("\nERROR: The size of the array in '#{$vars_block::auxiliar.scope_location}' must be greather than cero\n")
+      end
+      $vars_block::auxiliar.checkParamInArguments( $ID.text )
+      $vars_block::auxiliar.arguments.push( Hash[ type: \$type, ref: true, id: $ID.text, array: true, size: \$size ] )
     } argumentoaux
     ;
 
@@ -543,16 +560,31 @@ llamadaargs: /* empty */
       end
       \$argument = $vars_block::auxiliar.procedures[\$procedure][:args][\$arg_number]
       # Abort if the data types are different
-      # TODO CASTING!!!
       if \$argument[:type] != \$result[:type]
         abort("\nERROR: Different data types for the arguments of '#{\$procedure}'\n")
       end
+      # Abort if the reference is applied to an expression
       if \$argument[:ref] && $vars_block::auxiliar.local_memory.temporal.checkAddress(\$result[:value])
         abort("\nERROR: Cannot apply 'ref' to an expression\n")
+      end
+      # Abort if the argument is an array and the passed value is not an array
+      if \$argument[:array] && (\$result[:array].nil? || ! \$result[:array])
+        abort("\nERROR: The argument '#{\$argument[:id]}' of '#{\$procedure}' must be an array\n")
+      end
+      # Abort if the argument is not an array and the passed value is an array
+      if (! \$argument[:array]) && (! \$result[:array].nil?) && \$result[:array]
+        abort("\nERROR: The argument '#{\$argument[:id]}' of '#{\$procedure}' is not an array\n")
+      end
+      # Abort if the argument and the passed values are arrays of different sizes
+      if \$argument[:array] && (! \$result[:array].nil?) && \$result[:array] && (\$argument[:size] != \$result[:size])
+        abort("\nERROR: The passed array in '#{\$procedure}' has different size than the argument '#{\$argument[:id]}'\n")
       end
       \$flag_ref = Hash[ value: 0 ]
       if \$argument[:ref]
         \$flag_ref[:value] = 1
+      end
+      if \$argument[:array]
+        \$flag_ref[:value] = 2
       end
       # Param
       \$action = Hash[ id: 'Param', value: CODES::Codes[:PARAM] ]
@@ -583,16 +615,30 @@ llamadaargsaux: /* empty */
       end
       \$argument = $vars_block::auxiliar.procedures[\$procedure][:args][\$arg_number]
       # Abort if the data types are different
-      # TODO CASTING!!!
       if \$argument[:type] != \$result[:type]
         abort("\nERROR: Different data types for the arguments of '#{\$procedure}'\n")
       end
       if \$argument[:ref] && $vars_block::auxiliar.local_memory.temporal.checkAddress(\$result[:value])
         abort("\nERROR: Cannot apply 'ref' to an expression\n")
       end
+      # Abort if the argument is an array and the passed value is not an array
+      if \$argument[:array] && (\$result[:array].nil? || ! \$result[:array])
+        abort("\nERRO: The argument '#{\$argument[:id]}' of '#{\$procedure}' must be and array\n")
+      end
+      # Abort if the argument is not an array and the passed value is an array
+      if (! \$argument[:array]) && (! \$result[:array].nil?) && \$result[:array]
+        abort("\nERROR: The argument '#{\$argument[:id]}' of '#{\$procedure}' is not an array\n")
+      end
+      # Abort if the argument and the passed values are arrays of different sizes
+      if \$argument[:array] && (! \$result[:array].nil?) && \$result[:array] && (\$argument[:size] != \$result[:size])
+        abort("\nERROR: The passed array in '#{\$procedure}' has different size than the argument '#{\$argument[:id]}'\n")
+      end
       \$flag_ref = Hash[ value: 0 ]
       if \$argument[:ref]
         \$flag_ref[:value] = 1
+      end
+      if \$argument[:array]
+        \$flag_ref[:value] = 2
       end
       # Param
       \$action = Hash[ id: 'Param', value: CODES::Codes[:PARAM] ]

@@ -8,18 +8,18 @@ var allText;
 // memory = {int_init_addr, float_init_addr, boolean_init_addr, string_init_addr,
 // int_count, float_count, boolean_count, string_count}
 function Memory(memory) {
-    this.int_count = Math.floor(memory["int_count"]);
+    this.int_count = Math.floor(memory["ic"]);
     this.integers = new Array(this.int_count);
-    this.int_init_addr = Math.floor(memory["int_init_addr"]);
-    this.float_count = Math.floor(memory["float_count"]);
+    this.int_init_addr = Math.floor(memory["iia"]);
+    this.float_count = Math.floor(memory["fc"]);
     this.floats = new Array(this.float_count);
-    this.float_init_addr = Math.floor(memory["float_init_addr"]);
-    this.boolean_count = Math.floor(memory["boolean_count"]);
+    this.float_init_addr = Math.floor(memory["fia"]);
+    this.boolean_count = Math.floor(memory["bc"]);
     this.booleans = new Array(this.boolean_count);
-    this.boolean_init_addr = Math.floor(memory["boolean_init_addr"]);
-    this.string_count = Math.floor(memory["string_count"]);
+    this.boolean_init_addr = Math.floor(memory["bia"]);
+    this.string_count = Math.floor(memory["sc"]);
     this.strings = new Array(this.string_count);
-    this.string_init_addr = Math.floor(memory["string_init_addr"]);
+    this.string_init_addr = Math.floor(memory["sia"]);
 
     // Searches if an address belongs to this memory
     /*
@@ -401,19 +401,33 @@ function runProgram() {
                 break;
             case 24:
                 // PARAM
-                op1 = parseInt(line[1]);  // Address
-                op2 = parseInt(line[2]);  // Is reference?
+                op1 = parseInt(line[1]);  // Base address
+                op2 = parseInt(line[2]);  // Is reference (1) or and array(2)?
                 dest = parseInt(line[3]);  // Number of param
-                value = getValueForAddress(op1);
 
                 // Save the value in the new reserved memory according with the number of the parameter
                 id = procedures[proc_name]["args"][dest]["id"];
                 address = procedures[proc_name]["local_vars"][id]["value"];
-                era[0].setValue(address, value);
 
-                // If it is a reference, then save the address in the reference stack to copy data later
-                if (op2) {
+                // Parameter by value
+                if (op2 == 0) {
+                    value = getValueForAddress(op1);
+                    era[0].setValue(address, value);
+                // Parameter by reference
+                } else if (op2 == 1) {
+                    value = getValueForAddress(op1);
+                    era[0].setValue(address, value);
                     stack_ref.push(op1);
+                // Parameter -> array!
+                } else if (op2 == 2) {
+                    size = procedures[proc_name]["local_vars"][id]["size"];
+                    for (var i = 0; i < size; i++) {
+                        value = getValueForAddress(op1);
+                        era[0].setValue(address, value);
+                        stack_ref.push(op1);
+                        address++;
+                        op1++;
+                    }
                 }
 
                 line_number++;
@@ -443,9 +457,19 @@ function runProgram() {
                 for (var i = 0; i < args.length; i++) {
                     if (args[i]["ref"]) {
                         id = args[i]["id"];
-                        address = procedures[proc_name]["local_vars"][id]["value"];
-                        value = getValueForAddress(address);
-                        stack_values.push(value);
+                        if (args[i]["array"]) {
+                            size = args[i]["size"];
+                            address = procedures[proc_name]["local_vars"][id]["value"];
+                            for (var j = 0; j < size; j++) {
+                                value = getValueForAddress(address);
+                                stack_values.push(value);
+                                address++;
+                            }
+                        } else {
+                            address = procedures[proc_name]["local_vars"][id]["value"];
+                            value = getValueForAddress(address);
+                            stack_values.push(value);
+                        }
                     }
                 }
 
@@ -540,10 +564,10 @@ function runProgram() {
 
 function setConstValues(dictionary) {
     var integers, floats, booleans, strings;
-    integers = dictionary["int"];
-    floats = dictionary["float"];
-    booleans = dictionary["boolean"];
-    strings = dictionary["string"];
+    integers = dictionary["i"];
+    floats = dictionary["f"];
+    booleans = dictionary["b"];
+    strings = dictionary["s"];
 
     //------------------------------------------------------------
     // Itereates every key-value and map it in the const_memory

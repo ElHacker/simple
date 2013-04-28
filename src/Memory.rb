@@ -112,7 +112,7 @@ class Memory
     if @string_init_addr <= address && address <= (@string_init_addr + @string_count)
       return true
     end
-    false
+    return false
   end
 
   # Reset the counter of this block memory
@@ -125,18 +125,18 @@ class Memory
 
   # Returns a hash representation of the object
   def to_hash()
-    return (Hash[ int_init_addr: @int_init_addr, float_init_addr: @float_init_addr,
-      boolean_init_addr: @boolean_init_addr, string_init_addr: @string_init_addr,
-      int_count: @int_count, float_count: @float_count, boolean_count: @boolean_count,
-      string_count: @string_count])
+    return (Hash[ iia: @int_init_addr, fia: @float_init_addr,
+      bia: @boolean_init_addr, sia: @string_init_addr,
+      ic: @int_count, fc: @float_count, bc: @boolean_count,
+      sc: @string_count])
   end
 
   # Returns a json representation of the object
   def to_json()
-    return (Hash[ int_init_addr: @int_init_addr, float_init_addr: @float_init_addr,
-      boolean_init_addr: @boolean_init_addr, string_init_addr: @string_init_addr,
-      int_count: @int_count, float_count: @float_count, boolean_count: @boolean_count,
-      string_count: @string_count]).to_json
+    return (Hash[ iia: @int_init_addr, fia: @float_init_addr,
+      bia: @boolean_init_addr, sia: @string_init_addr,
+      ic: @int_count, fc: @float_count, bc: @boolean_count,
+      sc: @string_count]).to_json
     end
 
 end
