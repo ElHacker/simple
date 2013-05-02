@@ -10,7 +10,6 @@ grammar Simple;
 
 options {
   language  = Ruby;
-  output    = AST;
   backtrack = true;
 }
 
@@ -128,10 +127,12 @@ scope {
     print("#{$vars_block::auxiliar.const_memory.to_json}\n")
     print("#{$vars_block::auxiliar.const_memory.values_to_json}\n")
   else
-    File.open($vars_block::auxiliar.filename, 'w') { | file |
-      file.write("{ \"const_memory_map\": #{$vars_block::auxiliar.const_memory.to_json},\n")
-      file.write(" \"const_memory_values\": #{$vars_block::auxiliar.const_memory.values_to_json},\n")
-    }
+    #File.open($vars_block::auxiliar.filename, 'w') { | file |
+    #  file.write("{ \"const_memory_map\": #{$vars_block::auxiliar.const_memory.to_json},\n")
+    #  file.write(" \"const_memory_values\": #{$vars_block::auxiliar.const_memory.values_to_json},\n")
+    #}
+    print("{ \"const_memory_map\": #{$vars_block::auxiliar.const_memory.to_json},\n")
+    print(" \"const_memory_values\": #{$vars_block::auxiliar.const_memory.values_to_json},\n")
   end
 
   if $vars_block::auxiliar.debug
@@ -144,10 +145,12 @@ scope {
     puts("Map of global memory:\n")
     print($vars_block::auxiliar.global.to_json)
   else
-    File.open($vars_block::auxiliar.filename, 'a') { | file |
-      file.write(" \"global_memory_map\": #{$vars_block::auxiliar.global_memory.to_json},\n")
-      file.write(" \"global_memory_values\": #{$vars_block::auxiliar.global.to_json},\n")
-    }
+    #File.open($vars_block::auxiliar.filename, 'a') { | file |
+    #  file.write(" \"global_memory_map\": #{$vars_block::auxiliar.global_memory.to_json},\n")
+    #  file.write(" \"global_memory_values\": #{$vars_block::auxiliar.global.to_json},\n")
+    #}
+    print(" \"global_memory_map\": #{$vars_block::auxiliar.global_memory.to_json},\n")
+    print(" \"global_memory_values\": #{$vars_block::auxiliar.global.to_json},\n")
   end
 
   if $vars_block::auxiliar.debug
@@ -158,9 +161,10 @@ scope {
       print("#{key}: #{\$proc_info}\n")
     end
   else
-    File.open($vars_block::auxiliar.filename, 'a') { | file |
-      file.write(" \"functions\": #{$vars_block::auxiliar.procedures.to_json},\n")
-    }
+    #File.open($vars_block::auxiliar.filename, 'a') { | file |
+    #  file.write(" \"functions\": #{$vars_block::auxiliar.procedures.to_json},\n")
+    #}
+    print(" \"functions\": #{$vars_block::auxiliar.procedures.to_json},\n")
   end
 
   \$cont = 0
@@ -172,19 +176,28 @@ scope {
       \$cont += 1
     }
   else
-    File.open($vars_block::auxiliar.filename, 'a') { | file |
-      file.write(" \"quadruples\": [\n")
-      \$cont = 0
-      while \$cont < \$cuadruples.length do
-        if \$cont == (\$cuadruples.length - 1)
-          file.write(" \"#{\$cuadruples[\$cont].to_values}\"\n")
-        else
-          file.write(" \"#{\$cuadruples[\$cont].to_values}\",\n")
-        end
-        \$cont += 1
+    #File.open($vars_block::auxiliar.filename, 'a') { | file |
+    #  file.write(" \"quadruples\": [\n")
+    #  while \$cont < \$cuadruples.length do
+    #    if \$cont == (\$cuadruples.length - 1)
+    #      file.write(" \"#{\$cuadruples[\$cont].to_values}\"\n")
+    #    else
+    #      file.write(" \"#{\$cuadruples[\$cont].to_values}\",\n")
+    #    end
+    #    \$cont += 1
+    #  end
+    #  file.write("]}")
+    #}
+    print(" \"quadruples\": [\n")
+    while \$cont < \$cuadruples.length do
+      if \$cont == (\$cuadruples.length - 1)
+        print(" \"#{\$cuadruples[\$cont].to_values}\"\n")
+      else
+        print(" \"#{\$cuadruples[\$cont].to_values}\",\n")
       end
-      file.write("]}")
-    }
+      \$cont += 1
+    end
+    print("]}\n")
   end
 }
   : programa
@@ -200,9 +213,7 @@ programa:
       \$cuadruple = Cuadruples.new(\$goto_line, \$empty, \$empty, \$empty)
       $vars_block::auxiliar.lines_counter += 1
       $vars_block::auxiliar.cuadruples_array.push(\$cuadruple)
-    } func main {
-      print("[PROGRAMA] -> Entrada aceptada\n")
-    }
+    } func main
     ;
 
 var:
@@ -406,7 +417,7 @@ argumentoaux: /* empty */
       $vars_block::auxiliar.checkParamInArguments( $ID.text )
       $vars_block::auxiliar.arguments.push( Hash[ type: \$type, ref: \$ref, id: $ID.text, array: false ] )
     } argumentoaux
-    | ARRAY tipo ID COLON CTEI {
+    | COMMA ARRAY tipo ID COLON CTEI {
       \$size = $CTEI.text.to_i
       \$type = $vars_block::auxiliar.data_type
       if \$size <= 0
