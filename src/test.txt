@@ -3,10 +3,28 @@ int contador = 0;
 boolean flags;
 string mensaje = "Hola mundo";
 
+function add(int &a, int b) : int
+{
+    int c;
+    c = b * 5 - a;
+    return c;
+}
+
+function dos() : void
+{
+    int var_in_dos;
+    var_in_dos = rows * contador;
+    return;
+}
+
+
 main()
 {
     int j;
     int num;
+    input(int, j);
+    input(int, num);
+    input(boolean, flags);
     for(j = 0; j * 10; j = j + 1) {
       if ( j + 10) {
         j = j - 10;
@@ -14,4 +32,7 @@ main()
         j = j + 10;
       }
     }
+    num = add(j, add(num, 5));
+    dos();
+    print(j, num, "hola");
 }
