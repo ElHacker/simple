@@ -259,7 +259,7 @@ class Auxiliar
       # Abort if the operand cannot be applyed to the data types
       abort("\nERROR: cannot apply '#{next_operation}' to #{oper1[:id]} aka '#{oper1[:type]}' and #{oper2[:id]} aka '#{oper2[:type]}'\n") if resulting_type.nil?
       # Emit a warning when casting is necessary
-      print("\nWARNING: '#{resulting_type}' to '#{oper1[:type]}'\n") if oper1[:type] != resulting_type
+      # $stderr.puts("WARNING: '#{resulting_type}' to '#{oper1[:type]}'") if oper1[:type] != resulting_type
       return resulting_type
     end
   end
